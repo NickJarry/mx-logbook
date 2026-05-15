@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MX-Logbook — Aviation Maintenance Log Assistant</title>
+<title>MX-Logbook   Aviation Maintenance Log Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -354,11 +354,11 @@
   <h1 class="hero-headline">Stop writing<br>logbooks <span>for free.</span></h1>
   <p class="hero-sub">
     You already work the hours. You already know the regs.
-    <strong>MX-Logbook turns your plain-language descriptions into professional, FAA-compliant log entries in seconds</strong> —
+    <strong>MX-Logbook turns your plain-language descriptions into professional, FAA-compliant log entries in seconds</strong>  
     so you can stop donating your own time to paperwork at the end of a 10-hour shift.
   </p>
   <div class="hero-actions">
-    <button class="btn-primary" onclick="openModal()">Start free — 14 days, no card</button>
+    <button class="btn-primary" onclick="openModal()">Start free   14 days, no card</button>
     <a href="#tool"><button class="btn-ghost">See it in action</button></a>
   </div>
   <p class="hero-fine">Then from $9.99/mo. Cancel anytime. No BS.</p>
@@ -391,7 +391,7 @@
     <div class="how-card">
       <div class="how-num">02</div>
       <div class="how-title">Pick your entry type</div>
-      <div class="how-desc">Maintenance, squawk, RTS, AD compliance, inspection, repair — six types covered.</div>
+      <div class="how-desc">Maintenance, squawk, RTS, AD compliance, inspection, repair   six types covered.</div>
     </div>
     <div class="how-card">
       <div class="how-num">03</div>
@@ -425,7 +425,7 @@
     <div id="tool-form" style="display:none">
       <div class="disclaimer">
         <span class="disclaimer-icon">⚠</span>
-        <div class="disclaimer-text"><strong>DRAFT ONLY — NOT AN OFFICIAL FAA DOCUMENT.</strong> All entries must be reviewed and signed by the responsible A&P or IA certificate holder. The certifying technician bears sole legal responsibility for accuracy and compliance with 14 CFR Parts 43 and 91. Not affiliated with or approved by the FAA.</div>
+        <div class="disclaimer-text"><strong>DRAFT ONLY   NOT AN OFFICIAL FAA DOCUMENT.</strong> All entries must be reviewed and signed by the responsible A&P or IA certificate holder. The certifying technician bears sole legal responsibility for accuracy and compliance with 14 CFR Parts 43 and 91. Not affiliated with or approved by the FAA.</div>
       </div>
 
       <p class="section-hed" style="margin-top:0">Entry type</p>
@@ -498,7 +498,7 @@
         </div>
         <div class="output-text" id="outputText"></div>
         <div class="output-footer" id="outputFooter" style="display:none">
-          <p class="output-disclaimer">⚠ DRAFT ONLY — Review all details before signing. Technician is solely responsible per 14 CFR §43.9.</p>
+          <p class="output-disclaimer">⚠ DRAFT ONLY   Review all details before signing. Technician is solely responsible per 14 CFR §43.9.</p>
           <button class="btn-copy" onclick="copyEntry()" id="copyBtn">Copy draft to clipboard</button>
         </div>
       </div>
@@ -508,10 +508,10 @@
 
 <!-- PRICING -->
 <section id="pricing">
-  <p class="section-hed">Pricing — because you've been underpaid long enough</p>
+  <p class="section-hed">Pricing   because you've been underpaid long enough</p>
   <div class="pricing-intro">
     You keep the aircraft flying. The company bills $185/hr and pays you $32.
-    <strong>This app was built by one of you.</strong> That's why it costs less than a lunch —
+    <strong>This app was built by one of you.</strong> That's why it costs less than a lunch  
     no enterprise licensing, no "call for pricing," no suits deciding what your time is worth.
   </div>
 
@@ -554,7 +554,7 @@
     <div class="promise-item"><span class="promise-check">✓</span>No price hikes once you're in. Early subscribers keep their rate forever.</div>
     <div class="promise-item"><span class="promise-check">✓</span>No "call sales." Every plan is self-serve, no runaround.</div>
     <div class="promise-item"><span class="promise-check">✓</span>If this saves you less than it costs, email me and I'll refund you. No questions.</div>
-    <div class="promise-item"><span class="promise-check">✓</span>Draft only — your certificate, your sign-off, always.</div>
+    <div class="promise-item"><span class="promise-check">✓</span>Draft only   your certificate, your sign-off, always.</div>
   </div>
 </section>
 
@@ -651,10 +651,10 @@
 
 <script>
 const PROMO_CODES = {
-  'MAGDROP': { plan: 'Pro — 60 days free', duration: 60 },
-  'REDTAG': { plan: 'Pro — 60 days free', duration: 60 },
-  'SIGNOFF': { plan: 'Pro — 60 days free', duration: 60 },
-  'WRENCH': { plan: 'Solo — 30 days free', duration: 30 },
+  'MAGDROP': { plan: 'Pro   60 days free', duration: 60 },
+  'REDTAG': { plan: 'Pro   60 days free', duration: 60 },
+  'SIGNOFF': { plan: 'Pro   60 days free', duration: 60 },
+  'WRENCH': { plan: 'Solo   30 days free', duration: 30 },
 };
 
 const ANTHROPIC_KEY = window.ANTHROPIC_KEY || '';
@@ -701,7 +701,7 @@ function applyPromo() {
 
   if (PROMO_CODES[code]) {
     const promo = PROMO_CODES[code];
-    statusEl.textContent = '✓ Code applied — ' + promo.plan;
+    statusEl.textContent = '✓ Code applied   ' + promo.plan;
     statusEl.className = 'promo-status promo-valid';
     planName.textContent = promo.plan;
     planPrice.textContent = 'Free';
@@ -806,7 +806,7 @@ Parts/P/N: ${parts || 'N/A'}
 Reference (MM/AD/SB): ${ref || 'N/A'}
 Technician: ${tech || 'Not specified'}
 
-Write a concise, professional logbook entry in standard aviation maintenance format. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text — no preamble.`;
+Write a concise, professional logbook entry in standard aviation maintenance format. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text   no preamble.`;
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
