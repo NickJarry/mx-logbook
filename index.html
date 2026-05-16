@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX-Logbook — Aviation Maintenance Log Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #00e5a0; --green-dark: #00c48c;
+    --bg: #0d0d0d; --bg2: #151515; --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f0; --text2: #999; --text3: #555;
+    --amber: #ef9f27; --red: #e24b4a;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-cond: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--green); text-decoration: none; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(13,13,13,0.95); border-bottom: 0.5px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; backdrop-filter: blur(8px); }
+  .nav-logo { font-family: var(--font-mono); font-size: 13px; color: var(--green); letter-spacing: 2px; }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { font-family: var(--font-mono); font-size: 11px; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { background: var(--green) !important; color: #0a0a0a !important; padding: 6px 14px; border-radius: 4px; }
+
+  section { padding: 5rem 2rem; max-width: 900px; margin: 0 auto; }
+  .hero { min-height: calc(100vh - 56px); display: flex; flex-direction: column; justify-content: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+  .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; animation: fadeUp 0.5s ease both; }
+  .hero-eyebrow::before { content: ''; display: block; width: 24px; height: 1px; background: var(--green); }
+  .hero-headline { font-family: var(--font-cond); font-size: clamp(48px, 8vw, 86px); font-weight: 700; line-height: 1; text-transform: uppercase; margin-bottom: 1.5rem; letter-spacing: -1px; animation: fadeUp 0.5s 0.1s ease both; }
+  .hero-headline span { color: var(--green); }
+  .hero-sub { font-size: 16px; color: var(--text2); line-height: 1.8; max-width: 540px; margin-bottom: 2.5rem; animation: fadeUp 0.5s 0.2s ease both; }
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+  .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; animation: fadeUp 0.5s 0.3s ease both; }
+  .btn-primary { background: var(--green); color: #0a0a0a; font-family: var(--font-mono); font-size: 13px; padding: 14px 28px; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; font-weight: 500; transition: background 0.2s; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-ghost { background: transparent; color: var(--text2); font-family: var(--font-mono); font-size: 13px; padding: 14px 28px; border: 0.5px solid var(--border2); border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: color 0.2s; }
+  .btn-ghost:hover { color: var(--text); }
+  .hero-fine { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin-top: 1rem; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 4rem; animation: fadeUp 0.5s 0.4s ease both; }
+  .stat { background: var(--bg); padding: 1.25rem 1.5rem; }
+  .stat-num { font-family: var(--font-cond); font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 0.5px; }
+
+  .pain-section { border-left: 3px solid var(--amber); padding-left: 1.5rem; margin: 2rem 0; }
+  .pain-quote { font-family: var(--font-cond); font-size: 22px; font-weight: 500; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
+  .pain-attr { font-family: var(--font-mono); font-size: 11px; color: var(--text3); }
+
+  .section-hed { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); }
+  .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .how-card { border: 0.5px solid var(--border); border-radius: 8px; padding: 1.25rem; background: var(--bg2); }
+  .how-num { font-family: var(--font-mono); font-size: 11px; color: var(--green); margin-bottom: 8px; }
+  .how-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+  .how-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  #tool { background: var(--bg2); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); padding: 4rem 2rem; }
+  .tool-inner { max-width: 900px; margin: 0 auto; }
+
+  .disclaimer { background: rgba(239,159,39,0.08); border: 0.5px solid rgba(239,159,39,0.3); border-radius: 6px; padding: 10px 14px; margin-bottom: 1.5rem; display: flex; gap: 10px; }
+  .disclaimer-text { font-family: var(--font-mono); font-size: 11px; color: #ba7517; line-height: 1.6; }
+  .disclaimer-text strong { color: var(--amber); }
+
+  .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+  .type-card { border: 0.5px solid var(--border); border-radius: 6px; padding: 10px; cursor: pointer; text-align: center; background: var(--bg3); transition: border-color 0.2s; }
+  .type-card:hover { border-color: var(--border2); }
+  .type-card.selected { border-color: var(--green); background: rgba(0,229,160,0.05); }
+  .type-card-icon { font-size: 18px; margin-bottom: 4px; }
+  .type-card-name { font-family: var(--font-mono); font-size: 11px; color: var(--text2); }
+  .type-card.selected .type-card-name { color: var(--green); }
+
+  .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  @media(max-width:600px) { .form-grid-3, .form-grid-2 { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+  input[type=text], input[type=date], textarea { background: var(--bg); border: 0.5px solid var(--border2); border-radius: 4px; color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 9px 12px; width: 100%; transition: border-color 0.2s; }
+  input[type=text]:focus, input[type=date]:focus, textarea:focus { outline: none; border-color: var(--green); }
+  input[type=text]::placeholder, textarea::placeholder { color: var(--text3); }
+  textarea { height: 110px; resize: vertical; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chip { font-family: var(--font-mono); font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 0.5px solid var(--border2); cursor: pointer; color: var(--text3); background: transparent; transition: color 0.2s; }
+  .chip:hover { color: var(--text); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
+
+  .output-box { background: var(--bg3); border: 0.5px solid var(--border2); border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem; display: none; }
+  .output-box.visible { display: block; }
+  .output-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .output-label { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+  .output-status { font-family: var(--font-mono); font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+  .status-gen { background: rgba(239,159,39,0.15); color: var(--amber); }
+  .status-done { background: rgba(0,229,160,0.1); color: var(--green); }
+  .output-text { font-size: 14px !important; line-height: 1.8 !important; white-space: pre-wrap !important; color: #f0f0f0 !important; min-height: 40px; font-family: var(--font-body) !important; }
+  .output-footer { margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--border); }
+  .output-disclaimer { font-family: var(--font-mono); font-size: 10px; color: var(--text3); line-height: 1.6; margin-bottom: 8px; }
+  .btn-copy { font-family: var(--font-mono); font-size: 11px; background: transparent; border: 0.5px solid var(--border2); padding: 6px 14px; border-radius: 4px; cursor: pointer; color: var(--text2); }
+  .btn-copy:hover { color: var(--text); }
+
+  .pricing-intro { background: var(--bg2); border-left: 3px solid var(--green); padding: 1.25rem 1.5rem; border-radius: 0 6px 6px 0; margin-bottom: 2rem; font-size: 15px; color: var(--text2); line-height: 1.7; }
+  .pricing-intro strong { color: var(--text); font-weight: 500; }
+  .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  @media(max-width:650px) { .tier-grid { grid-template-columns: 1fr; } }
+  .tier { border: 0.5px solid var(--border); border-radius: 8px; padding: 1.25rem; background: var(--bg2); }
+  .tier.featured { border: 1.5px solid var(--green); }
+  .tier-badge { font-family: var(--font-mono); font-size: 10px; background: rgba(0,229,160,0.1); color: var(--green); padding: 2px 8px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+  .tier-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .tier-price { font-family: var(--font-mono); font-size: 26px; color: var(--text); line-height: 1; }
+  .tier-period { font-size: 12px; color: var(--text3); }
+  .tier-equiv { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin: 6px 0 12px; }
+  .tier-divider { border: none; border-top: 0.5px solid var(--border); margin-bottom: 12px; }
+  .tier-feat { font-size: 13px; color: var(--text2); padding: 3px 0; display: flex; gap: 8px; }
+  .tier-feat-check { color: var(--green); flex-shrink: 0; }
+  .promise { border: 0.5px solid rgba(0,229,160,0.25); border-radius: 8px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
+  .promise-hed { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
+  .promise-item { font-size: 13px; color: var(--text2); padding: 4px 0; display: flex; gap: 10px; line-height: 1.6; }
+  .promise-check { color: var(--green); flex-shrink: 0; }
+
+  .founder { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; gap: 1.25rem; align-items: flex-start; }
+  .founder-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 13px; color: var(--green); flex-shrink: 0; }
+  .founder-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+  .founder-cert { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+  .founder-quote { font-size: 14px; color: var(--text2); line-height: 1.8; }
+  .founder-quote strong { color: var(--text); font-weight: 500; }
+
+  .gate { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 2rem; text-align: center; margin-bottom: 1.5rem; }
+  .gate-title { font-family: var(--font-cond); font-size: 22px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+  .gate-sub { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.6; }
+  .gate-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 12px; padding: 2rem; width: 100%; max-width: 420px; position: relative; }
+  .modal-logo { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 2px; margin-bottom: 1.5rem; }
+  .modal-title { font-family: var(--font-cond); font-size: 26px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.6; }
+  .modal-field { margin-bottom: 12px; }
+  .modal-field label { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .promo-row { display: flex; gap: 8px; }
+  .promo-row input { flex: 1; }
+  .btn-apply { font-family: var(--font-mono); font-size: 11px; background: transparent; border: 0.5px solid var(--border2); padding: 0 14px; border-radius: 4px; cursor: pointer; color: var(--text2); white-space: nowrap; }
+  .promo-status { font-family: var(--font-mono); font-size: 11px; margin-top: 4px; }
+  .promo-valid { color: var(--green); }
+  .promo-invalid { color: var(--red); }
+  .modal-plan { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .modal-plan-name { font-family: var(--font-mono); font-size: 12px; color: var(--text2); }
+  .modal-plan-price { font-family: var(--font-mono); font-size: 14px; color: var(--green); }
+  .modal-actions { display: flex; flex-direction: column; gap: 8px; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: var(--text3); cursor: pointer; font-size: 18px; padding: 4px; }
+
+  footer { border-top: 0.5px solid var(--border); padding: 2rem; text-align: center; max-width: 900px; margin: 0 auto; }
+  .footer-logo { font-family: var(--font-mono); font-size: 12px; color: var(--green); letter-spacing: 2px; margin-bottom: 8px; }
+  .footer-text { font-family: var(--font-mono); font-size: 10px; color: var(--text3); line-height: 1.8; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">MX-LOGBOOK</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#tool">Try it</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#tool" class="nav-cta" onclick="openModal();return false;">Get started</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Built by an A&P. Priced for one too.</div>
+  <h1 class="hero-headline">Stop writing<br>logbooks <span>for free.</span></h1>
+  <p class="hero-sub">You already work the hours. You already know the regs. <strong>MX-Logbook turns your plain-language descriptions into professional, FAA-compliant log entries in seconds</strong> so you can stop donating your own time to paperwork at the end of a 10-hour shift.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openModal()">Start free — 14 days, no card</button>
+    <a href="#tool"><button class="btn-ghost">See it in action</button></a>
+  </div>
+  <p class="hero-fine">Then from $9.99/mo. Cancel anytime. No BS.</p>
+  <div class="stat-row">
+    <div class="stat"><div class="stat-num">~180K</div><div class="stat-label">Certificated A&Ps in the US</div></div>
+    <div class="stat"><div class="stat-num">10-20 min</div><div class="stat-label">Saved per log entry</div></div>
+    <div class="stat"><div class="stat-num">$150-200</div><div class="stat-label">What the shop bills per hour</div></div>
+    <div class="stat"><div class="stat-num">$9.99</div><div class="stat-label">What this costs per month</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="pain-section">
+    <p class="pain-quote">"The shop bills $185/hr. I take home $32. And I still have to write up every squawk myself at the end of the day."</p>
+    <p class="pain-attr">Every A&P, everywhere, always.</p>
+  </div>
+</section>
+
+<section id="how">
+  <p class="section-hed">How it works</p>
+  <div class="how-grid">
+    <div class="how-card"><div class="how-num">01</div><div class="how-title">Describe the work</div><div class="how-desc">Plain language is fine. "Replaced left mag, ran it up, drop within limits." You know what you did.</div></div>
+    <div class="how-card"><div class="how-num">02</div><div class="how-title">Pick your entry type</div><div class="how-desc">Maintenance, squawk, RTS, AD compliance, inspection, repair — six types covered.</div></div>
+    <div class="how-card"><div class="how-num">03</div><div class="how-title">Get a clean write-up</div><div class="how-desc">Proper regulatory language, correct format, ready to copy into your logbook in seconds.</div></div>
+    <div class="how-card"><div class="how-num">04</div><div class="how-title">You sign it. You own it.</div><div class="how-desc">MX-Logbook drafts. You verify and certify. Your expertise, your certificate, your call.</div></div>
+  </div>
+</section>
+
+<div id="tool">
+  <div class="tool-inner">
+    <p class="section-hed">Try it now</p>
+    <div class="gate" id="gate">
+      <div class="gate-title">Free 14-day trial</div>
+      <p class="gate-sub">Create a free account to generate log entries. No credit card required. Have a beta code? Enter it during sign up.</p>
+      <div class="gate-actions">
+        <button class="btn-primary" onclick="openModal()">Create free account</button>
+        <button class="btn-ghost" onclick="openLogin()">Log in</button>
+      </div>
+    </div>
+
+    <div id="tool-form" style="display:none">
+      <div class="disclaimer">
+        <div class="disclaimer-text"><strong>DRAFT ONLY — NOT AN OFFICIAL FAA DOCUMENT.</strong> All entries must be reviewed and signed by the responsible A&P or IA certificate holder. The certifying technician bears sole legal responsibility for accuracy and compliance with 14 CFR Parts 43 and 91. Not affiliated with or approved by the FAA.</div>
+      </div>
+
+      <p class="section-hed" style="margin-top:0">Entry type</p>
+      <div class="type-grid">
+        <div class="type-card selected" onclick="selectType(this,'Maintenance Log Entry')"><div class="type-card-icon">🔧</div><div class="type-card-name">Maintenance</div></div>
+        <div class="type-card" onclick="selectType(this,'Squawk Write-Up')"><div class="type-card-icon">⚠️</div><div class="type-card-name">Squawk</div></div>
+        <div class="type-card" onclick="selectType(this,'Return to Service')"><div class="type-card-icon">✅</div><div class="type-card-name">RTS</div></div>
+        <div class="type-card" onclick="selectType(this,'AD Compliance')"><div class="type-card-icon">📋</div><div class="type-card-name">AD Compliance</div></div>
+        <div class="type-card" onclick="selectType(this,'Inspection Sign-Off')"><div class="type-card-icon">🗂️</div><div class="type-card-name">Inspection</div></div>
+        <div class="type-card" onclick="selectType(this,'Repair Record')"><div class="type-card-icon">🩹</div><div class="type-card-name">Repair</div></div>
+      </div>
+
+      <p class="section-hed">What did you do?</p>
+      <div style="position:relative;">
+        <textarea id="workDesc" placeholder="Plain language is fine. e.g. replaced left mag, ran it up, drop within limits..." style="padding-right:52px;"></textarea>
+        <button id="voiceBtn" onclick="toggleVoice()" title="Voice input" style="position:absolute;right:10px;top:10px;background:transparent;border:0.5px solid var(--border2);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--text3);">🎙️</button>
+      </div>
+      <div id="voiceStatus" style="font-family:var(--font-mono);font-size:11px;color:var(--green);margin-top:4px;display:none;">Listening...</div>
+      <div class="chips" style="margin-top:8px;">
+        <button class="chip" onclick="addChip('oil change')">+ oil change</button>
+        <button class="chip" onclick="addChip('spark plugs')">+ spark plugs</button>
+        <button class="chip" onclick="addChip('annual inspection')">+ annual inspection</button>
+        <button class="chip" onclick="addChip('brake inspection')">+ brake inspection</button>
+        <button class="chip" onclick="addChip('tire replacement')">+ tire replacement</button>
+        <button class="chip" onclick="addChip('pitot-static check')">+ pitot-static</button>
+      </div>
+
+      <p class="section-hed" style="margin-top:1.25rem;">Aircraft info <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(remembered for next time)</span></p>
+      <div id="recentAircraft" style="display:none;margin-bottom:10px;"></div>
+      <div class="form-grid-3">
+        <div class="field"><label>Tail Number</label><input type="text" id="tailNum" placeholder="N12345" oninput="saveFieldMemory()"></div>
+        <div class="field"><label>Make / Model</label><input type="text" id="aircraft" placeholder="Cessna 172S" oninput="saveFieldMemory()"></div>
+        <div class="field"><label>TTSN</label><input type="text" id="ttsn" placeholder="4521.3 hrs"></div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <button onclick="toggleOptional()" id="optionalToggle" style="background:transparent;border:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);cursor:pointer;padding:0;letter-spacing:0.5px;">+ Show optional fields (parts, reference, technician)</button>
+      </div>
+      <div id="optionalFields" style="display:none;">
+        <div class="form-grid-2">
+          <div class="field"><label>Parts / P/N used</label><input type="text" id="parts" placeholder="e.g. Slick 4371, S/N 12345"></div>
+          <div class="field"><label>Reference (MM, AD, SB)</label><input type="text" id="reference" placeholder="e.g. MM 74-00-00, AD 2020-23-07"></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field"><label>Technician / Cert #</label><input type="text" id="techName" placeholder="J. Smith A&P #123456789" oninput="saveTechMemory()"></div>
+          <div class="field"><label>Date</label><input type="date" id="workDate"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="generateEntry()">Generate draft entry</button>
+        <button class="btn-ghost" onclick="clearForm()">Clear</button>
+      </div>
+
+      <div class="output-box" id="outputBox">
+        <div class="output-header">
+          <span class="output-label">Generated draft</span>
+          <span class="output-status status-gen" id="outputStatus">Generating...</span>
+        </div>
+        <div id="outputText" style="font-size:14px;line-height:1.8;white-space:pre-wrap;color:#f0f0f0;min-height:40px;font-family:'Barlow',sans-serif;padding:4px 0;"></div>
+        <div id="outputFooter" style="display:none;margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border);">
+          <p style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text3);line-height:1.6;margin-bottom:8px;">DRAFT ONLY — Review all details before signing. Technician is solely responsible per 14 CFR 43.9.</p>
+          <button class="btn-copy" onclick="copyEntry()" id="copyBtn">Copy draft to clipboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="pricing">
+  <p class="section-hed">Pricing — because you have been underpaid long enough</p>
+  <div class="pricing-intro">You keep the aircraft flying. The company bills $185/hr and pays you $32. <strong>This app was built by one of you.</strong> That's why it costs less than a lunch — no enterprise licensing, no "call for pricing," no suits deciding what your time is worth.</div>
+  <div class="tier-grid">
+    <div class="tier">
+      <div class="tier-name">Solo</div>
+      <div class="tier-price">$9.99<span class="tier-period">/mo</span></div>
+      <div class="tier-equiv">Less than a lunch.</div>
+      <hr class="tier-divider">
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>50 entries/mo</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>All 6 entry types</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>Copy to clipboard</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>No contracts</div>
+    </div>
+    <div class="tier featured">
+      <div class="tier-badge">Most popular</div>
+      <div class="tier-name">Pro</div>
+      <div class="tier-price">$16.99<span class="tier-period">/mo</span></div>
+      <div class="tier-equiv">Half a shop t-shirt.</div>
+      <hr class="tier-divider">
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>Unlimited entries</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>PDF export</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>Entry history</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>AD lookup</div>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Shop</div>
+      <div class="tier-price">$59.99<span class="tier-period">/mo</span></div>
+      <div class="tier-equiv">25 min of your labor rate.</div>
+      <hr class="tier-divider">
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>Up to 10 techs</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>Admin dashboard</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>Work order export</div>
+      <div class="tier-feat"><span class="tier-feat-check">✓</span>Priority support</div>
+    </div>
+  </div>
+  <div class="promise">
+    <p class="promise-hed">The MX-Logbook promise</p>
+    <div class="promise-item"><span class="promise-check">✓</span>No price hikes once you're in. Early subscribers keep their rate forever.</div>
+    <div class="promise-item"><span class="promise-check">✓</span>No "call sales." Every plan is self-serve, no runaround.</div>
+    <div class="promise-item"><span class="promise-check">✓</span>If this saves you less than it costs, email me and I'll refund you. No questions.</div>
+    <div class="promise-item"><span class="promise-check">✓</span>Draft only — your certificate, your sign-off, always.</div>
+  </div>
+</section>
+
+<section>
+  <p class="section-hed">Who built this</p>
+  <div class="founder">
+    <div class="founder-avatar">A&P</div>
+    <div>
+      <div class="founder-name">Built by a working mechanic</div>
+      <div class="founder-cert">A&P · Aviation Maintenance · Film · Comedy · Coaching</div>
+      <p class="founder-quote">I built this because I was tired of spending the last 20 minutes of every shift staring at a logbook. <strong>The company charges $185/hr and pays you $32. The least I can do is give you your paperwork time back for less than ten bucks a month.</strong> This is not a Silicon Valley product. It's a shop tool. Built by one of us, priced for one of us.</p>
+    </div>
+  </div>
+</section>
+
+<section style="text-align:center;padding:4rem 2rem;">
+  <h2 style="font-family:var(--font-cond);font-size:clamp(32px,5vw,52px);font-weight:700;text-transform:uppercase;margin-bottom:8px;">Your time is worth more<br>than this paperwork.</h2>
+  <p style="font-size:14px;color:var(--text2);margin-bottom:2rem;">14-day free trial. No credit card. Cancel anytime.</p>
+  <button class="btn-primary" onclick="openModal()">Get started free</button>
+</section>
+
+<footer>
+  <div class="footer-logo">MX-LOGBOOK</div>
+  <p class="footer-text">mx-logbook.com · Built by an A&P, for A&Ps<br>Draft entries only. Not affiliated with or approved by the FAA.<br>All entries require review and certification by a licensed A&P or IA per 14 CFR Part 43.<br><br>2026 MX-Logbook · <a href="mailto:hello@mx-logbook.com" style="color:var(--text3)">hello@mx-logbook.com</a></p>
+</footer>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">X</button>
+    <div class="modal-logo">MX-LOGBOOK</div>
+    <div id="signupView">
+      <h2 class="modal-title">Start free</h2>
+      <p class="modal-sub">14 days free, no credit card. Have a beta code? Enter it below.</p>
+      <div class="modal-field"><label>Email</label><input type="text" id="signupEmail" placeholder="you@email.com"></div>
+      <div class="modal-field"><label>Password</label><input type="text" id="signupPassword" placeholder="Create a password"></div>
+      <div class="modal-field">
+        <label>Beta / promo code (optional)</label>
+        <div class="promo-row">
+          <input type="text" id="promoCode" placeholder="e.g. MAGDROP" style="text-transform:uppercase">
+          <button class="btn-apply" onclick="applyPromo()">Apply</button>
+        </div>
+        <div class="promo-status" id="promoStatus"></div>
+      </div>
+      <div class="modal-plan">
+        <span class="modal-plan-name" id="planName">14-day free trial then Pro $16.99/mo</span>
+        <span class="modal-plan-price" id="planPrice">Free</span>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" style="width:100%" onclick="handleSignup()">Create account</button>
+        <button class="btn-ghost" style="width:100%;text-align:center" onclick="showLogin()">Already have an account? Log in</button>
+      </div>
+    </div>
+    <div id="loginView" style="display:none">
+      <h2 class="modal-title">Welcome back</h2>
+      <p class="modal-sub">Log in to your MX-Logbook account.</p>
+      <div class="modal-field"><label>Email</label><input type="text" id="loginEmail" placeholder="you@email.com"></div>
+      <div class="modal-field"><label>Password</label><input type="text" id="loginPassword" placeholder="Your password"></div>
+      <div class="modal-actions">
+        <button class="btn-primary" style="width:100%" onclick="handleLogin()">Log in</button>
+        <button class="btn-ghost" style="width:100%;text-align:center" onclick="showSignup()">Need an account? Sign up free</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROMO_CODES = {
+  'MAGDROP': { plan: 'Pro 60 days free', duration: 60 },
+  'REDTAG':  { plan: 'Pro 60 days free', duration: 60 },
+  'SIGNOFF': { plan: 'Pro 60 days free', duration: 60 },
+  'WRENCH':  { plan: 'Solo 30 days free', duration: 30 },
+};
+
+let selectedType = 'Maintenance Log Entry';
+let promoApplied = false;
+let currentUser = null;
+let voiceRecognition = null;
+let voiceActive = false;
+
+function openModal() { document.getElementById('modalOverlay').classList.add('open'); document.getElementById('signupView').style.display='block'; document.getElementById('loginView').style.display='none'; }
+function openLogin() { document.getElementById('modalOverlay').classList.add('open'); document.getElementById('signupView').style.display='none'; document.getElementById('loginView').style.display='block'; }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+function showLogin() { document.getElementById('signupView').style.display='none'; document.getElementById('loginView').style.display='block'; }
+function showSignup() { document.getElementById('loginView').style.display='none'; document.getElementById('signupView').style.display='block'; }
+
+function applyPromo() {
+  const code = document.getElementById('promoCode').value.trim().toUpperCase();
+  const statusEl = document.getElementById('promoStatus');
+  if (PROMO_CODES[code]) {
+    statusEl.textContent = 'Code applied: ' + PROMO_CODES[code].plan;
+    statusEl.className = 'promo-status promo-valid';
+    document.getElementById('planName').textContent = PROMO_CODES[code].plan;
+    promoApplied = true;
+  } else if (code) {
+    statusEl.textContent = 'Invalid code';
+    statusEl.className = 'promo-status promo-invalid';
+  }
+}
+
+function handleSignup() {
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPassword').value.trim();
+  if (!email || !pass) { alert('Please enter your email and a password.'); return; }
+  const user = { email, plan: promoApplied ? 'pro' : 'trial', trialStart: Date.now() };
+  localStorage.setItem('mxl_user', JSON.stringify(user));
+  currentUser = user;
+  closeModal();
+  activateTool();
+}
+
+function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { alert('Please enter your email.'); return; }
+  const stored = localStorage.getItem('mxl_user');
+  if (stored) { currentUser = JSON.parse(stored); closeModal(); activateTool(); }
+  else { alert('No account found. Please sign up first.'); showSignup(); }
+}
+
+function activateTool() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('tool-form').style.display = 'block';
+  loadMemory();
+  document.getElementById('tool').scrollIntoView({ behavior: 'smooth' });
+}
+
+function checkSession() {
+  const stored = localStorage.getItem('mxl_user');
+  if (stored) { currentUser = JSON.parse(stored); activateTool(); }
+}
+
+function saveFieldMemory() {
+  const tail = document.getElementById('tailNum').value.trim();
+  const ac = document.getElementById('aircraft').value.trim();
+  if (!tail && !ac) return;
+  const mem = JSON.parse(localStorage.getItem('mxl_aircraft') || '[]');
+  const idx = mem.findIndex(m => m.tail === tail);
+  const entry = { tail, aircraft: ac, lastUsed: Date.now() };
+  if (idx >= 0) mem[idx] = entry; else mem.unshift(entry);
+  localStorage.setItem('mxl_aircraft', JSON.stringify(mem.slice(0, 5)));
+  renderRecentAircraft();
+}
+
+function saveTechMemory() {
+  const tech = document.getElementById('techName').value.trim();
+  if (tech) localStorage.setItem('mxl_tech', tech);
+}
+
+function loadMemory() {
+  const tech = localStorage.getItem('mxl_tech');
+  if (tech) document.getElementById('techName').value = tech;
+  const wd = document.getElementById('workDate');
+  if (wd) wd.valueAsDate = new Date();
+  renderRecentAircraft();
+}
+
+function renderRecentAircraft() {
+  const mem = JSON.parse(localStorage.getItem('mxl_aircraft') || '[]');
+  const c = document.getElementById('recentAircraft');
+  if (!mem.length) { c.style.display = 'none'; return; }
+  c.style.display = 'block';
+  c.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:6px;letter-spacing:1px;">RECENT AIRCRAFT</div>' +
+    mem.map(m => `<button onclick="autofillAircraft('${m.tail}','${m.aircraft}')" style="font-family:var(--font-mono);font-size:11px;background:var(--bg3);border:0.5px solid var(--border);padding:4px 12px;border-radius:20px;cursor:pointer;color:var(--text2);margin-right:6px;margin-bottom:6px;">${m.tail}${m.aircraft?' · '+m.aircraft:''}</button>`).join('');
+}
+
+function autofillAircraft(tail, ac) {
+  document.getElementById('tailNum').value = tail;
+  document.getElementById('aircraft').value = ac;
+}
+
+function toggleOptional() {
+  const el = document.getElementById('optionalFields');
+  const btn = document.getElementById('optionalToggle');
+  const hidden = el.style.display === 'none';
+  el.style.display = hidden ? 'block' : 'none';
+  btn.textContent = hidden ? '- Hide optional fields' : '+ Show optional fields (parts, reference, technician)';
+}
+
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('Voice input requires Chrome browser.'); return; }
+  if (voiceActive) { voiceRecognition.stop(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  voiceRecognition = new SR();
+  voiceRecognition.continuous = true;
+  voiceRecognition.interimResults = true;
+  voiceRecognition.lang = 'en-US';
+  const btn = document.getElementById('voiceBtn');
+  const status = document.getElementById('voiceStatus');
+  const ta = document.getElementById('workDesc');
+  const base = ta.value;
+  voiceRecognition.onstart = () => { voiceActive=true; btn.style.borderColor='var(--green)'; btn.style.color='var(--green)'; btn.textContent='stop'; status.style.display='block'; };
+  voiceRecognition.onresult = (e) => { let fin=base,int=''; for(let i=0;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript+' ';else int+=e.results[i][0].transcript;} ta.value=fin+int; };
+  voiceRecognition.onend = () => { voiceActive=false; btn.style.borderColor=''; btn.style.color=''; btn.textContent='mic'; status.style.display='none'; };
+  voiceRecognition.start();
+}
+
+function selectType(el, type) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = type;
+}
+
+function addChip(text) {
+  const ta = document.getElementById('workDesc');
+  ta.value = ta.value.trim() ? ta.value.trim() + ', ' + text : text;
+  ta.focus();
+}
+
+function clearForm() {
+  ['tailNum','aircraft','ttsn','workDesc','parts','reference'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('outputBox').classList.remove('visible');
+}
+
+async function generateEntry() {
+  const work = document.getElementById('workDesc').value.trim();
+  if (!work) { alert('Please describe the work performed.'); return; }
+
+  const tail = document.getElementById('tailNum').value.trim();
+  const aircraft = document.getElementById('aircraft').value.trim();
+  const ttsn = document.getElementById('ttsn').value.trim();
+  const parts = document.getElementById('parts').value.trim();
+  const ref = document.getElementById('reference').value.trim();
+  const tech = document.getElementById('techName').value.trim();
+  const date = document.getElementById('workDate').value;
+
+  saveFieldMemory();
+  saveTechMemory();
+
+  const outputBox = document.getElementById('outputBox');
+  const statusEl = document.getElementById('outputStatus');
+  const textEl = document.getElementById('outputText');
+  const footer = document.getElementById('outputFooter');
+
+  outputBox.classList.add('visible');
+  statusEl.className = 'output-status status-gen';
+  statusEl.textContent = 'Generating...';
+  textEl.textContent = '';
+  footer.style.display = 'none';
+
+  const prompt = `You are an FAA-certified aviation maintenance expert. Generate a professional, FAA-compliant ${selectedType} logbook entry.
+
+Aircraft: ${aircraft || 'Not specified'}
+Tail Number: ${tail || 'Not specified'}
+TTSN: ${ttsn || 'Not specified'}
+Date: ${date || 'Not specified'}
+Work Performed: ${work}
+Parts/P/N: ${parts || 'N/A'}
+Reference (MM/AD/SB): ${ref || 'N/A'}
+Technician: ${tech || 'Not specified'}
+
+Write a concise, professional logbook entry in standard aviation maintenance format. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text with no preamble.`;
+
+  try {
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+    });
+
+    const data = await resp.json();
+
+    if (data.error) {
+      textEl.textContent = 'Error: ' + data.error.message;
+    } else {
+      const text = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'No response received.';
+      textEl.textContent = text;
+      statusEl.className = 'output-status status-done';
+      statusEl.textContent = 'Draft ready';
+      footer.style.display = 'block';
+    }
+  } catch (err) {
+    textEl.textContent = 'Connection error. Please try again.';
+    statusEl.textContent = 'Error';
+  }
+}
+
+function copyEntry() {
+  const text = document.getElementById('outputText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy draft to clipboard'; }, 2000);
+  });
+}
+
+checkSession();
+</script>
+</body>
+</html>
