@@ -584,7 +584,7 @@ Parts/P/N: ${parts || 'N/A'}
 Reference (MM/AD/SB): ${ref || 'N/A'}
 Technician: ${tech || 'Not specified'}
 
-Write a concise, professional logbook entry in standard aviation maintenance format. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text with no preamble.`;
+Write a concise, professional ${selectedType} logbook entry. The header must clearly say "${selectedType}" not "Maintenance Log Entry". Use proper technical terminology for this specific entry type. Include airworthiness statement if appropriate. Output only the log entry text with no preamble.`;
 
   try {
     const resp = await fetch('/api/generate', {
