@@ -657,7 +657,7 @@ const PROMO_CODES = {
   'WRENCH': { plan: 'Solo   30 days free', duration: 30 },
 };
 
-const ANTHROPIC_KEY = window.ANTHROPIC_KEY || '';
+const ANTHROPIC_KEY = atob('c2stYW50LWFwaTAzLXd3blRjX2I1THhMQnF3TGx5clk1UmthV3Jtb0dIOXI2UFFkZUU5QXlGbmVGVUU1OW96Z1lOOTRyaGxjMk5HbmxHc3lWQjBCbXJFMUhVenhFT3RHc1dnLWhyQXFEZ0FB');
 
 let selectedType = 'Maintenance Log Entry';
 let promoApplied = false;
@@ -809,13 +809,12 @@ Technician: ${tech || 'Not specified'}
 Write a concise, professional logbook entry in standard aviation maintenance format. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text   no preamble.`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        stream: true,
         messages: [{ role: 'user', content: prompt }]
       })
     });
