@@ -306,16 +306,18 @@
         <div class="type-card" onclick="selectType(this,'Repair Record')"><div class="type-card-icon">🩹</div><div class="type-card-name">Repair</div></div>
         <div class="type-card" onclick="selectType(this,'AOG Report')"><div class="type-card-icon">🚨</div><div class="type-card-name">AOG Report</div></div>
       </div>
+
       <div id="aogTip" style="display:none;background:rgba(239,159,39,0.08);border:0.5px solid rgba(239,159,39,0.3);border-radius:6px;padding:10px 14px;margin-bottom:1rem;">
-        <p style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#ba7517;line-height:1.6;">AOG MODE: Use the voice button to speak your actions and timestamps as they happen. MX-Logbook will generate a clean, chronological AOG report ready to paste into your company's shared document.</p>
+        <p style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#ba7517;line-height:1.6;">AOG MODE: Speak your actions as they happen. Each update gets added to the running report. All drafts are saved for reference. Translate the final report to any language with one click.</p>
       </div>
 
       <p class="section-hed">What did you do?</p>
       <div style="position:relative;">
-        <textarea id="workDesc" placeholder="Plain language is fine. e.g. replaced left mag, ran it up, drop within limits..." style="padding-right:52px;"></textarea>
+        <textarea id="workDesc" placeholder="Plain language is fine. Speak or type as events happen..." style="padding-right:52px;"></textarea>
         <button id="voiceBtn" onclick="toggleVoice()" title="Voice input" style="position:absolute;right:10px;top:10px;background:transparent;border:0.5px solid var(--border2);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--text3);">🎙️</button>
       </div>
       <div id="voiceStatus" style="font-family:var(--font-mono);font-size:11px;color:var(--green);margin-top:4px;display:none;">Listening...</div>
+
       <div class="chips" style="margin-top:8px;">
         <button class="chip" onclick="addChip('oil change')">+ oil change</button>
         <button class="chip" onclick="addChip('spark plugs')">+ spark plugs</button>
@@ -360,7 +362,43 @@
         <div id="outputText" style="font-size:14px;line-height:1.8;white-space:pre-wrap;color:#f0f0f0;min-height:40px;font-family:'Barlow',sans-serif;padding:4px 0;"></div>
         <div id="outputFooter" style="display:none;margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border);">
           <p style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text3);line-height:1.6;margin-bottom:8px;">DRAFT ONLY: Review all details before signing. Technician is solely responsible per 14 CFR 43.9.</p>
-          <button class="btn-copy" onclick="copyEntry()" id="copyBtn">Copy draft to clipboard</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+            <button class="btn-copy" onclick="copyEntry()" id="copyBtn">Copy to clipboard</button>
+            <button class="btn-copy" id="appendBtn" onclick="appendToSession()" style="display:none;">Add to running report</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="translateLang" style="font-family:var(--font-mono);font-size:11px;background:var(--bg);border:0.5px solid var(--border2);color:var(--text2);padding:5px 10px;border-radius:4px;cursor:pointer;">
+              <option value="">Translate to...</option>
+              <option value="Spanish">Spanish</option>
+              <option value="French">French</option>
+              <option value="Portuguese">Portuguese</option>
+              <option value="Korean">Korean</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Mandarin Chinese">Mandarin Chinese</option>
+              <option value="Arabic">Arabic</option>
+              <option value="German">German</option>
+              <option value="Italian">Italian</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Russian">Russian</option>
+              <option value="Turkish">Turkish</option>
+            </select>
+            <button class="btn-copy" onclick="translateEntry()" id="translateBtn">Translate</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="sessionBox" style="display:none;margin-top:1.5rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;">Running report</span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-copy" onclick="copySession()">Copy full report</button>
+            <button class="btn-copy" onclick="clearSession()" style="color:var(--red);">Clear session</button>
+          </div>
+        </div>
+        <div id="sessionText" style="background:var(--bg);border:0.5px solid var(--border2);border-radius:6px;padding:1rem;font-size:13px;line-height:1.8;white-space:pre-wrap;color:#f0f0f0;font-family:'Barlow',sans-serif;max-height:400px;overflow-y:auto;"></div>
+        <div id="draftHistoryBox" style="margin-top:1rem;">
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;">Previous drafts</span>
+          <div id="draftHistory" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
         </div>
       </div>
     </div>
@@ -487,6 +525,8 @@ let promoApplied = false;
 let currentUser = null;
 let voiceRecognition = null;
 let voiceActive = false;
+let sessionEntries = [];
+let draftHistory = [];
 
 function openModal() { document.getElementById('modalOverlay').classList.add('open'); document.getElementById('signupView').style.display='block'; document.getElementById('loginView').style.display='none'; }
 function openLogin() { document.getElementById('modalOverlay').classList.add('open'); document.getElementById('signupView').style.display='none'; document.getElementById('loginView').style.display='block'; }
@@ -587,6 +627,14 @@ function toggleOptional() {
   btn.textContent = hidden ? '- Hide optional fields' : '+ Show optional fields (parts, reference, technician)';
 }
 
+function selectType(el, type) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = type;
+  const aogTip = document.getElementById('aogTip');
+  if (aogTip) aogTip.style.display = type === 'AOG Report' ? 'block' : 'none';
+}
+
 function toggleVoice() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('Voice input requires Chrome browser.'); return; }
   if (voiceActive) { voiceRecognition.stop(); return; }
@@ -594,7 +642,6 @@ function toggleVoice() {
   voiceRecognition = new SR();
   voiceRecognition.continuous = true;
   voiceRecognition.interimResults = true;
-  voiceRecognition.lang = 'en-US';
   const btn = document.getElementById('voiceBtn');
   const status = document.getElementById('voiceStatus');
   const ta = document.getElementById('workDesc');
@@ -603,14 +650,6 @@ function toggleVoice() {
   voiceRecognition.onresult = (e) => { let fin=base,int=''; for(let i=0;i<e.results.length;i++){if(e.results[i].isFinal)fin+=e.results[i][0].transcript+' ';else int+=e.results[i][0].transcript;} ta.value=fin+int; };
   voiceRecognition.onend = () => { voiceActive=false; btn.style.borderColor=''; btn.style.color=''; btn.textContent='mic'; status.style.display='none'; };
   voiceRecognition.start();
-}
-
-function selectType(el, type) {
-  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedType = type;
-  const aogTip = document.getElementById('aogTip');
-  if (aogTip) aogTip.style.display = type === 'AOG Report' ? 'block' : 'none';
 }
 
 function addChip(text) {
@@ -622,6 +661,84 @@ function addChip(text) {
 function clearForm() {
   ['tailNum','aircraft','ttsn','workDesc','parts','reference'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('outputBox').classList.remove('visible');
+}
+
+function appendToSession() {
+  const text = document.getElementById('outputText').textContent;
+  if (!text) return;
+  const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  sessionEntries.push({ time: timestamp, text, type: selectedType });
+  renderSession();
+  const btn = document.getElementById('appendBtn');
+  btn.textContent = 'Added!';
+  setTimeout(() => { btn.textContent = 'Add to running report'; }, 2000);
+}
+
+function renderSession() {
+  const box = document.getElementById('sessionBox');
+  const textEl = document.getElementById('sessionText');
+  if (!sessionEntries.length) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  textEl.textContent = sessionEntries.map((e, i) =>
+    `[UPDATE ${i+1} - ${e.time}]\n${e.text}`
+  ).join('\n\n' + '='.repeat(40) + '\n\n');
+}
+
+function renderDraftHistory() {
+  const el = document.getElementById('draftHistory');
+  el.innerHTML = draftHistory.map((d, i) =>
+    `<button onclick="viewDraft(${i})" style="font-family:var(--font-mono);font-size:11px;background:var(--bg3);border:0.5px solid var(--border);padding:4px 12px;border-radius:20px;cursor:pointer;color:var(--text2);">Draft ${i+1} (${d.time})</button>`
+  ).join('');
+}
+
+function viewDraft(i) {
+  const draft = draftHistory[i];
+  if (!draft) return;
+  document.getElementById('outputText').textContent = draft.text;
+  document.getElementById('outputBox').classList.add('visible');
+  document.getElementById('outputFooter').style.display = 'block';
+  document.getElementById('outputStatus').className = 'output-status status-done';
+  document.getElementById('outputStatus').textContent = 'Draft ' + (i+1);
+  document.getElementById('outputBox').scrollIntoView({ behavior: 'smooth' });
+}
+
+function copySession() {
+  const text = document.getElementById('sessionText').textContent;
+  navigator.clipboard.writeText(text).then(() => alert('Full report copied to clipboard.'));
+}
+
+function clearSession() {
+  if (!confirm('Clear the running report? This cannot be undone.')) return;
+  sessionEntries = [];
+  renderSession();
+}
+
+async function translateEntry() {
+  const lang = document.getElementById('translateLang').value;
+  if (!lang) { alert('Please select a language to translate to.'); return; }
+  const text = document.getElementById('outputText').textContent;
+  if (!text) { alert('No text to translate.'); return; }
+  const btn = document.getElementById('translateBtn');
+  btn.textContent = 'Translating...';
+  try {
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: `Translate the following aviation maintenance document into ${lang}. Preserve all technical terms, dates, part numbers, and regulatory references exactly as they appear. Output only the translated text with no preamble.\n\n${text}` }]
+      })
+    });
+    const data = await resp.json();
+    const translated = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'Translation failed.';
+    document.getElementById('outputText').textContent = translated;
+    btn.textContent = 'Translated to ' + lang;
+    setTimeout(() => { btn.textContent = 'Translate'; document.getElementById('translateLang').value = ''; }, 3000);
+  } catch (err) {
+    btn.textContent = 'Translation error';
+    setTimeout(() => { btn.textContent = 'Translate'; }, 2000);
+  }
 }
 
 async function generateEntry() {
@@ -643,6 +760,7 @@ async function generateEntry() {
   const statusEl = document.getElementById('outputStatus');
   const textEl = document.getElementById('outputText');
   const footer = document.getElementById('outputFooter');
+  const appendBtn = document.getElementById('appendBtn');
 
   outputBox.classList.add('visible');
   statusEl.className = 'output-status status-gen';
@@ -653,40 +771,44 @@ async function generateEntry() {
   const isAOG = selectedType === 'AOG Report';
 
   const fieldLines = [
-    aircraft  ? `Aircraft: ${aircraft}`   : null,
-    tail      ? `Tail Number: ${tail}`    : null,
-    ttsn      ? `TTSN: ${ttsn}`           : null,
-    date      ? `Date: ${date}`           : null,
-    tech      ? `Technician: ${tech}`     : null,
-    parts     ? `Parts/P/N: ${parts}`     : null,
-    ref       ? `Reference: ${ref}`       : null,
+    aircraft ? `Aircraft: ${aircraft}` : null,
+    tail     ? `Tail Number: ${tail}`  : null,
+    ttsn     ? `TTSN: ${ttsn}`         : null,
+    date     ? `Date: ${date}`         : null,
+    tech     ? `Technician: ${tech}`   : null,
+    parts    ? `Parts/P/N: ${parts}`   : null,
+    ref      ? `Reference: ${ref}`     : null,
   ].filter(Boolean).join('\n');
 
-  const prompt = isAOG ?
-`You are an aviation maintenance expert specializing in AOG documentation. Generate a clean, professional AOG Event Report from the notes below.
+  const voiceLangNote = 'The notes below may be in any language. First translate them to English if needed, then generate the entry in English.';
 
+  const prompt = isAOG ?
+`You are an aviation maintenance expert specializing in AOG documentation. ${voiceLangNote}
+
+Generate a clean, professional AOG Event Report from the notes below.
 ${fieldLines}
 AOG Notes: ${work}
 
 Rules:
 - Use plain text only. No markdown, no asterisks, no pound signs, no dashes as dividers.
-- Only include header fields that were provided above. Do not mention or show any field that was not provided.
-- Format as a readable plain-text report with clear section labels (TIMELINE, ACTIONS TAKEN, PARTS, STATUS) followed by their content.
+- Only include header fields that were provided. Do not mention any field that was not provided.
+- Format with clear plain-text section labels: TIMELINE, ACTIONS TAKEN, PARTS, STATUS.
 - Extract or infer timestamps from the notes where possible.
 - Be concise and factual.
-- Output only the report text with no preamble or explanation.` :
-`You are an FAA-certified aviation maintenance expert. Generate a professional, FAA-compliant ${selectedType} logbook entry.
+- Output only the report text with no preamble.` :
+`You are an FAA-certified aviation maintenance expert. ${voiceLangNote}
 
+Generate a professional, FAA-compliant ${selectedType} logbook entry.
 ${fieldLines}
 Work Performed: ${work}
 
 Rules:
 - Use plain text only. No markdown, no asterisks, no pound signs.
-- Only include header fields that were provided above. Do not mention or show any field that was not provided.
+- Only include header fields that were provided. Do not mention any field that was not provided.
 - The document header must clearly reflect the entry type: ${selectedType}.
 - Use proper technical terminology.
-- Include airworthiness statement if appropriate for this entry type.
-- Output only the log entry text with no preamble or explanation.`;
+- Include airworthiness statement if appropriate.
+- Output only the log entry text with no preamble.`;
 
   try {
     const resp = await fetch('/api/generate', {
@@ -706,6 +828,15 @@ Rules:
       statusEl.className = 'output-status status-done';
       statusEl.textContent = 'Draft ready';
       footer.style.display = 'block';
+
+      const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      draftHistory.push({ time: timestamp, text, type: selectedType });
+      renderDraftHistory();
+
+      appendBtn.style.display = 'inline-block';
+      document.getElementById('sessionBox').style.display = sessionEntries.length ? 'block' : 'none';
+
+      document.getElementById('workDesc').value = '';
     }
   } catch (err) {
     textEl.textContent = 'Connection error. Please try again.';
@@ -718,7 +849,7 @@ function copyEntry() {
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copyBtn');
     btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy draft to clipboard'; }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy to clipboard'; }, 2000);
   });
 }
 
