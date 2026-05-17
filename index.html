@@ -651,34 +651,42 @@ async function generateEntry() {
   footer.style.display = 'none';
 
   const isAOG = selectedType === 'AOG Report';
-  const prompt = isAOG ?
-`You are an aviation maintenance expert specializing in AOG documentation. Generate a professional, chronological AOG report from the following notes.
 
-Aircraft: ${aircraft || 'Not specified'}
-Tail Number: ${tail || 'Not specified'}
-Date: ${date || 'Not specified'}
-Technician: ${tech || 'Not specified'}
+  const fieldLines = [
+    aircraft  ? `Aircraft: ${aircraft}`   : null,
+    tail      ? `Tail Number: ${tail}`    : null,
+    ttsn      ? `TTSN: ${ttsn}`           : null,
+    date      ? `Date: ${date}`           : null,
+    tech      ? `Technician: ${tech}`     : null,
+    parts     ? `Parts/P/N: ${parts}`     : null,
+    ref       ? `Reference: ${ref}`       : null,
+  ].filter(Boolean).join('\n');
+
+  const prompt = isAOG ?
+`You are an aviation maintenance expert specializing in AOG documentation. Generate a clean, professional AOG Event Report from the notes below.
+
+${fieldLines}
 AOG Notes: ${work}
 
-Format this as a clean AOG report with:
-- A clear header identifying it as an AOG Event Report
-- Chronological timeline of events with timestamps (extract or infer from the notes)
-- Actions taken and communications made
-- Parts ordered or used if mentioned
-- Current status and resolution if mentioned
-Output only the report text with no preamble.` :
-`You are an FAA-certified aviation maintenance expert. Generate a professional, FAA-compliant ${selectedType} logbook entry. The document header must clearly reflect the entry type: ${selectedType}.
+Rules:
+- Use plain text only. No markdown, no asterisks, no pound signs, no dashes as dividers.
+- Only include header fields that were provided above. Do not mention or show any field that was not provided.
+- Format as a readable plain-text report with clear section labels (TIMELINE, ACTIONS TAKEN, PARTS, STATUS) followed by their content.
+- Extract or infer timestamps from the notes where possible.
+- Be concise and factual.
+- Output only the report text with no preamble or explanation.` :
+`You are an FAA-certified aviation maintenance expert. Generate a professional, FAA-compliant ${selectedType} logbook entry.
 
-Aircraft: ${aircraft || 'Not specified'}
-Tail Number: ${tail || 'Not specified'}
-TTSN: ${ttsn || 'Not specified'}
-Date: ${date || 'Not specified'}
+${fieldLines}
 Work Performed: ${work}
-Parts/P/N: ${parts || 'N/A'}
-Reference (MM/AD/SB): ${ref || 'N/A'}
-Technician: ${tech || 'Not specified'}
 
-Write a concise, professional logbook entry in standard aviation maintenance format. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text with no preamble.`;
+Rules:
+- Use plain text only. No markdown, no asterisks, no pound signs.
+- Only include header fields that were provided above. Do not mention or show any field that was not provided.
+- The document header must clearly reflect the entry type: ${selectedType}.
+- Use proper technical terminology.
+- Include airworthiness statement if appropriate for this entry type.
+- Output only the log entry text with no preamble or explanation.`;
 
   try {
     const resp = await fetch('/api/generate', {
