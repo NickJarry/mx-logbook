@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MX-Logbook — Aviation Maintenance Log Assistant</title>
+<title>MX-Logbook — Maintenance Documentation for the Trades</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -30,30 +30,45 @@
   .nav-cta { background: var(--green) !important; color: #0a0a0a !important; padding: 6px 14px; border-radius: 4px; }
 
   section { padding: 5rem 2rem; max-width: 900px; margin: 0 auto; }
+
   .hero { min-height: calc(100vh - 56px); display: flex; flex-direction: column; justify-content: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
-  .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; animation: fadeUp 0.5s ease both; }
+  .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
   .hero-eyebrow::before { content: ''; display: block; width: 24px; height: 1px; background: var(--green); }
-  .hero-headline { font-family: var(--font-cond); font-size: clamp(48px, 8vw, 86px); font-weight: 700; line-height: 1; text-transform: uppercase; margin-bottom: 1.5rem; letter-spacing: -1px; animation: fadeUp 0.5s 0.1s ease both; }
+  .hero-headline { font-family: var(--font-cond); font-size: clamp(48px, 8vw, 86px); font-weight: 700; line-height: 1; text-transform: uppercase; margin-bottom: 1.5rem; }
   .hero-headline span { color: var(--green); }
-  .hero-sub { font-size: 16px; color: var(--text2); line-height: 1.8; max-width: 540px; margin-bottom: 2.5rem; animation: fadeUp 0.5s 0.2s ease both; }
+  .hero-sub { font-size: 16px; color: var(--text2); line-height: 1.8; max-width: 540px; margin-bottom: 2.5rem; }
   .hero-sub strong { color: var(--text); font-weight: 500; }
-  .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; animation: fadeUp 0.5s 0.3s ease both; }
+  .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   .btn-primary { background: var(--green); color: #0a0a0a; font-family: var(--font-mono); font-size: 13px; padding: 14px 28px; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; font-weight: 500; transition: background 0.2s; }
   .btn-primary:hover { background: var(--green-dark); }
   .btn-ghost { background: transparent; color: var(--text2); font-family: var(--font-mono); font-size: 13px; padding: 14px 28px; border: 0.5px solid var(--border2); border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: color 0.2s; }
   .btn-ghost:hover { color: var(--text); }
   .hero-fine { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin-top: 1rem; }
 
-  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 4rem; animation: fadeUp 0.5s 0.4s ease both; }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 4rem; }
   .stat { background: var(--bg); padding: 1.25rem 1.5rem; }
   .stat-num { font-family: var(--font-cond); font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
-  .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 0.5px; }
+  .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
 
-  .pain-section { border-left: 3px solid var(--amber); padding-left: 1.5rem; margin: 2rem 0; }
-  .pain-quote { font-family: var(--font-cond); font-size: 22px; font-weight: 500; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
-  .pain-attr { font-family: var(--font-mono); font-size: 11px; color: var(--text3); }
+  .manifesto { background: var(--bg2); border-left: 3px solid var(--green); padding: 1.5rem 1.75rem; margin: 2rem 0; border-radius: 0 6px 6px 0; }
+  .manifesto-hed { font-family: var(--font-cond); font-size: 22px; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .manifesto-body { font-size: 14px; color: var(--text2); line-height: 1.8; }
+  .manifesto-body strong { color: var(--text); font-weight: 500; }
 
   .section-hed { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); }
+
+  .rage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+  .rage-card { border: 0.5px solid var(--border); border-radius: 8px; padding: 1.25rem; background: var(--bg2); }
+  .rage-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+  .rage-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  .trades-box { background: var(--bg2); border-radius: 8px; padding: 1.25rem; margin-bottom: 2rem; }
+  .trade-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .trade-tag { font-family: var(--font-mono); font-size: 11px; padding: 4px 12px; border-radius: 20px; }
+  .trade-live { background: rgba(0,229,160,0.1); color: var(--green); }
+  .trade-soon { background: var(--bg3); border: 0.5px solid var(--border2); color: var(--text3); }
+  .trades-note { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
   .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
   .how-card { border: 0.5px solid var(--border); border-radius: 8px; padding: 1.25rem; background: var(--bg2); }
   .how-num { font-family: var(--font-mono); font-size: 11px; color: var(--green); margin-bottom: 8px; }
@@ -63,7 +78,7 @@
   #tool { background: var(--bg2); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); padding: 4rem 2rem; }
   .tool-inner { max-width: 900px; margin: 0 auto; }
 
-  .disclaimer { background: rgba(239,159,39,0.08); border: 0.5px solid rgba(239,159,39,0.3); border-radius: 6px; padding: 10px 14px; margin-bottom: 1.5rem; display: flex; gap: 10px; }
+  .disclaimer { background: rgba(239,159,39,0.08); border: 0.5px solid rgba(239,159,39,0.3); border-radius: 6px; padding: 10px 14px; margin-bottom: 1.5rem; }
   .disclaimer-text { font-family: var(--font-mono); font-size: 11px; color: #ba7517; line-height: 1.6; }
   .disclaimer-text strong { color: var(--amber); }
 
@@ -77,7 +92,7 @@
 
   .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
   .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  @media(max-width:600px) { .form-grid-3, .form-grid-2 { grid-template-columns: 1fr; } }
+  @media(max-width:600px) { .form-grid-3, .form-grid-2 { grid-template-columns: 1fr; } .type-grid { grid-template-columns: repeat(2,1fr); } }
   .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
   label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
   input[type=text], input[type=date], textarea { background: var(--bg); border: 0.5px solid var(--border2); border-radius: 4px; color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 9px 12px; width: 100%; transition: border-color 0.2s; }
@@ -87,7 +102,7 @@
 
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .chip { font-family: var(--font-mono); font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 0.5px solid var(--border2); cursor: pointer; color: var(--text3); background: transparent; transition: color 0.2s; }
-  .chip:hover { color: var(--text); }
+  .chip:hover { color: var(--text); border-color: var(--text3); }
 
   .btn-row { display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
 
@@ -98,14 +113,12 @@
   .output-status { font-family: var(--font-mono); font-size: 11px; padding: 3px 10px; border-radius: 20px; }
   .status-gen { background: rgba(239,159,39,0.15); color: var(--amber); }
   .status-done { background: rgba(0,229,160,0.1); color: var(--green); }
-  .output-text { font-size: 14px !important; line-height: 1.8 !important; white-space: pre-wrap !important; color: #f0f0f0 !important; min-height: 40px; font-family: var(--font-body) !important; }
-  .output-footer { margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--border); }
-  .output-disclaimer { font-family: var(--font-mono); font-size: 10px; color: var(--text3); line-height: 1.6; margin-bottom: 8px; }
   .btn-copy { font-family: var(--font-mono); font-size: 11px; background: transparent; border: 0.5px solid var(--border2); padding: 6px 14px; border-radius: 4px; cursor: pointer; color: var(--text2); }
   .btn-copy:hover { color: var(--text); }
 
-  .pricing-intro { background: var(--bg2); border-left: 3px solid var(--green); padding: 1.25rem 1.5rem; border-radius: 0 6px 6px 0; margin-bottom: 2rem; font-size: 15px; color: var(--text2); line-height: 1.7; }
+  .pricing-intro { background: var(--bg2); border-left: 3px solid var(--green); padding: 1.25rem 1.5rem; margin-bottom: 2rem; font-size: 15px; color: var(--text2); line-height: 1.7; }
   .pricing-intro strong { color: var(--text); font-weight: 500; }
+
   .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
   @media(max-width:650px) { .tier-grid { grid-template-columns: 1fr; } }
   .tier { border: 0.5px solid var(--border); border-radius: 8px; padding: 1.25rem; background: var(--bg2); }
@@ -118,6 +131,7 @@
   .tier-divider { border: none; border-top: 0.5px solid var(--border); margin-bottom: 12px; }
   .tier-feat { font-size: 13px; color: var(--text2); padding: 3px 0; display: flex; gap: 8px; }
   .tier-feat-check { color: var(--green); flex-shrink: 0; }
+
   .promise { border: 0.5px solid rgba(0,229,160,0.25); border-radius: 8px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
   .promise-hed { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
   .promise-item { font-size: 13px; color: var(--text2); padding: 4px 0; display: flex; gap: 10px; line-height: 1.6; }
@@ -158,8 +172,6 @@
   footer { border-top: 0.5px solid var(--border); padding: 2rem; text-align: center; max-width: 900px; margin: 0 auto; }
   .footer-logo { font-family: var(--font-mono); font-size: 12px; color: var(--green); letter-spacing: 2px; margin-bottom: 8px; }
   .footer-text { font-family: var(--font-mono); font-size: 10px; color: var(--text3); line-height: 1.8; }
-
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -175,36 +187,59 @@
 </nav>
 
 <div class="hero">
-  <div class="hero-eyebrow">Built by an A&P. Priced for one too.</div>
-  <h1 class="hero-headline">Stop writing<br>logbooks <span>for free.</span></h1>
-  <p class="hero-sub">You already work the hours. You already know the regs. <strong>MX-Logbook turns your plain-language descriptions into professional, FAA-compliant log entries in seconds</strong> so you can stop donating your own time to paperwork at the end of a 10-hour shift.</p>
+  <div class="hero-eyebrow">For everyone who works with their hands</div>
+  <h1 class="hero-headline">Your skills keep the<br>world running.<br><span>Your paperwork shouldn't.</span></h1>
+  <p class="hero-sub">You diagnose it, fix it, certify it. <strong>Then you spend the last hour of your shift writing it up in the exact legal language the regulators require.</strong> Unpaid. Underthanked. Exhausted. MX-Logbook does that part for you.</p>
   <div class="hero-actions">
     <button class="btn-primary" onclick="openModal()">Start free — 14 days, no card</button>
     <a href="#tool"><button class="btn-ghost">See it in action</button></a>
   </div>
-  <p class="hero-fine">Then from $9.99/mo. Cancel anytime. No BS.</p>
+  <p class="hero-fine">From $9.99/mo. Less than a lunch. Cancel anytime.</p>
   <div class="stat-row">
-    <div class="stat"><div class="stat-num">~180K</div><div class="stat-label">Certificated A&Ps in the US</div></div>
-    <div class="stat"><div class="stat-num">10-20 min</div><div class="stat-label">Saved per log entry</div></div>
-    <div class="stat"><div class="stat-num">$150-200</div><div class="stat-label">What the shop bills per hour</div></div>
+    <div class="stat"><div class="stat-num">$150+</div><div class="stat-label">What shops bill per hour</div></div>
+    <div class="stat"><div class="stat-num">$28-38</div><div class="stat-label">What you take home</div></div>
+    <div class="stat"><div class="stat-num">1+ hrs</div><div class="stat-label">Lost daily to paperwork</div></div>
     <div class="stat"><div class="stat-num">$9.99</div><div class="stat-label">What this costs per month</div></div>
   </div>
 </div>
 
 <section>
-  <div class="pain-section">
-    <p class="pain-quote">"The shop bills $185/hr. I take home $32. And I still have to write up every squawk myself at the end of the day."</p>
-    <p class="pain-attr">Every A&P, everywhere, always.</p>
+  <div class="manifesto">
+    <div class="manifesto-hed">This is not enterprise software.</div>
+    <p class="manifesto-body">
+      Enterprise software is built by people who have never touched a wrench. It is priced for companies that bill your labor at five times what they pay you. It is designed by committees who have never ended a shift with grease under their fingernails.<br><br>
+      <strong>This was built by someone who has.</strong> Someone who spent years keeping complex machines airworthy and watched companies pocket the margin while the people doing the actual work stayed late to fill out the paperwork. This tool exists because that is wrong. The price exists because that is wrong. Everything about it exists because <strong>the trades deserve better tools, built by people who understand the work.</strong>
+    </p>
   </div>
 </section>
 
 <section id="how">
-  <p class="section-hed">How it works</p>
+  <p class="section-hed">The problem every tradesperson knows</p>
+  <div class="rage-grid">
+    <div class="rage-card"><div class="rage-title">Unpaid documentation time</div><div class="rage-desc">The job ends when the wrench goes down. The shift ends an hour later, after the write-ups are done. That time is yours. You should get it back.</div></div>
+    <div class="rage-card"><div class="rage-title">Regulatory language nobody teaches</div><div class="rage-desc">Schools teach you how to fix things. Nobody teaches you to translate that into the specific legal language regulators require. You learned it the hard way, on your own time.</div></div>
+    <div class="rage-card"><div class="rage-title">Same information a hundred times over</div><div class="rage-desc">Tail number. Cert number. Make and model. Date. Over and over, every single entry, for your entire career. Your time is worth more than data entry.</div></div>
+    <div class="rage-card"><div class="rage-title">Mental load at the end of a physical day</div><div class="rage-desc">You just spent 8 hours using your hands and your expertise. The last thing you should have to do is switch into legal writing mode when your body is done.</div></div>
+  </div>
+
+  <p class="section-hed" style="margin-top:2rem;">How it works</p>
   <div class="how-grid">
     <div class="how-card"><div class="how-num">01</div><div class="how-title">Describe the work</div><div class="how-desc">Plain language is fine. "Replaced left mag, ran it up, drop within limits." You know what you did.</div></div>
     <div class="how-card"><div class="how-num">02</div><div class="how-title">Pick your entry type</div><div class="how-desc">Maintenance, squawk, RTS, AD compliance, inspection, repair — six types covered.</div></div>
     <div class="how-card"><div class="how-num">03</div><div class="how-title">Get a clean write-up</div><div class="how-desc">Proper regulatory language, correct format, ready to copy into your logbook in seconds.</div></div>
     <div class="how-card"><div class="how-num">04</div><div class="how-title">You sign it. You own it.</div><div class="how-desc">MX-Logbook drafts. You verify and certify. Your expertise, your certificate, your call.</div></div>
+  </div>
+
+  <p class="section-hed" style="margin-top:2rem;">Currently available for aviation. More trades coming.</p>
+  <div class="trades-box">
+    <div class="trade-tags">
+      <span class="trade-tag trade-live">Aviation A&P — Live now</span>
+      <span class="trade-tag trade-soon">HVAC — Coming soon</span>
+      <span class="trade-tag trade-soon">Auto — Coming soon</span>
+      <span class="trade-tag trade-soon">Marine — Coming soon</span>
+      <span class="trade-tag trade-soon">Industrial — Coming soon</span>
+    </div>
+    <p class="trades-note">Built on aviation first because that is where the founder spent years. Every other trade on this list has the same broken dynamic. Skilled people, heavy documentation requirements, tools built by people who have never done the work. We are fixing that one trade at a time.</p>
   </div>
 </section>
 
@@ -294,7 +329,7 @@
 
 <section id="pricing">
   <p class="section-hed">Pricing — because you have been underpaid long enough</p>
-  <div class="pricing-intro">You keep the aircraft flying. The company bills $185/hr and pays you $32. <strong>This app was built by one of you.</strong> That's why it costs less than a lunch — no enterprise licensing, no "call for pricing," no suits deciding what your time is worth.</div>
+  <div class="pricing-intro">You keep the aircraft flying. The company bills $185/hr and pays you $32. <strong>This app was built by one of you.</strong> That is why it costs less than a lunch. No enterprise licensing. No "call for pricing." No suits deciding what your time is worth.</div>
   <div class="tier-grid">
     <div class="tier">
       <div class="tier-name">Solo</div>
@@ -330,10 +365,10 @@
   </div>
   <div class="promise">
     <p class="promise-hed">The MX-Logbook promise</p>
-    <div class="promise-item"><span class="promise-check">✓</span>No price hikes once you're in. Early subscribers keep their rate forever.</div>
+    <div class="promise-item"><span class="promise-check">✓</span>No price hikes once you are in. Early subscribers keep their rate forever.</div>
     <div class="promise-item"><span class="promise-check">✓</span>No "call sales." Every plan is self-serve, no runaround.</div>
-    <div class="promise-item"><span class="promise-check">✓</span>If this saves you less than it costs, email me and I'll refund you. No questions.</div>
-    <div class="promise-item"><span class="promise-check">✓</span>Draft only — your certificate, your sign-off, always.</div>
+    <div class="promise-item"><span class="promise-check">✓</span>If this saves you less than it costs, email me and I will refund you. No questions.</div>
+    <div class="promise-item"><span class="promise-check">✓</span>Built by a tradesperson. Priced for one. That will never change.</div>
   </div>
 </section>
 
@@ -342,9 +377,9 @@
   <div class="founder">
     <div class="founder-avatar">A&P</div>
     <div>
-      <div class="founder-name">Built by a working mechanic</div>
+      <div class="founder-name">Built by someone who gets it</div>
       <div class="founder-cert">A&P · Aviation Maintenance · Film · Comedy · Coaching</div>
-      <p class="founder-quote">I built this because I was tired of spending the last 20 minutes of every shift staring at a logbook. <strong>The company charges $185/hr and pays you $32. The least I can do is give you your paperwork time back for less than ten bucks a month.</strong> This is not a Silicon Valley product. It's a shop tool. Built by one of us, priced for one of us.</p>
+      <p class="founder-quote">I spent years keeping aircraft airworthy. Watching shops bill $185/hr while the people doing the actual work took home $32 and stayed late to do the paperwork. <strong>I built this because nobody should have to donate their expertise to documentation at the end of a long shift. Not mechanics. Not HVAC techs. Not anyone who works with their hands for a living.</strong> This tool is the one I wish I had.</p>
     </div>
   </div>
 </section>
@@ -357,7 +392,7 @@
 
 <footer>
   <div class="footer-logo">MX-LOGBOOK</div>
-  <p class="footer-text">mx-logbook.com · Built by an A&P, for A&Ps<br>Draft entries only. Not affiliated with or approved by the FAA.<br>All entries require review and certification by a licensed A&P or IA per 14 CFR Part 43.<br><br>2026 MX-Logbook · <a href="mailto:hello@mx-logbook.com" style="color:var(--text3)">hello@mx-logbook.com</a></p>
+  <p class="footer-text">mx-logbook.com · Built by a tradesperson, for the trades<br>Draft entries only. Not affiliated with or approved by the FAA.<br>All entries require review and certification by a licensed A&P or IA per 14 CFR Part 43.<br><br>2026 MX-Logbook · <a href="mailto:hello@mx-logbook.com" style="color:var(--text3)">hello@mx-logbook.com</a></p>
 </footer>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
@@ -573,7 +608,7 @@ async function generateEntry() {
   textEl.textContent = '';
   footer.style.display = 'none';
 
-  const prompt = `You are an FAA-certified aviation maintenance expert. Generate a professional, FAA-compliant ${selectedType} logbook entry.
+  const prompt = `You are an FAA-certified aviation maintenance expert. Generate a professional, FAA-compliant ${selectedType} logbook entry. The document header must clearly reflect the entry type: ${selectedType}.
 
 Aircraft: ${aircraft || 'Not specified'}
 Tail Number: ${tail || 'Not specified'}
@@ -584,7 +619,7 @@ Parts/P/N: ${parts || 'N/A'}
 Reference (MM/AD/SB): ${ref || 'N/A'}
 Technician: ${tech || 'Not specified'}
 
-Write a concise, professional logbook entry formatted specifically as a ${selectedType}. The document header must reflect the entry type exactly. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text with no preamble.`;
+Write a concise, professional logbook entry in standard aviation maintenance format. Use proper technical terminology. Include airworthiness statement if appropriate. Output only the log entry text with no preamble.`;
 
   try {
     const resp = await fetch('/api/generate', {
@@ -597,6 +632,7 @@ Write a concise, professional logbook entry formatted specifically as a ${select
 
     if (data.error) {
       textEl.textContent = 'Error: ' + data.error.message;
+      statusEl.textContent = 'Error';
     } else {
       const text = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'No response received.';
       textEl.textContent = text;
