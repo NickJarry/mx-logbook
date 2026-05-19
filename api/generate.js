@@ -84,7 +84,14 @@ export default async function handler(req, res) {
       const team = await sbFetch(`/profiles?company_id=eq.${company_id}&select=email,role,created_at`);
       return res.status(200).json({ team: Array.isArray(team) ? team : [] });
     }
-
+if (type === 'save_feedback') {
+      const { email, plan, reason, comment } = req.body;
+      await sbFetch('/cancellation_feedback', {
+        method: 'POST',
+        body: JSON.stringify({ user_id: user_id || null, email, plan, reason, comment })
+      });
+      return res.status(200).json({ success: true });
+    }
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
