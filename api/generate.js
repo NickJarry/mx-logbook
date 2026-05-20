@@ -45,10 +45,13 @@ export default async function handler(req, res) {
       const uid = data.user?.id || data.id;
       if (uid) {
         const code = Math.random().toString(36).substring(2,8).toUpperCase();
-        await sbFetch('/profiles', {
+        const profileResult = await sbFetch('/profiles', {
           method: 'POST',
           body: JSON.stringify({ id: uid, email, plan: plan || 'trial', trial_start: new Date().toISOString(), referral_code: code })
         });
+        console.log('Profile insert result:', JSON.stringify(profileResult));
+      } else {
+        console.log('No UID found in signup response:', JSON.stringify(data));
       }
       return res.status(200).json({ user: data.user || data, session: data.session });
     }
