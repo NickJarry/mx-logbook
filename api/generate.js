@@ -114,7 +114,17 @@ export default async function handler(req, res) {
       if (session.error) return res.status(400).json({ error: session.error.message });
       return res.status(200).json({ url: session.url });
     }
-
+if (type === 'get_or_create_profile') {
+      const { email, plan } = req.body;
+      const existing = await sbFetch(`/profiles?id=eq.${user_id}&select=*`);
+      if (existing[0]) return res.status(200).json({ profile: existing[0] });
+      const code = Math.random().toString(36).substring(2,8).toUpperCase();
+      const created = await sbFetch('/profiles', {
+        method: 'POST',
+        body: JSON.stringify({ id: user_id, email, plan: plan || 'trial', trial_start: new Date().toISOString(), referral_code: code })
+      });
+      return res.status(200).json({ profile: created[0] });
+    }
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
