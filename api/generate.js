@@ -10,11 +10,14 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
 
   async function sbFetch(path, options = {}) {
+    const key = (options.method === 'POST' || options.method === 'PATCH' || options.method === 'DELETE')
+      ? (process.env.SUPABASE_SERVICE_KEY || SUPABASE_KEY)
+      : SUPABASE_KEY;
     const r = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
       ...options,
       headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': key,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation',
         ...(options.headers || {})
