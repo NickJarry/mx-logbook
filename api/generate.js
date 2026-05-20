@@ -84,7 +84,8 @@ export default async function handler(req, res) {
       const team = await sbFetch(`/profiles?company_id=eq.${company_id}&select=email,role,created_at`);
       return res.status(200).json({ team: Array.isArray(team) ? team : [] });
     }
-if (type === 'save_feedback') {
+
+    if (type === 'save_feedback') {
       const { email, plan, reason, comment } = req.body;
       await sbFetch('/cancellation_feedback', {
         method: 'POST',
@@ -92,47 +93,28 @@ if (type === 'save_feedback') {
       });
       return res.status(200).json({ success: true });
     }
+
     if (type === 'create_portal_session') {
       const { customer_email } = req.body;
-      
-      // First find the customer by email
       const searchResp = await fetch(`https://api.stripe.com/v1/customers/search?query=email:"${customer_email}"`, {
-        headers: {
-          'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`
-        }
+        headers: { 'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}` }
       });
       const searchData = await searchResp.json();
       const customer = searchData.data?.[0];
-      
-      if (!customer) {
-        return res.status(400).json({ error: 'No billing account found for this email.' });
-      }
-
-      // Create portal session with customer ID
+      if (!customer) return res.status(400).json({ error: 'No billing account found for this email.' });
       const portalResp = await fetch('https://api.stripe.com/v1/billing_portal/sessions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams({
-          'customer': customer.id,
-          'return_url': 'https://mx-logbook.com'
-        }).toString()
+        body: new URLSearchParams({ 'customer': customer.id, 'return_url': 'https://mx-logbook.com' }).toString()
       });
       const session = await portalResp.json();
       if (session.error) return res.status(400).json({ error: session.error.message });
       return res.status(200).json({ url: session.url });
-    },
-        body: new URLSearchParams({
-          'customer': customer_email,
-          'return_url': 'https://mx-logbook.com'
-        }).toString()
-      });
-      const session = await stripeResp.json();
-      if (session.error) return res.status(400).json({ error: session.error.message });
-      return res.status(200).json({ url: session.url });
     }
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
