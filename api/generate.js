@@ -94,12 +94,36 @@ if (type === 'save_feedback') {
     }
     if (type === 'create_portal_session') {
       const { customer_email } = req.body;
-      const stripeResp = await fetch('https://api.stripe.com/v1/billing_portal/sessions', {
+      
+      // First find the customer by email
+      const searchResp = await fetch(`https://api.stripe.com/v1/customers/search?query=email:"${customer_email}"`, {
+        headers: {
+          'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`
+        }
+      });
+      const searchData = await searchResp.json();
+      const customer = searchData.data?.[0];
+      
+      if (!customer) {
+        return res.status(400).json({ error: 'No billing account found for this email.' });
+      }
+
+      // Create portal session with customer ID
+      const portalResp = await fetch('https://api.stripe.com/v1/billing_portal/sessions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded'
         },
+        body: new URLSearchParams({
+          'customer': customer.id,
+          'return_url': 'https://mx-logbook.com'
+        }).toString()
+      });
+      const session = await portalResp.json();
+      if (session.error) return res.status(400).json({ error: session.error.message });
+      return res.status(200).json({ url: session.url });
+    },
         body: new URLSearchParams({
           'customer': customer_email,
           'return_url': 'https://mx-logbook.com'
