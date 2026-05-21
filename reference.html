@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX-Logbook: Help & Reference Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #00e5a0; --green-dark: #00c48c;
+    --bg: #0d0d0d; --bg2: #151515; --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f0; --text2: #999; --text3: #555;
+    --amber: #ef9f27;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-cond: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+  a { color: var(--green); text-decoration: none; }
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(13,13,13,0.95); border-bottom: 0.5px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; backdrop-filter: blur(8px); }
+  .nav-logo { font-family: var(--font-mono); font-size: 13px; color: var(--green); letter-spacing: 2px; }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { font-family: var(--font-mono); font-size: 11px; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { background: var(--green) !important; color: #0a0a0a !important; padding: 6px 14px; border-radius: 4px; }
+
+  section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+  .section-hed { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 8px; border-bottom: 0.5px solid var(--border2); }
+
+  .hero { padding: 5rem 2rem 3rem; max-width: 900px; margin: 0 auto; }
+  .hero h1 { font-family: var(--font-cond); font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.1; margin-bottom: 1rem; }
+  .hero p { font-size: 18px; color: var(--text2); max-width: 600px; }
+
+  /* FAQ */
+  .faq-item { border: 0.5px solid var(--border); border-radius: 6px; margin-bottom: 8px; overflow: hidden; }
+  .faq-q { padding: 16px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-body); font-size: 15px; font-weight: 500; background: var(--bg2); transition: background 0.2s; }
+  .faq-q:hover { background: var(--bg3); }
+  .faq-q .arrow { font-family: var(--font-mono); color: var(--green); transition: transform 0.2s; }
+  .faq-q.open .arrow { transform: rotate(45deg); }
+  .faq-a { display: none; padding: 16px 20px; font-size: 14px; color: var(--text2); line-height: 1.8; border-top: 0.5px solid var(--border); background: var(--bg); }
+  .faq-a.open { display: block; }
+  .faq-a p { margin-bottom: 8px; }
+  .faq-a p:last-child { margin-bottom: 0; }
+  .faq-a code { font-family: var(--font-mono); font-size: 12px; background: var(--bg3); padding: 2px 6px; border-radius: 3px; color: var(--green); }
+
+  /* ATA Table */
+  .ata-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ata-table th { font-family: var(--font-mono); font-size: 10px; color: var(--green); letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; border-bottom: 0.5px solid var(--border2); text-align: left; background: var(--bg2); }
+  .ata-table td { padding: 10px 14px; border-bottom: 0.5px solid var(--border); color: var(--text2); font-family: var(--font-body); vertical-align: top; }
+  .ata-table td:first-child { font-family: var(--font-mono); color: var(--green); font-size: 12px; white-space: nowrap; }
+  .ata-table tr:hover td { background: var(--bg2); }
+
+  /* Reference cards */
+  .ref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem; }
+  .ref-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+  .ref-card-title { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .ref-card ul { list-style: none; padding: 0; }
+  .ref-card li { font-size: 13px; color: var(--text2); padding: 4px 0; border-bottom: 0.5px solid var(--border); line-height: 1.5; }
+  .ref-card li:last-child { border-bottom: none; }
+  .ref-card li strong { color: var(--text); font-weight: 500; }
+
+  /* Walkthrough steps */
+  .steps { counter-reset: steps; }
+  .step { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+  .step-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--green); color: #0a0a0a; font-family: var(--font-mono); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step-content h4 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .step-content p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  footer { border-top: 0.5px solid var(--border); padding: 2rem; text-align: center; font-family: var(--font-mono); font-size: 11px; color: var(--text3); }
+
+  @media (max-width: 600px) {
+    .nav-links a:not(.nav-cta) { display: none; }
+    .ata-table { font-size: 11px; }
+    .ata-table td, .ata-table th { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">MX-LOGBOOK</div>
+  <div class="nav-links">
+    <a href="#faq">FAQ</a>
+    <a href="#walkthrough">How it works</a>
+    <a href="#ata">ATA chapters</a>
+    <a href="#cfr">CFR reference</a>
+    <a href="/" class="nav-cta">Back to tool</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Help &amp; Reference Guide</h1>
+  <p>Everything you need to get the most out of MX-Logbook, plus a quick reference for common maintenance codes and regulations.</p>
+</div>
+
+<!-- FAQ -->
+<section id="faq">
+  <p class="section-hed">Frequently asked questions</p>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do I generate my first entry?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>Select your entry type at the top, fill in the aircraft info (tail number, make/model), then describe the work you did in plain language in the big text box. Click <strong>Generate draft entry</strong>. That's it.</p>
+      <p>You don't need perfect language or FAA terminology. Say it the way you'd tell a coworker. The AI handles the formatting.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What is the difference between Solo and Pro?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p><strong>Solo ($9.99/mo)</strong> gives you 6 standard entry types, voice input, aircraft log, and 25 generations per day. Good for a mechanic doing regular day-to-day documentation.</p>
+      <p><strong>Pro ($16.99/mo)</strong> adds the AOG Report, PDF export, translation to 12 languages, and 50 generations per day. If you work AOG events or need to hand off documentation to someone who doesn't speak English, Pro is the right plan.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How does the AOG running report work?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>Select AOG Report as your entry type. Each time you generate an entry, an <strong>Add to running report</strong> button appears. Click it to append that entry to the running report with a timestamp and your initials.</p>
+      <p>The aircraft info appears once at the top. Entries stack chronologically below it. When the job is done, click <strong>Close report</strong> — it stamps the closure time and copies the full report to your clipboard automatically.</p>
+      <p>The report saves to your device between sessions, so you can close the app and pick up exactly where you left off.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do I switch between local time and UTC?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>Once you have entries in the running report, a <strong>Convert to UTC</strong> button appears in the report header. Click it and every timestamp in the entire report — headers and body text — converts automatically. The button flips to <strong>Convert to Local</strong> so you can toggle back at any time.</p>
+      <p>Your timezone is detected automatically from your device. You don't need to enter anything.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">The AI keeps mishearing my words. What do I do?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>Two things help:</p>
+      <p>1. The built-in aviation glossary already corrects the most common mishearings automatically. Terms like ETOPS, FADEC, TCAS, and PIREP are recognized even if the microphone transcribes them phonetically.</p>
+      <p>2. Go to <strong>My Account &gt; Glossary</strong> and add your own terms. Format is <code>ABBR=Full term</code>, one per line. Custom terms get added to both the glossary and the phonetic correction layer.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Where are my entries stored? Are they secure?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>Entries in the <strong>Aircraft Log</strong> are stored on your device only in your browser's local storage. They are never sent to our servers. They are automatically deleted after 90 days.</p>
+      <p>Entry history in your <strong>My Account dashboard</strong> is stored in our secure database and associated with your account. It is only accessible by you when logged in.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I edit the generated draft before copying it?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>Yes. The generated draft is a fully editable text area. Click anywhere in it and type to make corrections. You can also use the mic button in the draft header to speak edits directly into the draft.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What happens if I generate the same entry type twice?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>If you already have a draft visible and generate again with new notes, the tool enters <strong>consolidation mode</strong>. Instead of replacing the existing draft, it takes both the existing draft and your new notes and produces one clean, merged document with no redundancy.</p>
+      <p>This applies to all entry types except AOG Report, which always appends to the running report.</p>
+      <p>To start fresh, click <strong>Clear</strong> to wipe the current draft first.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">I hit my daily limit. What now?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>You can purchase extra generation packs — 50 generations for $1.99 or 200 for $4.99. These are one-time purchases, not subscriptions. The credits are added immediately after checkout and draw down before your daily limit kicks in the following day.</p>
+      <p>Daily limits reset at midnight. Hard cap is 200 per day regardless of purchased packs.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Is this an official FAA-approved tool?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>No. MX-Logbook is a documentation assistant, not a certified FAA product. Every generated entry is clearly marked as a draft. The certifying technician is solely responsible for reviewing, verifying, and signing all maintenance records per 14 CFR Part 43. Never copy an entry into an official logbook without reviewing it for accuracy.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do I cancel?<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p>Go to <strong>My Account &gt; Overview</strong> and click <strong>Cancel subscription</strong>. You will be asked for a brief reason (this genuinely helps improve the tool), then redirected to the Stripe billing portal to complete the cancellation. No penalties, no fees, effective immediately.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WALKTHROUGH -->
+<section id="walkthrough">
+  <p class="section-hed">How to generate your first entry</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Select entry type</h4>
+        <p>Choose from Maintenance, Squawk, RTS, AD Compliance, Inspection, Repair, or AOG Report (Pro). This tells the AI what kind of document to produce.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Enter aircraft info</h4>
+        <p>Tail number, make/model, and TTSN are remembered for next time. Optional fields include parts used, reference numbers (MM, AD, SB), technician name, and date.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Describe the work</h4>
+        <p>Type or speak in plain language. No FAA terminology required. "Replaced left magneto, ran engine, checked mag drop, all good" is enough to generate a compliant entry. Use the mic button or the sticky mic button at the bottom left of the screen.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Generate and review</h4>
+        <p>Click Generate draft entry. Review the output — it is fully editable. Fix anything that looks off. The draft is never final until you copy it into your official logbook and sign it.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Copy or download</h4>
+        <p>Copy to clipboard for pasting into your digital logbook, or download as a PDF-ready HTML file. Pro users can also add the entry to an AOG running report.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ATA CHAPTERS -->
+<section id="ata">
+  <p class="section-hed">ATA chapter reference</p>
+  <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.8;">ATA 100 chapters are the standard system for organizing aviation maintenance documentation. Reference these when writing maintenance entries, AD compliance records, and repair documentation.</p>
+
+  <table class="ata-table">
+    <thead>
+      <tr><th>Chapter</th><th>System</th><th>Subchapter examples</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ATA 05</td><td>Time Limits / Maintenance Checks</td><td>Scheduled inspections, life limits, airworthiness limitations</td></tr>
+      <tr><td>ATA 06</td><td>Dimensions and Areas</td><td>Zones, station diagrams, fuselage references</td></tr>
+      <tr><td>ATA 07</td><td>Lifting and Shoring</td><td>Jack points, tow procedures, ground handling</td></tr>
+      <tr><td>ATA 08</td><td>Leveling and Weighing</td><td>Aircraft weighing, center of gravity, ballast</td></tr>
+      <tr><td>ATA 09</td><td>Towing and Taxiing</td><td>Tow bar attachment, towing limits</td></tr>
+      <tr><td>ATA 10</td><td>Parking, Mooring, Storage</td><td>Tie-down, protective storage, preservation</td></tr>
+      <tr><td>ATA 11</td><td>Placards and Markings</td><td>Required placards, exterior markings</td></tr>
+      <tr><td>ATA 12</td><td>Servicing</td><td>Fueling, oil servicing, tire inflation, hydraulic servicing</td></tr>
+      <tr><td>ATA 20</td><td>Standard Practices — Airframe</td><td>Torque values, rigging, safety wire, corrosion control</td></tr>
+      <tr><td>ATA 21</td><td>Air Conditioning</td><td>Pressurization, air cycle machine, distribution</td></tr>
+      <tr><td>ATA 22</td><td>Auto Flight</td><td>Autopilot, autothrottle, flight director</td></tr>
+      <tr><td>ATA 23</td><td>Communications</td><td>VHF/HF radios, ACARS, interphone, ELT</td></tr>
+      <tr><td>ATA 24</td><td>Electrical Power</td><td>AC/DC generation, battery, external power, IDG</td></tr>
+      <tr><td>ATA 25</td><td>Equipment / Furnishings</td><td>Seats, galley, cargo compartments, emergency equipment</td></tr>
+      <tr><td>ATA 26</td><td>Fire Protection</td><td>Detection, extinguishing, overheat protection</td></tr>
+      <tr><td>ATA 27</td><td>Flight Controls</td><td>Ailerons, elevator, rudder, flaps, spoilers, trim</td></tr>
+      <tr><td>ATA 28</td><td>Fuel</td><td>Fuel tanks, fuel feed, dump, quantity indication</td></tr>
+      <tr><td>ATA 29</td><td>Hydraulic Power</td><td>Main/auxiliary hydraulic systems, reservoirs, pumps</td></tr>
+      <tr><td>ATA 30</td><td>Ice and Rain Protection</td><td>Wing anti-ice, probe heat, windshield heat, de-icing</td></tr>
+      <tr><td>ATA 31</td><td>Indicating / Recording Systems</td><td>EICAS, ECAM, flight recorders, clocks</td></tr>
+      <tr><td>ATA 32</td><td>Landing Gear</td><td>Main/nose gear, wheels, brakes, steering, doors</td></tr>
+      <tr><td>ATA 33</td><td>Lights</td><td>Landing lights, navigation lights, strobe, cabin</td></tr>
+      <tr><td>ATA 34</td><td>Navigation</td><td>ILS, VOR, DME, GPS, TCAS, weather radar, ADIRS</td></tr>
+      <tr><td>ATA 35</td><td>Oxygen</td><td>Crew oxygen, passenger oxygen, portable equipment</td></tr>
+      <tr><td>ATA 36</td><td>Pneumatic</td><td>Bleed air, ducting, isolation valves</td></tr>
+      <tr><td>ATA 38</td><td>Water/Waste</td><td>Potable water, waste, lavatory systems</td></tr>
+      <tr><td>ATA 44</td><td>Cabin Systems</td><td>Cabin management, in-flight entertainment</td></tr>
+      <tr><td>ATA 45</td><td>Central Maintenance System</td><td>CMC, ACMS, fault codes, BITE</td></tr>
+      <tr><td>ATA 46</td><td>Information Systems</td><td>Aircraft data network, EFB, data loading</td></tr>
+      <tr><td>ATA 49</td><td>Airborne Auxiliary Power</td><td>APU, APU fuel, APU fire protection</td></tr>
+      <tr><td>ATA 51</td><td>Structures — General</td><td>Structural repair, materials, processes</td></tr>
+      <tr><td>ATA 52</td><td>Doors</td><td>Passenger doors, cargo doors, emergency exits</td></tr>
+      <tr><td>ATA 53</td><td>Fuselage</td><td>Frames, skins, pressure bulkheads, floor structure</td></tr>
+      <tr><td>ATA 54</td><td>Nacelles / Pylons</td><td>Engine mounts, thrust reversers, nacelle structure</td></tr>
+      <tr><td>ATA 55</td><td>Stabilizers</td><td>Horizontal stabilizer, vertical stabilizer, elevators</td></tr>
+      <tr><td>ATA 56</td><td>Windows</td><td>Windshields, cabin windows, inspection windows</td></tr>
+      <tr><td>ATA 57</td><td>Wings</td><td>Wing structure, control surfaces, winglets, access panels</td></tr>
+      <tr><td>ATA 61</td><td>Propellers</td><td>Propeller assembly, de-ice, pitch control</td></tr>
+      <tr><td>ATA 70</td><td>Standard Practices — Engines</td><td>Engine removal/installation, borescope, test cell</td></tr>
+      <tr><td>ATA 71</td><td>Power Plant</td><td>Engine cowlings, mounts, firewall, drain masts</td></tr>
+      <tr><td>ATA 72</td><td>Engine — Turbine/Turboprop</td><td>Fan, compressor, combustion, turbine, exhaust</td></tr>
+      <tr><td>ATA 73</td><td>Engine Fuel and Control</td><td>Fuel control, FADEC, flow divider, fuel nozzles</td></tr>
+      <tr><td>ATA 74</td><td>Ignition</td><td>Ignition exciter, leads, igniters, magnetos (piston)</td></tr>
+      <tr><td>ATA 75</td><td>Air — Engine Bleed</td><td>Bleed air valves, cooling, anti-ice, pressure regulation</td></tr>
+      <tr><td>ATA 76</td><td>Engine Controls</td><td>Throttle, mixture, prop controls, FADEC interface</td></tr>
+      <tr><td>ATA 77</td><td>Engine Indicating</td><td>EGT, EPR, N1/N2, oil pressure/temp, fuel flow</td></tr>
+      <tr><td>ATA 78</td><td>Exhaust</td><td>Exhaust nozzle, thrust reverser, noise suppressor</td></tr>
+      <tr><td>ATA 79</td><td>Oil</td><td>Oil tank, oil pump, oil filter, chip detector, cooling</td></tr>
+      <tr><td>ATA 80</td><td>Starting</td><td>Starter motor, starter valve, ignition sequence</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- CFR REFERENCE -->
+<section id="cfr">
+  <p class="section-hed">14 CFR quick reference</p>
+  <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.8;">Key Federal Aviation Regulations relevant to maintenance documentation. Reference these when writing logbook entries and return to service statements.</p>
+
+  <div class="ref-grid">
+    <div class="ref-card">
+      <div class="ref-card-title">14 CFR Part 43 — Maintenance</div>
+      <ul>
+        <li><strong>43.3</strong> — Persons authorized to perform maintenance</li>
+        <li><strong>43.5</strong> — Approval for return to service</li>
+        <li><strong>43.7</strong> — Persons authorized to approve for RTS</li>
+        <li><strong>43.9</strong> — Content, form, disposition of maintenance records</li>
+        <li><strong>43.11</strong> — Content, form of records for inspections</li>
+        <li><strong>43.12</strong> — Falsification of maintenance records</li>
+        <li><strong>43.13</strong> — Performance rules — general</li>
+        <li><strong>43.15</strong> — Performance rules — inspections</li>
+        <li><strong>43.16</strong> — Airworthiness limitations</li>
+        <li><strong>App. A</strong> — Major alterations, major repairs, preventive maintenance</li>
+        <li><strong>App. B</strong> — Recording of major repairs and alterations</li>
+        <li><strong>App. D</strong> — Scope and detail of items for annual/100-hr inspections</li>
+        <li><strong>App. E</strong> — Altimeter system test and inspection</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">14 CFR Part 91 — Operations</div>
+      <ul>
+        <li><strong>91.403</strong> — Owner/operator responsibility for airworthiness</li>
+        <li><strong>91.405</strong> — Maintenance required</li>
+        <li><strong>91.407</strong> — Operation after maintenance</li>
+        <li><strong>91.409</strong> — Inspections (annual, 100-hr, progressive)</li>
+        <li><strong>91.411</strong> — Altimeter/static system tests</li>
+        <li><strong>91.413</strong> — ATC transponder tests</li>
+        <li><strong>91.417</strong> — Maintenance record requirements</li>
+        <li><strong>91.419</strong> — Transfer of maintenance records</li>
+        <li><strong>91.421</strong> — Reconstructing lost or destroyed records</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">14 CFR Part 65 — Certificates</div>
+      <ul>
+        <li><strong>65.71</strong> — Eligibility requirements: Mechanic</li>
+        <li><strong>65.75</strong> — Knowledge requirements</li>
+        <li><strong>65.77</strong> — Skill requirements</li>
+        <li><strong>65.81</strong> — General privileges and limitations</li>
+        <li><strong>65.83</strong> — Recent experience requirements</li>
+        <li><strong>65.85</strong> — Airframe rating</li>
+        <li><strong>65.87</strong> — Powerplant rating</li>
+        <li><strong>65.91</strong> — Inspection authorization</li>
+        <li><strong>65.95</strong> — IA privileges and limitations</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">43.9 Record Requirements</div>
+      <ul>
+        <li><strong>Description</strong> — description of work performed</li>
+        <li><strong>Date</strong> — date of completion</li>
+        <li><strong>Name</strong> — name of person performing work</li>
+        <li><strong>Certificate</strong> — certificate number</li>
+        <li><strong>Kind</strong> — kind of certificate</li>
+        <li><strong>Signature</strong> — signature of person approving for RTS</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">Common Inspection Intervals</div>
+      <ul>
+        <li><strong>Annual</strong> — 12 calendar months (91.409a)</li>
+        <li><strong>100-hour</strong> — 100 flight hours (91.409b)</li>
+        <li><strong>ELT</strong> — 12 months battery/cumulative use (91.207)</li>
+        <li><strong>Transponder</strong> — 24 calendar months (91.413)</li>
+        <li><strong>Altimeter/static</strong> — 24 calendar months (91.411)</li>
+        <li><strong>VOR</strong> — 30 days IFR (91.171)</li>
+        <li><strong>Pitot-static</strong> — 24 months (IFR)</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">Preventive Maintenance (Part 43 App. A)</div>
+      <ul>
+        <li>Replenishing hydraulic fluid</li>
+        <li>Changing engine oil and filter</li>
+        <li>Servicing landing gear wheel bearings</li>
+        <li>Replacing defective safety wiring</li>
+        <li>Replacing bulbs, reflectors, lenses</li>
+        <li>Replacing tires</li>
+        <li>Replacing elastic shock absorber cords</li>
+        <li>Servicing battery and replacing battery box</li>
+        <li>Replacing prefabricated fuel lines</li>
+        <li>Cleaning fuel and oil strainers/filters</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ENTRY LANGUAGE REFERENCE -->
+<section id="language">
+  <p class="section-hed">Standard entry language examples</p>
+  <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.8;">Reference phrases commonly used in FAA-compliant maintenance entries. These are examples only — always tailor entries to the specific work performed.</p>
+
+  <div class="ref-grid">
+    <div class="ref-card">
+      <div class="ref-card-title">Return to Service Statements</div>
+      <ul>
+        <li>Aircraft returned to service in accordance with 14 CFR Part 43.</li>
+        <li>Aircraft found airworthy and returned to service.</li>
+        <li>Work performed in accordance with AMM Chapter [XX].</li>
+        <li>Aircraft inspected and approved for return to service per 14 CFR 43.9.</li>
+        <li>Repairs accomplished per SRM [section]. Aircraft returned to service.</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">Annual/100-hr Language</div>
+      <ul>
+        <li>Annual inspection completed in accordance with 14 CFR 43 Appendix D.</li>
+        <li>100-hour inspection performed per 14 CFR 91.409(b).</li>
+        <li>Aircraft inspected per approved inspection program.</li>
+        <li>All discrepancies noted and corrected prior to RTS.</li>
+        <li>No discrepancies noted. Aircraft approved for return to service.</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">AD Compliance Language</div>
+      <ul>
+        <li>Complied with AD [number] by [method/action].</li>
+        <li>AD [number] does not apply to this aircraft (S/N [XXXXX]).</li>
+        <li>Recurring AD [number] — next compliance due at [hours/date].</li>
+        <li>One-time AD [number] — terminated. No further action required.</li>
+      </ul>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-title">Parts Reference Language</div>
+      <ul>
+        <li>P/N [XXXXX], S/N [XXXXX] installed.</li>
+        <li>Removed unserviceable P/N [XXXXX], S/N [XXXXX].</li>
+        <li>Part installed per AMM [chapter].</li>
+        <li>New/serviceable part installed. TSN/CSN: zero.</li>
+        <li>Overhauled component installed. TSO: zero. TTSN: [hours].</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  MX-Logbook (mx-logbook.com) &nbsp;|&nbsp; DRAFT ONLY: Not an official FAA document. All entries must be reviewed and signed by the responsible A&P or IA before use. &nbsp;|&nbsp; <a href="/">Back to tool</a>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const isOpen = answer.classList.contains('open');
+  document.querySelectorAll('.faq-a.open').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq-q.open').forEach(q => q.classList.remove('open'));
+  if (!isOpen) {
+    answer.classList.add('open');
+    el.classList.add('open');
+  }
+}
+</script>
+
+</body>
+</html>
