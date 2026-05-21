@@ -212,26 +212,53 @@
   footer { border-top: 0.5px solid var(--border); padding: 2rem; text-align: center; max-width: 900px; margin: 0 auto; }
   .footer-logo { font-family: var(--font-mono); font-size: 12px; color: var(--green); letter-spacing: 2px; margin-bottom: 8px; }
   .footer-text { font-family: var(--font-mono); font-size: 10px; color: var(--text3); line-height: 1.8; }
- @media (max-width: 768px) {
+@media (max-width: 768px) {
   nav {
-    flex-wrap: wrap;
     padding: 12px 16px;
-    gap: 8px;
-  }
-  .nav-logo {
-    font-size: 14px;
+    position: relative;
   }
   .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #0a0a0a;
+    border-bottom: 1px solid #222;
+    padding: 16px;
+    gap: 12px;
+    z-index: 999;
+  }
+  .nav-links.open {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 11px;
   }
   .nav-links a {
-    font-size: 11px;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid #1a1a1a;
   }
-  .hero h1, .hero-title {
-    font-size: 2rem !important;
+  .nav-hamburger {
+    display: block !important;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .hero h1, .hero-title, h1 {
+    font-size: 1.8rem !important;
+    line-height: 1.2 !important;
+  }
+  h2 {
+    font-size: 1.3rem !important;
+  }
+  p, li, .body-text {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0 !important;
+    word-spacing: normal !important;
   }
   section, .section {
     padding: 40px 20px !important;
@@ -253,6 +280,7 @@
 
 <nav>
   <div class="nav-logo">MX-LOGBOOK</div>
+ <button class="nav-hamburger" style="display:none;" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
   <div class="nav-links">
     <a href="#how">How it works</a>
     <a href="#tool">Try it</a>
