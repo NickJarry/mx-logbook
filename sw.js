@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mxlogbook-v1';
+const CACHE_NAME = 'mxlogbook-v2';
 const SHELL_ASSETS = [
   '/',
   '/index.html',
