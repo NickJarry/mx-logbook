@@ -1472,7 +1472,7 @@ const accessData = await accessResp.json();
       document.getElementById('workDesc').value='';
       if(currentUser?.id){fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'save_entry',user_id:currentUser.id,entry_type:selectedType,tail_number:tail,aircraft,content:text})}).catch(()=>{});}
     }
-  }catch(err){textEl.value='Connection error. Please try again.';statusEl.textContent='Error';}
+  }catch(err){console.error('generateEntry error:',err);textEl.value='Error: '+err.message;statusEl.textContent='Error';}
 }
 
 function downloadPDF(){
