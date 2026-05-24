@@ -1439,7 +1439,7 @@ const accessData = await accessResp.json();
   if(!work){alert('Please describe the work performed.');return;}
   const tail=document.getElementById('tailNum').value.trim(),aircraft=document.getElementById('aircraft').value.trim(),ttsn=document.getElementById('ttsn').value.trim(),parts=document.getElementById('parts').value.trim(),ref=document.getElementById('reference').value.trim(),tech=document.getElementById('techName').value.trim(),date=document.getElementById('workDate').value;
   saveFieldMemory();saveTechMemory();
-  const outputBox=document.getElementById('outputBox'),statusEl=document.getElementById('outputStatus'),textEl=document.getElementById('outputText'),footer=document.getElementById('outputFooter'),appendBtn=document.getElementById('appendBtn');
+  const outputBox=document.getElementById('outputBox'),statusEl=document.getElementById('outputStatus'),textEl=document.getElementById('outputText'),footer=document.getElementById('outputFooter');
   const isAOG=selectedType==='AOG Report',existingDraft=!isAOG?document.getElementById('outputText').value.trim():'',isConsolidating=existingDraft.length>50;
   outputBox.classList.add('visible');statusEl.className='output-status status-gen';statusEl.textContent=isConsolidating?'Consolidating...':'Generating...';textEl.value='';footer.style.display='none';
   const fieldLines=[aircraft?`Aircraft: ${aircraft}`:null,tail?`Tail Number: ${tail}`:null,ttsn?`TTSN: ${ttsn}`:null,date?`Date: ${date}`:null,tech?`Technician: ${tech}`:null,parts?`Parts/P/N: ${parts}`:null,ref?`Reference: ${ref}`:null].filter(Boolean).join('\n');
@@ -1465,7 +1465,7 @@ const accessData = await accessResp.json();
       document.getElementById('voiceDraftBtn').style.display='flex';
       const now=new Date(),ts=String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'L';
       draftHistory.push({time:ts,text,type:selectedType});renderDraftHistory();
-      if(appendBtn) appendBtn.style.display='inline-block';
+       
       const hasPDF=['trial','pro','pro_indefinite','shop','team','proshop','enterprise'].includes(currentUser?.plan);
       document.getElementById('pdfBtn').style.display=hasPDF?'inline-block':'none';
       saveToLogbook({type:selectedType,tail:tail||'',aircraft:aircraft||'',content:text,time:ts,date:new Date().toLocaleDateString()});
