@@ -1421,7 +1421,8 @@ async function generateEntry(){
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'check_access', user_id: currentUser.id, email: currentUser.email })
       });
-      const accessData = await accessResp.json();
+      if(!accessResp.ok) throw new Error('access check failed');
+const accessData = await accessResp.json();
       if (accessData.blocked) {
         alert(accessData.message || 'Your subscription is no longer active. Please resubscribe at mx-logbook.com.');
         handleLogout();
