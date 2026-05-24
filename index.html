@@ -1342,7 +1342,7 @@ function appendToSession(){
   const now=new Date(),ts=isUTC?String(now.getUTCHours()).padStart(2,'0')+String(now.getUTCMinutes()).padStart(2,'0')+'Z':String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'L';
   sessionEntries.push({time:ts,initials:getInitials(),text,type:selectedType});
   renderSession();saveActiveAOG();
-  const btn=document.getElementById('appendBtn');btn.textContent='Added!';setTimeout(()=>{btn.textContent='+ Add to running report';},2000);
+  const btn=document.getElementById('appendBtn');if(btn){btn.textContent='Added!';setTimeout(()=>{btn.textContent='+ Add to running report';},2000);}
 }
 
 function renderSession(){
@@ -1465,7 +1465,7 @@ const accessData = await accessResp.json();
       document.getElementById('voiceDraftBtn').style.display='flex';
       const now=new Date(),ts=String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'L';
       draftHistory.push({time:ts,text,type:selectedType});renderDraftHistory();
-      appendBtn.style.display='inline-block';
+      if(appendBtn) appendBtn.style.display='inline-block';
       const hasPDF=['trial','pro','pro_indefinite','shop','team','proshop','enterprise'].includes(currentUser?.plan);
       document.getElementById('pdfBtn').style.display=hasPDF?'inline-block':'none';
       saveToLogbook({type:selectedType,tail:tail||'',aircraft:aircraft||'',content:text,time:ts,date:new Date().toLocaleDateString()});
