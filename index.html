@@ -1206,7 +1206,7 @@ if (isDesktopNonChrome) document.getElementById('voiceNote').style.display = 'bl
 async function checkSession() {
   const stored = localStorage.getItem('mxl_user');
  
-  if (!stored) { document.getElementById('navLogin').style.display = 'inline-block'; return; }
+  if (!stored) { document.getElementById('gate').style.display = 'block'; document.getElementById('navLogin').style.display = 'inline-block'; return; }
   currentUser = JSON.parse(stored);
 
   // If we have a pending user (just returned from Stripe), let handleStripeReturn handle it
