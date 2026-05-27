@@ -1,9 +1,0 @@
-{
-  "buildCommand": "bash build.sh",
-  "outputDirectory": ".",
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*\\.(js|css|png|jpg|ico|svg|json|webmanifest|woff2?))", "dest": "/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
-}
