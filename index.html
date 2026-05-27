@@ -1307,7 +1307,7 @@ let voiceDraftActive = false;
 function stopVoiceIfActive() { if (voiceActive && voiceRecognition) { voiceActive = false; voiceRecognition.stop(); } }
 
 function toggleVoiceDraft() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('Voice input requires Chrome.'); return; }
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { if (!/Mobi|Android/i.test(navigator.userAgent)) alert('Voice input requires Chrome on desktop.'); return; }
   if (voiceDraftActive) { voiceDraftRecognition.stop(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   voiceDraftRecognition = new SR();
@@ -1341,7 +1341,7 @@ function requestMicPermission() {
 }
 
 function toggleVoice() {
-  if (!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)) { alert('Voice input requires Chrome.'); return; }
+  if (!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)) { if (!/Mobi|Android/i.test(navigator.userAgent)) alert('Voice input requires Chrome on desktop.'); return; }
   if (voiceActive) { voiceActive=false; voiceRecognition.stop(); return; }
   const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
   voiceRecognition = new SR();
