@@ -1201,6 +1201,7 @@ function activateTool() {
 
 async function checkSession() {
   const stored = localStorage.getItem('mxl_user');
+ document.getElementById('gate').style.display = 'none';
   if (!stored) { document.getElementById('navLogin').style.display = 'inline-block'; return; }
   currentUser = JSON.parse(stored);
 
