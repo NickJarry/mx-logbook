@@ -2411,6 +2411,9 @@ function loadTheme() {
 
 loadTheme();
 loadTextSize();
+ if (localStorage.getItem('mxl_user')) {
+  document.querySelectorAll('.hero, section, footer').forEach(el => el.style.display = 'none');
+}
 checkSession();
 loadCustomGlossary();
 loadFoundingSpots();
