@@ -466,11 +466,8 @@ function toggleFaq(el) {
 </script>
 <script>
 function toggleTheme() {
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'light' ? 'dark' : 'light';
-  html.setAttribute('data-theme', next);
-  localStorage.setItem('mxl_theme', next);
+  const isLight = document.body.classList.toggle('light-mode');
+  localStorage.setItem('mxl_theme', isLight ? 'light' : 'dark');
 }
 function toggleTextSize() {
   const sizes = ['normal', 'large', 'xlarge'];
