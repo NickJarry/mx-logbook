@@ -168,8 +168,9 @@ export default async function handler(req, res) {
 
       // Check subscription status
       if (profile.subscription_status === 'pending_payment') {
-        return res.status(403).json({ error: 'Payment not completed. Please complete your signup at mx-logbook.com to activate your account.' });
-      }
+  // Pass through as trialing - webhook will update within seconds
+  return res.status(200).json({ user: data.user, session: data, profile: { ...profile, subscription_status: 'trialing' } });
+}
       if (profile.plan === 'cancelled') {
         return res.status(403).json({ error: 'Your subscription has been cancelled. Please resubscribe at mx-logbook.com to regain access.' });
       }
