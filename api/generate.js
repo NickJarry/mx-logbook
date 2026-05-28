@@ -84,7 +84,8 @@ export default async function handler(req, res) {
             plan: plan || 'solo',
             trial_start: new Date().toISOString(),
             referral_code: newCode,
-            subscription_status: 'pending_payment'
+            subscription_status: 'pending_payment',
+            company_id: isCompany ? uid : null
           })
         });
         console.log('Profile insert status:', insertResult.status, 'for', email);
