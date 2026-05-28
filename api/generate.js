@@ -352,10 +352,13 @@ export default async function handler(req, res) {
       }
 
       if (profile.subscription_status === 'pending_payment') {
-        // Don't block on pending_payment - webhook will update this within seconds
-        // Just let them through as trialing so they're not kicked out on return from Stripe
-        return res.status(200).json({ blocked: false, plan: profile.plan, subscription_status: 'trialing' });
-      }
+  const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
+  const ageSeconds = (Date.now() - createdAt) / 1000;
+  if (ageSeconds < 30) {
+    return res.status(200).json({ blocked: false, plan: profile.plan, subscription_status: 'trialing' });
+  }
+  return res.status(200).json({ blocked: true, message: 'Payment not completed. Please complete your signup at mx-logbook.com to activate your account.' });
+}
       if (profile.plan === 'cancelled') {
         return res.status(200).json({ blocked: true, message: 'Your subscription has been cancelled. Please resubscribe at mx-logbook.com to continue.' });
       }
