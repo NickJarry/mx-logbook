@@ -45,19 +45,25 @@ export default async function handler(req, res) {
 
   // Helper to update Supabase profile
   async function updateProfile(email, updates) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
-      method: 'PATCH',
-      headers: {
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(updates)
-    });
-    return r.json();
+    for (let attempt = 0; attempt < 5; attempt++) {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1000));
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(updates)
+      });
+      const data = await r.json();
+      if (Array.isArray(data) && data.length > 0) return data;
+      console.log(`updateProfile attempt ${attempt + 1} found no rows for ${email}, retrying...`);
+    }
+    console.error(`updateProfile failed after 5 attempts for ${email}`);
+    return [];
   }
-
   // Helper to get customer email from Stripe
   async function getCustomerEmail(customerId) {
     const r = await fetch(`https://api.stripe.com/v1/customers/${customerId}`, {
