@@ -986,7 +986,7 @@ const PROMO_CODES = {
   'MXOWNER1': { plan: 'Solo - owner access', duration: -1, access: 'solo' },
   'MXOWNER2': { plan: 'Pro - owner access', duration: -1, access: 'pro_indefinite' },
   'MXOWNER3': { plan: 'Shop - owner access', duration: -1, access: 'shop' },
-  'MXOWNER4': { plan: 'Team - owner access', duration: -1, access: 'team' },
+
   'MXOWNER5': { plan: 'Shop Pro - owner access', duration: -1, access: 'proshop' },
   'MXOWNER6': { plan: 'Enterprise - owner access', duration: -1, access: 'enterprise' },
 };
@@ -1117,7 +1117,7 @@ function requiresPro(feature) {
   const plan = currentUser ? currentUser.plan : 'trial';
   const status = currentUser ? currentUser.subscription_status : null;
   const isTrialing = status === 'trialing' || plan === 'trial';
-  const hasPro = isTrialing || ['pro','pro_indefinite','shop','team','proshop','enterprise'].includes(plan);
+  const hasPro = isTrialing || ['pro','pro_indefinite','shop','proshop','enterprise'].includes(plan);
   if (!hasPro) {
     alert('Upgrade to Pro to access ' + feature + '.');
     return false;
@@ -1166,7 +1166,7 @@ function applyPlanUI() {
 function activateTool() {
   // Redirect company plan admins to the admin portal
   // Skip redirect if they explicitly navigated to main site with ?tool=1
-  const companyPlans = ['shop','team','proshop','enterprise'];
+  const companyPlans = ['shop','proshop','enterprise'];
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnTool = urlParams.get('tool') === '1' || sessionStorage.getItem('mxl_stay_on_tool') === '1';
   if (currentUser && companyPlans.includes(currentUser.plan) && !stayOnTool) {
@@ -1291,7 +1291,7 @@ function selectAOG(el) {
   const status = currentUser ? currentUser.subscription_status : null;
   const isTrialing = status === 'trialing' || plan === 'trial';
   if (plan === 'solo' && !isTrialing) { alert('Upgrade to Pro to access AOG Report.'); return; }
-  const hasAOG = ['trial','pro','pro_indefinite','shop','team','proshop','enterprise'].includes(plan);
+  const hasAOG = ['trial','pro','pro_indefinite','shop','proshop','enterprise'].includes(plan);
   if (!hasAOG) { document.getElementById('aogUpgrade').style.display='block'; document.getElementById('aogTip').style.display='none'; return; }
   selectType(el, 'AOG Report');
 }
@@ -1473,7 +1473,7 @@ async function generateFinalReport() {
     // Show PDF button for pro+ and trial users
     const _plan = currentUser ? currentUser.plan : 'trial';
     const _status = currentUser ? currentUser.subscription_status : null;
-    const _hasPDF = _status === 'trialing' || _plan === 'trial' || ['pro','pro_indefinite','shop','team','proshop','enterprise'].includes(_plan);
+    const _hasPDF = _status === 'trialing' || _plan === 'trial' || ['pro','pro_indefinite','shop','proshop','enterprise'].includes(_plan);
     const _pdfBtn = document.getElementById('pdfBtn');
     if (_pdfBtn) _pdfBtn.style.display = _hasPDF ? 'inline-block' : 'none';
     if (currentUser && currentUser.id) {
@@ -1632,7 +1632,7 @@ async function generateEntry(){
       document.getElementById('voiceDraftBtn').style.display='flex';
       const now=new Date(),ts=String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'L';
       draftHistory.push({time:ts,text,type:selectedType});renderDraftHistory();
-      const hasPDF=['trial','pro','pro_indefinite','shop','team','proshop','enterprise'].includes(currentUser?.plan);
+      const hasPDF=['trial','pro','pro_indefinite','shop','proshop','enterprise'].includes(currentUser?.plan);
       document.getElementById('pdfBtn').style.display=hasPDF?'inline-block':'none';
       saveToLogbook({type:selectedType,tail:tail||'',aircraft:aircraft||'',content:text,time:ts,date:new Date().toLocaleDateString()});
       document.getElementById('workDesc').value='';
@@ -1733,9 +1733,9 @@ function showDashTab(tab,btn){
 async function loadDashboard(){
   if(!currentUser)return;
   document.getElementById('dashEmail').textContent=currentUser.email||'';
-  const planLabels={trial:'Free Trial',solo:'Solo',pro:'Pro',pro_indefinite:'Pro (Lifetime)',shop:'Shop',team:'Team',proshop:'Shop Pro',enterprise:'Enterprise'};
+  const planLabels={trial:'Free Trial',solo:'Solo',pro:'Pro',pro_indefinite:'Pro (Lifetime)',shop:'Shop', proshop:'Shop Pro',enterprise:'Enterprise'};
   document.getElementById('dashPlan').textContent=planLabels[currentUser.plan]||currentUser.plan;
-  if(['shop','team','proshop','enterprise'].includes(currentUser.plan))document.getElementById('adminTabBtn').style.display='inline-block';
+  if(['shop','proshop','enterprise'].includes(currentUser.plan))document.getElementById('adminTabBtn').style.display='inline-block';
   try{
     const resp=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'get_entries',user_id:currentUser.id})});
     const data=await resp.json();
@@ -1920,16 +1920,16 @@ const FOUNDING_PRICES = {
   solo:       { price_id: 'price_1TYrNjF0p7ZYm2D2ShrJKeWL', label: 'Solo',       cost: '$9.99/mo',  seats: null },
   pro:        { price_id: 'price_1TYrPqF0p7ZYm2D2PBSK3IU6', label: 'Pro',        cost: '$16.99/mo', seats: null },
   shop:       { price_id: 'price_1Tb7HjF0p7ZYm2D2rlVittmR', label: 'Shop',       cost: '$299/mo',   seats: 10 },
-  team:       { price_id: 'price_1TYuoPF0p7ZYm2D2WsAmvYd9', label: 'Team',       cost: '$299/mo',   seats: 25 },
+
   proshop:    { price_id: 'price_1Tb7fDF0p7ZYm2D2DakiP9X7', label: 'Shop Pro',   cost: '$599/mo',   seats: 25 },
   enterprise: { price_id: 'price_1Tb7fyF0p7ZYm2D2oEvUzv9C', label: 'Enterprise', cost: '$999/mo',   seats: 50 }
 };
-const PLAN_ORDER = ['solo','pro','shop','team','proshop','enterprise'];
+const PLAN_ORDER = ['solo','pro','shop','proshop','enterprise'];
 const PLAN_FEATURES = {
   solo:       ['50 entries/month','Voice input','6 entry types','Copy to clipboard'],
   pro:        ['Unlimited entries','AOG report','PDF export','Translation','Entry history'],
   shop:       ['10 mechanics','Shared AOG sessions','Admin dashboard','Entry attribution'],
-  team:       ['25 mechanics','Shared AOG sessions','Work order export','Admin dashboard'],
+  
   proshop:    ['50 mechanics','Priority support','Custom reporting','Admin dashboard'],
   enterprise: ['100 mechanics','API access','SLA support','Dedicated onboarding']
 };
@@ -2347,7 +2347,7 @@ async function loadFoundingSpots() {
     const data = await resp.json();
     if (!data.spots) return;
 
-    ['shop','team','proshop','enterprise'].forEach(plan => {
+    ['shop','proshop','enterprise'].forEach(plan => {
       const el = document.getElementById('spots-' + plan);
       if (!el) return;
       const remaining = data.spots[plan] ?? 10;
