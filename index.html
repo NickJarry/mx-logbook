@@ -1231,10 +1231,13 @@ async function checkSession() {
             proshop: 'https://buy.stripe.com/eVq5kDfi6aALc8b8ec2VG0d',
             enterprise: 'https://buy.stripe.com/00weVdd9YdMX8VZ9ig2VG0e'
           };
-          const go = confirm('Your payment was not completed. Click OK to finish signing up.');
-         console.log('Redirecting with plan:', currentUser?.plan, 'user:', currentUser);
-if (go) window.location.href = (planLinks[currentUser?.plan] || planLinks.solo) + '?prefilled_email=' + encodeURIComponent(currentUser?.email || '');
-          if (go) window.location.href = (planLinks[currentUser?.plan] || planLinks.solo) + '?prefilled_email=' + encodeURIComponent(currentUser?.email || '');
+          const pendingData = localStorage.getItem('mxl_pending_signup');
+const pendingPlan = pendingData ? JSON.parse(pendingData).plan : null;
+const pendingEmail = pendingData ? JSON.parse(pendingData).email : '';
+const redirectPlan = (currentUser?.plan || pendingPlan || 'solo');
+const redirectEmail = (currentUser?.email || pendingEmail || '');
+const go = confirm('Your payment was not completed. Click OK to finish signing up.');
+if (go) window.location.href = (planLinks[redirectPlan] || planLinks.solo) + '?prefilled_email=' + encodeURIComponent(redirectEmail);
         }
         return;
       }
