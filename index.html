@@ -1722,7 +1722,11 @@ function saveCustomGlossary(){const text=document.getElementById('customGlossary
 
 function loadCustomGlossary(){const stored=localStorage.getItem('mxl_custom_glossary'),input=document.getElementById('customGlossaryInput');if(stored&&input)input.value=stored.split(', ').join('\n');}
 
-function openDashboard(){document.getElementById('dashOverlay').classList.add('open');loadDashboard();}
+function openDashboard(){
+  document.getElementById('dashOverlay').classList.add('open');
+  loadDashboard();
+  if(currentUser && ['shop','proshop','enterprise'].includes(currentUser.plan)) loadAdmin();
+}
 function closeDashboard(){document.getElementById('dashOverlay').classList.remove('open');}
 
 function showDashTab(tab,btn){
