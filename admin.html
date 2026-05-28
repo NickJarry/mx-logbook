@@ -352,7 +352,7 @@ let teamData = [];
 let allEntries = [];
 let allEntriesRaw = [];
 const PLAN_SEATS = { shop:10, team:25, proshop:50, enterprise:100 };
-const PLAN_LABELS = { shop:'Shop - 10 seats', team:'Team - 25 seats', proshop:'Pro Shop - 50 seats', enterprise:'Enterprise - 100 seats' };
+const PLAN_LABELS = { shop:'Shop - 10 seats', proshop:'Shop Pro - 25 seats', enterprise:'Enterprise - 50 seats' };
 
 async function api(body) {
   const r = await fetch('/api/generate', {
@@ -774,7 +774,7 @@ async function confirmChangePlan(currentPlan, newPlan, priceId, isDowngrade) {
     // Update billing display
     const bp = document.getElementById('billingPlan');
     const bs = document.getElementById('billingSeats');
-    const PLAN_SEATS_L = {shop:10,team:25,proshop:50,enterprise:100};
+    const PLAN_SEATS = { shop:10, proshop:25, enterprise:50 };
     if(bp) bp.textContent = PLAN_LABELS[newPlan]||newPlan;
     if(bs) bs.textContent = PLAN_SEATS_L[newPlan] ? 'Up to '+PLAN_SEATS_L[newPlan]+' mechanics' : '';
   } catch(e){if(statusEl){statusEl.textContent='Error. Please try again.';statusEl.style.color='var(--red)';}}
