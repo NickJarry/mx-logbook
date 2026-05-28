@@ -1091,6 +1091,7 @@ async function handleLogin() {
           // Find their plan from pending signup or default to solo
           const pending = localStorage.getItem('mxl_pending_signup');
           const planKey = currentUser?.plan || (pending ? (JSON.parse(pending).plan || 'solo') : 'solo');
+         console.log('Plan redirect:', planKey, 'currentUser:', currentUser);
           const planLinks = {
             solo: 'https://buy.stripe.com/28E5kD6LA6kv4FJamk2VG00',
             pro: 'https://buy.stripe.com/4gM14n2vkcITegj7a82VG01',
