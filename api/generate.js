@@ -354,7 +354,7 @@ export default async function handler(req, res) {
       if (profile.subscription_status === 'pending_payment') {
   const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
   const ageSeconds = (Date.now() - createdAt) / 1000;
-  if (ageSeconds < 15) {
+  if (ageSeconds < 30) {
     return res.status(200).json({ blocked: false, plan: profile.plan, subscription_status: 'trialing' });
   }
   return res.status(200).json({ blocked: true, message: 'Payment not completed. Please complete your signup at mx-logbook.com to activate your account.' });
