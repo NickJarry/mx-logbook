@@ -77,6 +77,14 @@
     .ata-table { font-size: 11px; }
     .ata-table td, .ata-table th { padding: 8px; }
   }
+ body.light-mode {
+  --bg: #f5f5f0; --bg2: #eaeae6; --bg3: #dcdcd8;
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.15);
+  --text: #111111; --text2: #444; --text3: #888;
+}
+body.light-mode nav { background: rgba(245,245,240,0.97); }
+body.medium-text * { font-size: 107% !important; line-height: 1.7 !important; }
+body.large-text * { font-size: 115% !important; line-height: 1.75 !important; }
 </style>
 </head>
 <body>
@@ -478,7 +486,7 @@ function toggleTextSize() {
 }
 // Apply saved preferences on load
 const savedTheme = localStorage.getItem('mxl_theme');
-if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+if (savedTheme === 'light') document.body.classList.add('light-mode');
 const savedSize = localStorage.getItem('mxl_textsize');
 if (savedSize) document.documentElement.setAttribute('data-textsize', savedSize);
 </script>
