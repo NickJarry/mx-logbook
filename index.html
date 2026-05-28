@@ -2052,8 +2052,8 @@ function handleLogout(){
 
 async function handleStripeReturn(){
   const pendingUser=localStorage.getItem('mxl_pending_user'),pendingSignup=localStorage.getItem('mxl_pending_signup');
-  localStorage.removeItem('mxl_pending_user');
-    localStorage.removeItem('mxl_pending_signup');
+  if(pendingUser){
+    localStorage.removeItem('mxl_pending_user');
     const pu=JSON.parse(pendingUser);
     // Poll until Stripe webhook activates the account (max 15s)
     let activated=false;
