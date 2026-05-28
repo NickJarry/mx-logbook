@@ -1231,6 +1231,8 @@ async function checkSession() {
             enterprise: 'https://buy.stripe.com/00weVdd9YdMX8VZ9ig2VG0e'
           };
           const go = confirm('Your payment was not completed. Click OK to finish signing up.');
+         console.log('Redirecting with plan:', currentUser?.plan, 'user:', currentUser);
+if (go) window.location.href = (planLinks[currentUser?.plan] || planLinks.solo) + '?prefilled_email=' + encodeURIComponent(currentUser?.email || '');
           if (go) window.location.href = (planLinks[currentUser?.plan] || planLinks.solo) + '?prefilled_email=' + encodeURIComponent(currentUser?.email || '');
         }
         return;
