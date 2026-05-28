@@ -2092,7 +2092,7 @@ async function handleStripeReturn(){
   }
   if(pendingSignup){
     const{email,password,plan}=JSON.parse(pendingSignup);
-    localStorage.removeItem('mxl_pending_signup');
+    
     try{
       const resp=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'auth_signup',email,password,plan:plan||'solo'})});
       const data=await resp.json();
@@ -2101,6 +2101,7 @@ async function handleStripeReturn(){
         if(uid){
           currentUser={email,plan:plan||'solo',id:uid};
           localStorage.setItem('mxl_user',JSON.stringify(currentUser));
+         localStorage.removeItem('mxl_pending_signup');
           activateTool();
           return;
         }
