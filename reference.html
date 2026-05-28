@@ -478,17 +478,22 @@ function toggleTheme() {
   localStorage.setItem('mxl_theme', isLight ? 'light' : 'dark');
 }
 function toggleTextSize() {
-  const sizes = ['normal', 'large', 'xlarge'];
   const current = localStorage.getItem('mxl_textsize') || 'normal';
-  const next = sizes[(sizes.indexOf(current) + 1) % sizes.length];
+  const cycle = { normal: 'medium', medium: 'large', large: 'normal' };
+  const labels = { normal: 'A+', medium: 'A++', large: 'A-' };
+  const next = cycle[current];
+  document.body.classList.remove('medium-text', 'large-text');
+  if (next === 'medium') document.body.classList.add('medium-text');
+  if (next === 'large') document.body.classList.add('large-text');
   localStorage.setItem('mxl_textsize', next);
-  document.documentElement.setAttribute('data-textsize', next);
+  const btn = document.getElementById('textSizeToggle');
+  if (btn) btn.innerHTML = labels[next];
 }
 // Apply saved preferences on load
 const savedTheme = localStorage.getItem('mxl_theme');
 if (savedTheme === 'light') document.body.classList.add('light-mode');
 const savedSize = localStorage.getItem('mxl_textsize');
-if (savedSize) document.documentElement.setAttribute('data-textsize', savedSize);
+if (savedSize === 'medium') document.body.classList.add('medium-text'); if (savedSize === 'large') document.body.classList.add('large-text');
 </script>
 </body>
 </html>
