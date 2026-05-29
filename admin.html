@@ -154,7 +154,7 @@
   <div style="display:flex;align-items:center;">
     <div class="nav-logo">MX-LOGBOOK</div>
     <div class="nav-badge">ADMIN</div>
-   <button onclick="document.querySelector('.sidebar').classList.toggle('collapsed')" style="background:transparent;border:none;cursor:pointer;color:var(--text2);font-size:18px;padding:0 8px;" title="Toggle sidebar">&#9776;</button>
+   <button onclick="const s=document.querySelector('.sidebar');s.classList.toggle('collapsed');localStorage.setItem('sidebar_collapsed',s.classList.contains('collapsed'))" style="background:transparent;border:none;cursor:pointer;color:var(--text2);font-size:18px;padding:0 8px;" title="Toggle sidebar">&#9776;</button>
   </div>
   <div style="display:flex;align-items:center;gap:6px;">
     <button id="themeToggle" onclick="toggleTheme()" style="background:transparent;border:0.5px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;transition:color 0.2s;">&#9790; DARK</button>
@@ -676,6 +676,7 @@ function loadPreferences() {
     const btn = document.getElementById('textSizeToggle');
     if (btn) btn.innerHTML = 'A-';
   }
+  if (localStorage.getItem('sidebar_collapsed') === 'true') document.querySelector('.sidebar').classList.add('collapsed');
 }
 
 
