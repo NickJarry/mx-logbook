@@ -450,19 +450,29 @@
 
       <p class="section-hed" style="margin-top:0.5rem;">Aircraft info <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(remembered for next time)</span></p>
       <div id="recentAircraft" style="display:none;margin-bottom:10px;"></div>
-      <div class="form-grid-3">
+     <div class="form-grid-2">
         <div class="field"><label>Tail Number</label><input type="text" id="tailNum" placeholder="N12345" oninput="saveFieldMemory()"></div>
         <div class="field"><label>Make / Model</label><input type="text" id="aircraft" placeholder="Cessna 172S" oninput="saveFieldMemory()"></div>
-        <div class="field"><label>TTSN</label><input type="text" id="ttsn" placeholder="4521.3 hrs"></div>
       </div>
-      <div style="margin-bottom:10px;"><button onclick="toggleOptional()" id="optionalToggle" style="background:transparent;border:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);cursor:pointer;padding:0;letter-spacing:0.5px;">+ Show optional fields (parts, reference, technician)</button></div>
+      <div style="margin-bottom:10px;"><button onclick="toggleOptional()" id="optionalToggle" style="background:transparent;border:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);cursor:pointer;padding:0;letter-spacing:0.5px;">+ Show optional fields</button></div>
       <div id="optionalFields" style="display:none;">
         <div class="form-grid-2">
-          <div class="field"><label>Parts / P/N used</label><input type="text" id="parts" placeholder="e.g. Slick 4371, S/N 12345"></div>
+          <div class="field"><label>TTSN</label><input type="text" id="ttsn" placeholder="4521.3 hrs"></div>
           <div class="field"><label>Reference (MM, AD, SB)</label><input type="text" id="reference" placeholder="e.g. MM 74-00-00, AD 2020-23-07"></div>
         </div>
         <div class="form-grid-2">
-          <div class="field"><label>Technician / Cert #</label><input type="text" id="techName" placeholder="J. Smith A&amp;P #123456789" oninput="saveTechMemory()"></div>
+          <div class="field"><label>P/N Removed</label><input type="text" id="pnRemoved" placeholder="e.g. 10-163100-3"></div>
+          <div class="field"><label>P/N Installed</label><input type="text" id="parts" placeholder="e.g. 10-163100-5"></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field"><label>S/N Removed</label><input type="text" id="snRemoved" placeholder="e.g. 123456"></div>
+          <div class="field"><label>S/N Installed</label><input type="text" id="snInstalled" placeholder="e.g. 789012"></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field"><label>Technician Name</label><input type="text" id="techName" placeholder="J. Smith" oninput="saveTechMemory()"></div>
+          <div class="field"><label>Cert #</label><input type="text" id="certNum" placeholder="A&amp;P #123456789" oninput="saveCertMemory()"></div>
+        </div>
+        <div class="form-grid-2">
           <div class="field"><label>Date</label><input type="date" id="workDate"></div>
         </div>
       </div>
