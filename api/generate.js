@@ -469,7 +469,7 @@ export default async function handler(req, res) {
 
     if (type === 'get_founding_spots') {
       // Count how many accounts are on each company plan
-      const MAX_SPOTS = 1;
+      const MAX_SPOTS = 5;
       const plans = ['shop','proshop','enterprise'];
       const spots = {};
       await Promise.all(plans.map(async plan => {
