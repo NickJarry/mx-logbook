@@ -65,7 +65,7 @@ export default async function handler(req, res) {
 
       if (uid) {
         // Generate plan-prefixed referral code
-        const companyPlans = ['shop','team','proshop','enterprise'];
+        const companyPlans = ['shop','proshop','enterprise'];
         const isCompany = companyPlans.includes(plan);
         const codeBase = Math.random().toString(36).substring(2,8).toUpperCase();
         const newCode = isCompany ? `CO-${codeBase}` : codeBase;
@@ -470,7 +470,7 @@ export default async function handler(req, res) {
     if (type === 'get_founding_spots') {
       // Count how many accounts are on each company plan
       const MAX_SPOTS = 10;
-      const plans = ['shop','team','proshop','enterprise'];
+      const plans = ['shop','proshop','enterprise'];
       const spots = {};
       await Promise.all(plans.map(async plan => {
         const rows = await sbFetch(`/profiles?plan=eq.${plan}&select=id`);
