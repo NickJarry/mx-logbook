@@ -531,6 +531,7 @@
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
             <button class="btn-copy" onclick="copyEntry()" id="copyBtn">Copy to clipboard</button>
             <button class="btn-copy" id="pdfBtn" onclick="downloadPDF()" style="display:none;">Download PDF</button>
+           <button class="btn-copy" id="tzToggleBtn" onclick="toggleTimezone()" style="color:var(--amber);border-color:var(--amber);">Convert to UTC</button>
           </div>
           <div id="translateRow" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <select id="translateLang" style="font-family:var(--font-mono);font-size:11px;background:var(--bg);border:0.5px solid var(--border2);color:var(--text2);padding:5px 10px;border-radius:4px;cursor:pointer;">
