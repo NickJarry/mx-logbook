@@ -200,6 +200,13 @@ body.large-text * { font-size: 115% !important; line-height: 1.75 !important; }
       <p>Go to <strong>My Account &gt; Overview</strong> and click <strong>Cancel subscription</strong>. You will be asked for a brief reason (this genuinely helps improve the tool), then redirected to the Stripe billing portal to complete the cancellation. No penalties, no fees, effective immediately.</p>
     </div>
   </div>
+ <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">The microphone keeps asking for permission every time I open the app<span class="arrow">+</span></div>
+    <div class="faq-a">
+      <p><strong>On iPhone (Safari/PWA):</strong> iOS resets microphone permissions each time you close and reopen the app. This is an Apple restriction we cannot override. To minimize the prompts, go to <strong>iPhone Settings → Apps → Safari → Microphone</strong> and set it to <strong>Allow</strong>. This grants access for all websites but stops the repeated prompts.</p>
+      <p><strong>On Android or desktop Chrome:</strong> Click <strong>Allow</strong> once when prompted and the browser will remember your choice permanently. If you accidentally clicked Deny, click the lock icon in the address bar and reset the microphone permission to Allow.</p>
+    </div>
+  </div>
 </section>
 
 <!-- WALKTHROUGH -->
