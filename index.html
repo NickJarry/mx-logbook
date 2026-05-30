@@ -1248,7 +1248,7 @@ if (go) window.location.href = (planLinks[redirectPlan] || planLinks.solo) + '?p
       // Network error - allow through, generateEntry will catch it
     }
   }
-  activateTool();
+  activateTool(); if (new URLSearchParams(window.location.search).get('account') === '1') openDashboard();
 }
 
 function saveFieldMemory() {
