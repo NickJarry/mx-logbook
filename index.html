@@ -1888,7 +1888,7 @@ function clearActiveAOG(){localStorage.removeItem('mxl_active_aog');updateResume
 function updateResumeBtn(){
   const session=JSON.parse(localStorage.getItem('mxl_active_aog')||'null'),btn=document.getElementById('resumeBtn');
   if(!btn)return;
-  if(session&&session.entries&&session.entries.length>0&&currentUser){btn.style.display='flex';btn.innerHTML=`<div class="resume-btn-dot"></div> ${session.type==='AOG Report'?'RESUME AOG':'RESUME REPORT'}${session.tail?' - '+session.tail:''}`;}
+ if(session&&session.entries&&session.entries.length>0&&currentUser&&session.type==='AOG Report'){btn.style.display='flex';btn.innerHTML=`<div class="resume-btn-dot"></div> RESUME AOG${session.tail?' - '+session.tail:''}`;}
   else{btn.style.display='none';}
 }
 
