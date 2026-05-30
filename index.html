@@ -507,30 +507,12 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0.75rem;">
           <button class="btn-copy" onclick="saveRunningReport()" style="background:var(--amber);color:#0a0a0a;border-color:var(--amber);" id="saveReportBtn">Save report</button>
           <button class="btn-copy" onclick="copySession()">Copy full report</button>
-          <button class="btn-copy" id="tzToggleBtn" onclick="toggleTimezone()" style="color:var(--amber);border-color:var(--amber);">Convert to UTC</button>
+          
           <button class="btn-copy" onclick="generateFinalReport()" style="background:var(--green);color:#0a0a0a;border-color:var(--green);font-weight:600;">Generate final report</button>
           <button class="btn-copy" onclick="closeReport()" style="color:var(--text3);border-color:var(--border);">Close</button>
           <button class="btn-copy" onclick="clearSession()" style="color:var(--text3);border-color:var(--border);font-size:10px;">Clear</button>
         </div>
-        <div id="sessionTranslateRow" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">
-          <select id="sessionTranslateLang" style="font-family:var(--font-mono);font-size:11px;background:var(--bg);border:0.5px solid var(--border2);color:var(--text2);padding:5px 10px;border-radius:4px;cursor:pointer;">
-            <option value="">Translate report to...</option>
-            <option value="English">English (restore)</option>
-            <option value="Spanish">Spanish</option>
-            <option value="French">French</option>
-            <option value="Portuguese">Portuguese</option>
-            <option value="Korean">Korean</option>
-            <option value="Japanese">Japanese</option>
-            <option value="Mandarin Chinese">Mandarin Chinese</option>
-            <option value="Arabic">Arabic</option>
-            <option value="German">German</option>
-            <option value="Italian">Italian</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Russian">Russian</option>
-            <option value="Turkish">Turkish</option>
-          </select>
-          <button class="btn-copy" onclick="translateSession()" id="sessionTranslateBtn">Translate</button>
-        </div>
+        
         <div id="draftHistoryBox" style="margin-top:1rem;">
           <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;">Previous drafts</span>
           <div id="draftHistory" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
