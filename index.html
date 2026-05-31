@@ -1020,7 +1020,7 @@ function showLogin() { document.getElementById('signupView').style.display='none
 function showSignup() { document.getElementById('loginView').style.display='none'; document.getElementById('signupView').style.display='block'; }
 
 const PLANS = {
-  trial:      { name: '3-day free trial', link: 'https://buy.stripe.com/4gM14n2vkcITegj7a82VG01', price: 'Free' },
+  trial:      { name: '3-day free trial', link: 'https://buy.stripe.com/cNi5kD7PE10b5JN7a82VG0i', price: 'Free' },
   solo:       { name: 'Solo',             link: 'https://buy.stripe.com/28E5kD6LA6kv4FJamk2VG00', price: '$9.99/mo' },
   pro:        { name: 'Pro',              link: 'https://buy.stripe.com/cNi5kD7PE10b5JN7a82VG0i', price: '$19.99/mo' },
   shop:       { name: 'Shop',             link: 'https://buy.stripe.com/3cI00jd9YdMXegj8ec2VG0c', price: '$299/mo' },
@@ -1110,7 +1110,7 @@ async function handleLogin() {
          console.log('Plan redirect:', planKey, 'currentUser:', currentUser);
           const planLinks = {
             solo: 'https://buy.stripe.com/28E5kD6LA6kv4FJamk2VG00',
-            pro: 'https://buy.stripe.com/4gM14n2vkcITegj7a82VG01',
+            pro: 'https://buy.stripe.com/cNi5kD7PE10b5JN7a82VG0i',
             shop: 'https://buy.stripe.com/3cI00jd9YdMXegj8ec2VG0c',
                         proshop: 'https://buy.stripe.com/eVq5kDfi6aALc8b8ec2VG0d',
             enterprise: 'https://buy.stripe.com/00weVdd9YdMX8VZ9ig2VG0e'
@@ -1240,7 +1240,7 @@ async function checkSession() {
         if (d.message && d.message.includes('Payment not completed')) {
           const planLinks = {
             solo: 'https://buy.stripe.com/28E5kD6LA6kv4FJamk2VG00',
-            pro: 'https://buy.stripe.com/4gM14n2vkcITegj7a82VG01',
+            pro: 'https://buy.stripe.com/cNi5kD7PE10b5JN7a82VG0i',
             shop: 'https://buy.stripe.com/3cI00jd9YdMXegj8ec2VG0c',
             proshop: 'https://buy.stripe.com/eVq5kDfi6aALc8b8ec2VG0d',
             enterprise: 'https://buy.stripe.com/00weVdd9YdMX8VZ9ig2VG0e'
@@ -2292,7 +2292,7 @@ async function handleStripeReturn(){
       // Still pending after polling - don't let them in
       const planLinks = {
         solo: 'https://buy.stripe.com/28E5kD6LA6kv4FJamk2VG00',
-        pro: 'https://buy.stripe.com/4gM14n2vkcITegj7a82VG01',
+        pro: 'https://buy.stripe.com/cNi5kD7PE10b5JN7a82VG0i',
         shop: 'https://buy.stripe.com/3cI00jd9YdMXegj8ec2VG0c',
                 proshop: 'https://buy.stripe.com/eVq5kDfi6aALc8b8ec2VG0d',
         enterprise: 'https://buy.stripe.com/00weVdd9YdMX8VZ9ig2VG0e'
