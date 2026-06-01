@@ -288,6 +288,20 @@ export default async function handler(req, res) {
         method: 'POST',
         body: JSON.stringify({ user_id: user_id || null, email, plan, reason, comment })
       });
+      await sendEmail({
+        to: 'hello@mx-logbook.com',
+        subject: `Cancellation: ${email} (${plan})`,
+        html: `
+          <div style="font-family:monospace;max-width:560px;margin:0 auto;padding:24px;background:#0d0d0d;color:#f0f0f0;border-radius:8px;border:1px solid #333;">
+            <div style="color:#00e5a0;font-size:13px;letter-spacing:2px;margin-bottom:16px;">MX-LOGBOOK CANCELLATION</div>
+            <p style="margin-bottom:8px;"><strong>Email:</strong> ${email}</p>
+            <p style="margin-bottom:8px;"><strong>Plan:</strong> ${plan}</p>
+            <p style="margin-bottom:8px;"><strong>Reason:</strong> ${reason}</p>
+            <p style="margin-bottom:8px;"><strong>Comment:</strong> ${comment || 'None'}</p>
+            <p style="color:#555;font-size:11px;margin-top:16px;">${new Date().toISOString()}</p>
+          </div>
+        `
+      }).catch(() => {});
       return res.status(200).json({ success: true });
     }
 
