@@ -1301,14 +1301,7 @@ function activateTool() {
   // Redirect company plan admins to the admin portal
   // Skip redirect if they explicitly navigated to main site with ?tool=1
   const companyPlans = ['shop','proshop','enterprise'];
-  const urlParams = new URLSearchParams(window.location.search);
-  const stayOnTool = urlParams.get('tool') === '1' || sessionStorage.getItem('mxl_stay_on_tool') === '1';
-  if (currentUser && companyPlans.includes(currentUser.plan) && !stayOnTool) {
-    window.location.href = '/admin.html';
-    return;
-  }
-
-  // Hide all marketing sections - user is logged in, just show the tool
+   // Hide all marketing sections - user is logged in, just show the tool
   document.querySelectorAll('.hero, section, footer').forEach(el => el.style.display = 'none');
 
   // Show tool
