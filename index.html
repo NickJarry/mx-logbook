@@ -2119,6 +2119,12 @@ async function submitCancellation(){
     else if(data.cancelled){
       // Trial cancelled directly - no Stripe customer yet
       localStorage.removeItem('mxl_user');
+      localStorage.removeItem('mxl_active_aog');
+      localStorage.removeItem('mxl_session');
+      localStorage.removeItem('mxl_pending_signup');
+      localStorage.removeItem('mxl_tech');
+      localStorage.removeItem('mxl_cert');
+      localStorage.removeItem('mxl_custom_glossary');
       document.getElementById('dash-cancel').innerHTML=`<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:1.5rem;"><h2 style="font-family:var(--font-cond);font-size:20px;font-weight:700;text-transform:uppercase;margin-bottom:8px;color:var(--green);">Trial cancelled.</h2><p style="font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:1.25rem;">${data.message} A confirmation has been sent to your email.</p><button class="btn-ghost" style="font-size:12px;padding:8px 16px;" onclick="handleLogout()">Back to home</button></div>`;
     }
     else{document.getElementById('dash-cancel').innerHTML=`<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:1.5rem;"><h2 style="font-family:var(--font-cond);font-size:20px;font-weight:700;text-transform:uppercase;margin-bottom:8px;color:var(--green);">Feedback received.</h2><p style="font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:1.25rem;">To cancel immediately email <a href="mailto:hello@mx-logbook.com?subject=Cancel" style="color:var(--green);">hello@mx-logbook.com</a> and we will handle it within 24 hours.</p><button class="btn-ghost" style="font-size:12px;padding:8px 16px;" onclick="showDashTab('overview', document.querySelector('.dash-tab'))">Back to account</button></div>`;}
