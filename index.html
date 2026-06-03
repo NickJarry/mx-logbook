@@ -2333,7 +2333,7 @@ async function loadReferrals(){
     if(ruleBox && data.plan) {
       const val = planValues[data.plan] || 0;
       const label = planLabels[data.plan] || data.plan;
-      ruleBox.innerHTML = `<p style="font-family:var(--font-body);font-size:14px;color:var(--text2);line-height:1.6;">You are on the <strong style="color:var(--text);">${label}</strong> plan. When the reward program launches, you will earn one free month for each referral who stays on a plan valued at <strong style="color:var(--green);">$${val}/mo or higher</strong>. Referrals to lower-tier plans are tracked but will not qualify for a reward.</p>`;
+      ruleBox.innerHTML = `<p style="font-family:var(--font-body);font-size:14px;color:var(--text2);line-height:1.6;">You are on the <strong style="color:var(--text);">${label}</strong> plan. When the reward program launches, you will earn one free month for each referral who stays on a plan valued at <strong style="color:var(--green);">$${val}/mo or higher</strong> for at least 60 days. Referrals to lower-tier plans are tracked but will not qualify for a reward.</p>`;
     }
 
     if(data.referrals&&data.referrals.length){
