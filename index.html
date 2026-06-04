@@ -1877,7 +1877,7 @@ function renderSession(){
             onblur="this.style.background='';this.style.outline='none';saveEntryEdit(this,${i})"
             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
           >${e.text||''}</div>
-          ${e.editedBy?`<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">${e.editedBy}</div>`:''}
+          ${e.editedBy?`<div data-edit-tag style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">${e.editedBy}</div>`:''}
         </div>
         <button onclick="deleteSessionEntry(${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:3px;" onmouseover="this.style.color='#ff4444'" onmouseout="this.style.color='var(--text3)'">✕</button>
       </div>`).join('');
@@ -1894,8 +1894,9 @@ function saveEntryEdit(el, idx) {
   sessionEntries[idx].editedBy = `edited by ${currentUser?.email||'unknown'} at ${ts}`;
   saveActiveAOG();
   saveRunningReport(true);
-  renderSession();
-}
+  const tag = el.parentElement.querySelector('[data-edit-tag]');
+  if (tag) { tag.textContent = `edited by ${currentUser?.email||'unknown'} at ${ts}`; }
+  else { const t = document.createElement('div'); t.setAttribute('data-edit-tag',''); t.style.cssText='font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;'; t.textContent=`edited by ${currentUser?.email||'unknown'} at ${ts}`; el.parentElement.appendChild(t); }
 
 function deleteSessionEntry(idx) {
   if (!confirm('Delete this entry?')) return;
