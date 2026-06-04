@@ -722,7 +722,10 @@ export default async function handler(req, res) {
     if (type === 'add_aog_entry') {
       const { session_id, entry_text, tech_name, cert_num, time } = req.body;
       if (!session_id || !entry_text) return res.status(200).json({ error: 'Missing required fields' });
-      const existing = await sbFetch(`/aog_sessions?id=eq.${session_id}&select=entries`);
+     const existingResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?id=eq.${session_id}&select=entries`, {
+        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` }
+      });
+      const existing = await existingResp.json();
       const current = Array.isArray(existing) ? existing[0] : existing;
       const entries = (() => { try { return JSON.parse(current?.entries || '[]'); } catch(e) { return []; } })();
       const now = new Date();
