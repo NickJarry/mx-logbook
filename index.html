@@ -1366,6 +1366,13 @@ async function checkSession() {
       if (d.blocked) {
         // Account not active - clear and show login
         localStorage.removeItem('mxl_user');
+        localStorage.removeItem('mxl_active_aog');
+        localStorage.removeItem('mxl_session');
+        localStorage.removeItem('mxl_pending_signup');
+        localStorage.removeItem('mxl_tech');
+        localStorage.removeItem('mxl_cert');
+        localStorage.removeItem('mxl_custom_glossary');
+        localStorage.removeItem('mxl_aircraft');
         currentUser = null;
         document.getElementById('navLogin').style.display = 'inline-block';
         if (d.message && d.message.includes('Payment not completed')) {
