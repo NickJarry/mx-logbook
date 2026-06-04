@@ -755,7 +755,16 @@ export default async function handler(req, res) {
       });
       return res.status(200).json({ success: true });
     }
-
+if (type === 'update_aog_entries') {
+      const { session_id, entries } = req.body;
+      if (!session_id) return res.status(200).json({ error: 'Missing session_id' });
+      await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?id=eq.${session_id}`, {
+        method: 'PATCH',
+        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+        body: JSON.stringify({ entries: JSON.stringify(entries), updated_at: new Date().toISOString() })
+      });
+      return res.status(200).json({ success: true });
+    }
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
