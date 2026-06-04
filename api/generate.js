@@ -448,9 +448,9 @@ export default async function handler(req, res) {
       // Look up by user_id if available, otherwise by email
       let profiles;
       if (user_id) {
-        profiles = await sbFetch(`/profiles?id=eq.${user_id}&select=plan,subscription_status,cancelled_at,created_at,full_name,cert_number`);
+        profiles = await sbFetch(`/profiles?id=eq.${user_id}&select=plan,subscription_status,cancelled_at,created_at,full_name,cert_number,company_id`);
       } else {
-        profiles = await sbFetch(`/profiles?email=eq.${encodeURIComponent(email)}&select=plan,subscription_status,cancelled_at,created_at,full_name,cert_number`);
+        profiles = await sbFetch(`/profiles?email=eq.${encodeURIComponent(email)}&select=plan,subscription_status,cancelled_at,created_at,full_name,cert_number,company_id`);
       }
       const profile = profiles[0];
 
@@ -477,7 +477,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ blocked: true, message: 'Your account has been suspended due to a failed payment. Please update your billing information.' });
       }
 
-      return res.status(200).json({ blocked: false, plan: profile.plan, subscription_status: profile.subscription_status || null, tech_name: profile.full_name || null, cert_num: profile.cert_number || null });
+      return res.status(200).json({ blocked: false, plan: profile.plan, subscription_status: profile.subscription_status || null, tech_name: profile.full_name || null, cert_num: profile.cert_number || null, company_id: profile.company_id || null });
     }
 
     if (type === 'send_alert') {
