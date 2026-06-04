@@ -573,7 +573,7 @@ async function loadAOG() {
     const data = await api({ type: 'get_company_aog', company_id: currentUser.company_id, user_id: currentUser.id });
     const sessions = data.sessions || [];
     const lastRefresh = document.getElementById('aogLastRefresh');
-    if (lastRefresh) { const n=new Date(); lastRefresh.textContent = 'Updated ' + String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
+    if (lastRefresh) { const n=new Date(); lastRefresh.textContent = 'Updated ' + String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0'); }
     container.innerHTML = sessions.length ?
       sessions.map(s => {
         const entries = (() => { try { return JSON.parse(s.entries || '[]'); } catch(e) { return []; } })();
