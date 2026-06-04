@@ -1854,7 +1854,7 @@ function appendToSession(){
   const text=document.getElementById('outputText').value;if(!text)return;
   const now=new Date(),ts=isUTC?String(now.getUTCHours()).padStart(2,'0')+String(now.getUTCMinutes()).padStart(2,'0')+'Z':String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'L';
   sessionEntries.push({time:ts,initials:getInitials(),text,type:selectedType});
-  renderSession();saveActiveAOG();
+  renderSession();saveActiveAOG();saveRunningReport(true);
   const btn=document.getElementById('appendBtn');if(btn){btn.textContent='Added!';setTimeout(()=>{btn.textContent='+ Add to running report';},2000);}
 }
 
@@ -1864,8 +1864,43 @@ function renderSession(){
   box.style.display='block';
   const tail=document.getElementById('tailNum').value.trim(),ac=document.getElementById('aircraft').value.trim(),date=document.getElementById('workDate').value;
   const header=[tail?`Tail Number: ${tail}`:null,ac?`Aircraft: ${ac}`:null,date?`Date: ${date}`:null].filter(Boolean).join('   |   ');
-  const entries = sessionEntries.map(e=>`${e.time} [${e.initials||'MX'}]  ${e.text}`).join('\n\n');
-  textEl.textContent=(header?header+'\n\n':'')+entries;
+  textEl.style.whiteSpace='normal';
+  textEl.innerHTML=(header?`<div style="font-size:12px;color:var(--text3);margin-bottom:10px;">${header}</div>`:'') +
+    sessionEntries.map((e,i)=>`
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);">
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--amber);white-space:nowrap;padding-top:3px;">${e.time||''} [${e.initials||'MX'}]</span>
+        <div style="flex:1;">
+          <div contenteditable="true" data-idx="${i}" style="font-size:13px;color:#f0f0f0;line-height:1.6;outline:none;border-radius:3px;padding:2px 4px;cursor:text;"
+            onfocus="this.style.background='var(--bg3)';this.style.outline='1px solid var(--amber)'"
+            onblur="this.style.background='';this.style.outline='none';saveEntryEdit(this,${i})"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+          >${e.text||''}</div>
+          ${e.editedBy?`<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">${e.editedBy}</div>`:''}
+        </div>
+        <button onclick="deleteSessionEntry(${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:3px;" onmouseover="this.style.color='#ff4444'" onmouseout="this.style.color='var(--text3)'">✕</button>
+      </div>`).join('');
+}
+
+function saveEntryEdit(el, idx) {
+  el.style.background='';
+  el.style.outline='none';
+  const newText = el.innerText.trim();
+  if (!newText || newText === sessionEntries[idx].text) return;
+  const now = new Date();
+  const ts = isUTC ? String(now.getUTCHours()).padStart(2,'0')+String(now.getUTCMinutes()).padStart(2,'0')+'Z' : String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'L';
+  sessionEntries[idx].text = newText;
+  sessionEntries[idx].editedBy = `edited by ${currentUser?.email||'unknown'} at ${ts}`;
+  saveActiveAOG();
+  saveRunningReport(true);
+  renderSession();
+}
+
+function deleteSessionEntry(idx) {
+  if (!confirm('Delete this entry?')) return;
+  sessionEntries.splice(idx, 1);
+  saveActiveAOG();
+  saveRunningReport(true);
+  renderSession();
 }
 
 function closeReport(){
