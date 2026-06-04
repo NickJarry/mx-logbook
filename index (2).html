@@ -1884,6 +1884,7 @@ function renderSession(){
 }
 
 function saveEntryEdit(el, idx) {
+  console.log('saveEntryEdit fired', idx);
   el.style.background='';
   el.style.outline='none';
   const newText = el.innerText.trim();
