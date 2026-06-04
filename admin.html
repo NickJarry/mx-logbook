@@ -737,7 +737,29 @@ function exportAOGText() {
   a.download = `AOG_${_aogModalSession.tail_number||'report'}_${new Date().toISOString().slice(0,10)}.txt`;
   a.click();
 }
-
+function exportAOGCSV() {
+  if (!_aogModalSession) return;
+  const s = _aogModalSession;
+  const rows = [];
+  rows.push(`Aircraft: ${s.tail_number||'N/A'}${s.aircraft?' · '+s.aircraft:''}`);
+  rows.push(`Date: ${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'N/A'}`);
+  rows.push(`Started by: ${s.mechanic_name||s.mechanic_email||'Unknown'}`);
+  rows.push('');
+  rows.push(['Time (Local)','Time (UTC)','Technician','Email','Entry'].join(','));
+  _aogOriginalEntries.forEach(e => {
+    const local = e.time || '';
+    const utc = e.created_at ? (() => { const d=new Date(e.created_at); return String(d.getUTCHours()).padStart(2,'0')+String(d.getUTCMinutes()).padStart(2,'0')+'Z'; })() : '';
+    const tech = e.tech_name || 'MX';
+    const email = e.user_email || '';
+    const text = '"' + (e.text||'').replace(/"/g,'""') + '"';
+    rows.push([local, utc, tech, email, text].join(','));
+  });
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `AOG_${s.tail_number||'report'}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
 function exportAOGPDF() {
   if (!_aogModalSession) return;
   const text = buildAOGReportText(_aogModalSession, _aogOriginalEntries, _aogUtcMode);
