@@ -1760,7 +1760,7 @@ function addToRunningReport() {
         if (!tail) { alert('Please enter a tail number for this AOG report.'); return; }
         fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'create_aog_session', company_id: currentUser.company_id, user_id: currentUser.id, tail_number: tail, aircraft }) })
           .then(r => r.json()).then(data => {
-            console.log('create_aog_session response:', JSON.stringify(data));
+          
             if (data.session) {
               activeAOGSessionId = data.session.id;
               updateResumeBtn();
