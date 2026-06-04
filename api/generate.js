@@ -725,14 +725,11 @@ export default async function handler(req, res) {
       const current = Array.isArray(existing) ? existing[0] : existing;
       const entries = (() => { try { return JSON.parse(current?.entries || '[]'); } catch(e) { return []; } })();
       const now = new Date();
-      const hh = String(now.getUTCHours()).padStart(2, '0');
-      const mm = String(now.getUTCMinutes()).padStart(2, '0');
       entries.push({
         user_id,
         tech_name: tech_name || null,
         cert_num: cert_num || null,
         text: entry_text,
-        time: hh + mm + 'L',
         created_at: now.toISOString()
       });
       await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?id=eq.${session_id}`, {
