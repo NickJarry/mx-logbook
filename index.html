@@ -1625,6 +1625,7 @@ function selectType(el, type) {
   el.classList.add('selected');
   if (type !== selectedType && sessionEntries.length) {
     saveRunningReport(true);
+    activeReportId = null;
     sessionEntries = [];
     draftHistory = [];
     activeReportId = null;
