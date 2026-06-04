@@ -747,7 +747,7 @@ export default async function handler(req, res) {
       await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?id=eq.${session_id}`, {
         method: 'PATCH',
         headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
-        body: JSON.stringify({ updated_at: new Date().toISOString() })
+        body: JSON.stringify({ status: 'closed', closed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
       });
       return res.status(200).json({ success: true });
     }
