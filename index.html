@@ -1756,11 +1756,11 @@ function addToRunningReport() {
               activeAOGSessionId = data.session.id;
               updateResumeBtn();
               // Now add the entry
-              fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'add_aog_entry', user_id: currentUser.id, session_id: activeAOGSessionId, entry_text: work, tech_name: tech, cert_num: cert }) }).catch(() => {});
+              fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'add_aog_entry', user_id: currentUser.id, session_id: activeAOGSessionId, entry_text: work, tech_name: tech, cert_num: cert, time: ts }) }).catch(() => {});
             }
           }).catch(() => {});
       } else {
-        fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'add_aog_entry', user_id: currentUser.id, session_id: activeAOGSessionId, entry_text: work, tech_name: tech, cert_num: cert }) }).catch(() => {});
+        fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'add_aog_entry', user_id: currentUser.id, session_id: activeAOGSessionId, entry_text: work, tech_name: tech, cert_num: cert, time: ts }) }).catch(() => {});
       }
     }
   }
