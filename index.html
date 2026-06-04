@@ -1623,6 +1623,16 @@ function selectDelay(el) {
 function selectType(el, type) {
   document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
+  if (type !== selectedType && sessionEntries.length) {
+    saveRunningReport(true);
+    sessionEntries = [];
+    draftHistory = [];
+    activeReportId = null;
+    activeAOGSessionId = null;
+    clearActiveAOG();
+    renderSession();
+    document.getElementById('outputBox')?.classList.remove('visible');
+  }
   selectedType = type;
   const aogTip = document.getElementById('aogTip');
   if (aogTip) aogTip.style.display = type === 'AOG Report' ? 'block' : 'none';
