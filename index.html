@@ -1624,11 +1624,13 @@ function selectType(el, type) {
   document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   if (type !== selectedType && sessionEntries.length) {
-    saveRunningReport(true);
+    const reportToSave = activeReportId;
     activeReportId = null;
     sessionEntries = [];
     draftHistory = [];
-    activeReportId = null;
+    if (reportToSave) {
+      fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'save_running_report', user_id: currentUser?.id, report_id: reportToSave, tail_number: document.getElementById('tailNum').value.trim()||'No tail', aircraft: document.getElementById('aircraft').value.trim(), entries: [], status: 'active' }) }).catch(() => {});
+    }
     activeAOGSessionId = null;
     clearActiveAOG();
     renderSession();
