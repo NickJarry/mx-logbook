@@ -581,11 +581,12 @@ export default async function handler(req, res) {
       if (!user_id) return res.status(400).json({ error: 'Missing user_id' });
       if (report_id) {
         // Update existing report
-        const updated = await sbFetch(`/running_reports?id=eq.${report_id}&user_id=eq.${user_id}`, {
+        const patchResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?id=eq.${report_id}&user_id=eq.${user_id}`, {
           method: 'PATCH',
           headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
           body: JSON.stringify({ entries: JSON.stringify(entries), status: status || 'active', updated_at: new Date().toISOString() })
         });
+        const updated = await patchResp.json();
         return res.status(200).json({ report: Array.isArray(updated) ? updated[0] : updated });
       } else {
         // Create new report
@@ -613,9 +614,9 @@ export default async function handler(req, res) {
     if (type === 'save_report_permanent') {
       const { report_id } = req.body;
       if (!user_id || !report_id) return res.status(400).json({ error: 'Missing params.' });
-      await sbFetch(`/running_reports?id=eq.${report_id}&user_id=eq.${user_id}`, {
+      await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?id=eq.${report_id}&user_id=eq.${user_id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
         body: JSON.stringify({ is_saved: true, expires_at: null, status: 'saved' })
       });
       return res.status(200).json({ success: true });
