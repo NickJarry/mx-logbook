@@ -1394,6 +1394,7 @@ if (go) window.location.href = (planLinks[redirectPlan] || planLinks.pro) + '?pr
       }
       currentUser.subscription_status = d.subscription_status || null;
       if (d.plan) currentUser.plan = d.plan;
+      if (d.company_id) currentUser.company_id = d.company_id;
       localStorage.setItem('mxl_user', JSON.stringify(currentUser));
     } catch(e) {
       // Network error - allow through, generateEntry will catch it
