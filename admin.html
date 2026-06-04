@@ -573,12 +573,12 @@ async function loadAOG() {
     const data = await api({ type: 'get_company_aog', company_id: currentUser.company_id, user_id: currentUser.id });
     const sessions = data.sessions || [];
     const lastRefresh = document.getElementById('aogLastRefresh');
-    if (lastRefresh) lastRefresh.textContent = 'Updated ' + new Date().toLocaleTimeString();
+    if (lastRefresh) { const n=new Date(); lastRefresh.textContent = 'Updated ' + String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
     container.innerHTML = sessions.length ?
       sessions.map(s => {
         const entries = (() => { try { return JSON.parse(s.entries || '[]'); } catch(e) { return []; } })();
         const lastEntry = entries[entries.length - 1];
-        const lastActivity = lastEntry ? new Date(lastEntry.created_at).toLocaleTimeString() : new Date(s.created_at).toLocaleTimeString();
+        const lastActivity = (() => { const d = new Date(lastEntry ? lastEntry.created_at : s.created_at); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })();
         return `<div class="card" style="cursor:pointer;border-left:3px solid var(--amber);" onclick="showAOGDetail(${JSON.stringify(s).replace(/"/g,'&quot;')})">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--amber);">&#9888; ACTIVE AOG</div>
