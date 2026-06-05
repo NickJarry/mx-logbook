@@ -305,6 +305,7 @@ export default async function handler(req, res) {
       const planSeats = { shop: 5, proshop: 10, enterprise: 25 };
       const seats = planSeats[plan] || 5;
       const existing = await sbFetch(`/profiles?company_id=eq.${company_id}&select=id`);
+      console.log('seat check:', { existing, seats });
       if (Array.isArray(existing) && existing.length >= seats) {
         return res.status(400).json({ error: `Seat limit reached (${seats} for ${plan} plan).` });
       }
