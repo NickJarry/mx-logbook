@@ -2103,7 +2103,9 @@ function resumeReportFromModal(reportId, entries, type) {
     selectedType = type;
     document.querySelectorAll('.type-card').forEach(c => {
       c.classList.remove('selected');
-      if (c.getAttribute('onclick') && c.getAttribute('onclick').includes(type)) c.classList.add('selected');
+      const onclickAttr = c.getAttribute('onclick') || '';
+      const match = onclickAttr.match(/'([^']+)'\s*\)/);
+      if (match && match[1] === type) c.classList.add('selected');
     });
     const aogTip = document.getElementById('aogTip');
     if (aogTip) aogTip.style.display = type === 'AOG Report' ? 'block' : 'none';
