@@ -85,7 +85,8 @@ export default async function handler(req, res) {
             trial_start: new Date().toISOString(),
             referral_code: newCode,
             subscription_status: 'pending_payment',
-            company_id: isCompany ? uid : null
+            company_id: isCompany ? uid : null,
+            role: isCompany ? 'admin' : null
           })
         });
         console.log('Profile insert status:', insertResult.status, 'for', email);
