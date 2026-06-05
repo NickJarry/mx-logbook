@@ -333,7 +333,10 @@ export default async function handler(req, res) {
       if (!invite?.token) return res.status(500).json({ error: 'Could not create invite.' });
 
       // Get company name for email
-      const companyRows = await sbFetch(`/companies?id=eq.${company_id}&select=name`);
+      const companyResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/companies?id=eq.${company_id}&select=name`, {
+        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` }
+      });
+      const companyRows = await companyResp.json();
       const companyName = companyRows[0]?.name || 'your team';
 
       const inviteUrl = `https://mx-logbook.com/invite.html?token=${invite.token}`;
@@ -375,7 +378,7 @@ export default async function handler(req, res) {
         });
         return res.status(400).json({ error: 'This invite has expired. Please ask your admin to send a new invite.' });
       }
-      const companyRows = await sbFetch(`/companies?id=eq.${invite.company_id}&select=name,plan`);
+      const companyResp2 = await fetch(`${process.env.SUPABASE_URL}/rest/v1/companies?id=eq.${invite.company_id}&select=name,plan`, {         headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` }       });       const companyRows = await companyResp2.json();
       const company = companyRows[0] || {};
       return res.status(200).json({ invite: { ...invite, company_name: company.name || '', company_plan: company.plan || '' } });
     }
