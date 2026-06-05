@@ -298,6 +298,7 @@ export default async function handler(req, res) {
 
     if (type === 'invite_member') {
       const { company_id, email, role, plan } = req.body;
+      console.log('invite_member called:', { company_id, email, role, plan, user_id });
       if (!company_id || !email) return res.status(400).json({ error: 'Missing required fields.' });
 
       // Check seat limit
