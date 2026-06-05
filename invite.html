@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX-Logbook — Accept Invite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #00e5a0; --green-dark: #00c48c;
+    --bg: #0a0a0a; --bg2: #121212; --bg3: #1a1a1a;
+    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f0; --text2: #888; --text3: #444;
+    --amber: #ef9f27; --red: #e24b4a;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-cond: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+  .logo { font-family: var(--font-mono); font-size: 13px; color: var(--green); letter-spacing: 3px; margin-bottom: 2rem; }
+  .card { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 10px; padding: 2rem; width: 100%; max-width: 420px; }
+  .title { font-family: var(--font-cond); font-size: 26px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+  .subtitle { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin-bottom: 1.5rem; letter-spacing: 1px; }
+  .invite-info { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 1.5rem; }
+  .invite-info-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+  .invite-info-row:last-child { margin-bottom: 0; }
+  .invite-info-label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+  .invite-info-value { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+  label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  input { background: var(--bg); border: 0.5px solid var(--border2); border-radius: 4px; color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 10px 12px; width: 100%; transition: border-color 0.2s; margin-bottom: 14px; }
+  input:focus { outline: none; border-color: var(--green); }
+  input::placeholder { color: var(--text3); }
+  .btn { background: var(--green); color: #0a0a0a; font-family: var(--font-mono); font-size: 13px; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; letter-spacing: 1px; transition: background 0.2s; }
+  .btn:hover { background: var(--green-dark); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .msg { font-family: var(--font-mono); font-size: 11px; margin-top: 12px; text-align: center; line-height: 1.7; }
+  .msg.error { color: var(--red); }
+  .msg.success { color: var(--green); }
+  .loading-state { text-align: center; padding: 2rem; }
+  .loading-state p { font-family: var(--font-mono); font-size: 12px; color: var(--text3); }
+  .error-state { text-align: center; padding: 1rem 0; }
+  .error-state .error-icon { font-size: 32px; margin-bottom: 12px; }
+  .error-state p { font-family: var(--font-body); font-size: 14px; color: var(--text2); line-height: 1.7; }
+  .pw-strength { height: 3px; background: var(--bg3); border-radius: 2px; margin-top: -10px; margin-bottom: 14px; overflow: hidden; }
+  .pw-strength-bar { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0%; }
+</style>
+</head>
+<body>
+
+<div class="logo">MX-LOGBOOK</div>
+
+<div class="card" id="mainCard">
+  <div class="loading-state" id="loadingState">
+    <p>Validating invite...</p>
+  </div>
+
+  <div id="inviteForm" style="display:none;">
+    <div class="title">Accept Invite</div>
+    <div class="subtitle">SET UP YOUR ACCOUNT</div>
+
+    <div class="invite-info" id="inviteInfoBox"></div>
+
+    <div>
+      <label>Email address</label>
+      <input type="email" id="emailDisplay" readonly style="color:var(--text3);cursor:default;">
+    </div>
+    <div>
+      <label>Create a password</label>
+      <input type="password" id="passwordInput" placeholder="Minimum 8 characters" oninput="checkPwStrength(this.value)">
+      <div class="pw-strength"><div class="pw-strength-bar" id="pwStrengthBar"></div></div>
+    </div>
+    <div>
+      <label>Confirm password</label>
+      <input type="password" id="passwordConfirm" placeholder="Re-enter password">
+    </div>
+
+    <button class="btn" onclick="acceptInvite()" id="acceptBtn">Activate account</button>
+    <div class="msg" id="formMsg"></div>
+  </div>
+
+  <div id="errorState" style="display:none;" class="error-state">
+    <div class="error-icon">⚠</div>
+    <p id="errorMsg"></p>
+    <p style="margin-top:12px;font-family:var(--font-mono);font-size:11px;color:var(--text3);">Contact <a href="mailto:hello@mx-logbook.com" style="color:var(--green);">hello@mx-logbook.com</a> for help.</p>
+  </div>
+</div>
+
+<script>
+let inviteData = null;
+
+const roleLabels = { mechanic: 'Mechanic', lead: 'Lead Mechanic', inspector: 'Inspector / IA', admin: 'Admin' };
+
+async function api(body) {
+  const r = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return r.json();
+}
+
+function showError(msg) {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('inviteForm').style.display = 'none';
+  document.getElementById('errorState').style.display = 'block';
+  document.getElementById('errorMsg').textContent = msg;
+}
+
+function checkPwStrength(pw) {
+  const bar = document.getElementById('pwStrengthBar');
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const pct = (score / 5) * 100;
+  bar.style.width = pct + '%';
+  bar.style.background = score <= 1 ? 'var(--red)' : score <= 3 ? 'var(--amber)' : 'var(--green)';
+}
+
+async function loadInvite() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  if (!token) { showError('No invite token found. Please use the link from your invite email.'); return; }
+
+  try {
+    const data = await api({ type: 'get_invite', token });
+    if (data.error) { showError(data.error); return; }
+    inviteData = data.invite;
+
+    document.getElementById('emailDisplay').value = inviteData.invited_email;
+    document.getElementById('inviteInfoBox').innerHTML = `
+      <div class="invite-info-row">
+        <span class="invite-info-label">Company</span>
+        <span class="invite-info-value">${inviteData.company_name || '—'}</span>
+      </div>
+      <div class="invite-info-row">
+        <span class="invite-info-label">Role</span>
+        <span class="invite-info-value">${roleLabels[inviteData.role] || inviteData.role}</span>
+      </div>
+      <div class="invite-info-row">
+        <span class="invite-info-label">Expires</span>
+        <span class="invite-info-value">${new Date(inviteData.expires_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+      </div>
+    `;
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('inviteForm').style.display = 'block';
+  } catch(e) {
+    showError('Could not load invite. Please check your connection and try again.');
+  }
+}
+
+async function acceptInvite() {
+  const password = document.getElementById('passwordInput').value;
+  const confirm = document.getElementById('passwordConfirm').value;
+  const msg = document.getElementById('formMsg');
+  const btn = document.getElementById('acceptBtn');
+
+  if (!password || password.length < 8) {
+    msg.textContent = 'Password must be at least 8 characters.'; msg.className = 'msg error'; return;
+  }
+  if (password !== confirm) {
+    msg.textContent = 'Passwords do not match.'; msg.className = 'msg error'; return;
+  }
+
+  btn.textContent = 'Activating...'; btn.disabled = true;
+  msg.textContent = ''; msg.className = 'msg';
+
+  try {
+    const data = await api({ type: 'accept_invite', token: inviteData.token, password });
+    if (data.error) {
+      msg.textContent = data.error; msg.className = 'msg error';
+      btn.textContent = 'Activate account'; btn.disabled = false;
+      return;
+    }
+
+    // Store user in localStorage and redirect to tool
+    if (data.user) {
+      const user = {
+        email: data.email,
+        plan: 'mechanic',
+        id: data.user.id,
+        company_id: data.company_id,
+        role: data.role,
+        subscription_status: 'active'
+      };
+      localStorage.setItem('mxl_user', JSON.stringify(user));
+      msg.textContent = 'Account activated! Redirecting...'; msg.className = 'msg success';
+      setTimeout(() => { window.location.href = '/?tool=1'; }, 1500);
+    } else {
+      msg.textContent = 'Account created. Please log in at mx-logbook.com.'; msg.className = 'msg success';
+      setTimeout(() => { window.location.href = '/'; }, 2000);
+    }
+  } catch(e) {
+    msg.textContent = 'Something went wrong. Please try again.'; msg.className = 'msg error';
+    btn.textContent = 'Activate account'; btn.disabled = false;
+  }
+}
+
+loadInvite();
+</script>
+</body>
+</html>
