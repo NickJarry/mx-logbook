@@ -324,6 +324,7 @@ export default async function handler(req, res) {
 
       // Create invite record
       const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString();
+      console.log('About to insert invite, expiresAt:', expiresAt, 'SUPABASE_URL exists:', !!process.env.SUPABASE_URL, 'SERVICE_KEY exists:', !!process.env.SUPABASE_SERVICE_KEY);
       const inviteResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/mechanic_invites`, {
         method: 'POST',
         headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
