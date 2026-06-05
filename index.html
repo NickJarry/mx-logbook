@@ -2411,7 +2411,12 @@ async function resolveAOGSession() {
   try {
     await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'close_aog_session', user_id: currentUser.id, session_id: activeAOGSessionId }) });
     activeAOGSessionId = null;
+    sessionEntries = [];
+    draftHistory = [];
+    activeReportId = null;
     clearActiveAOG();
+    renderSession();
+    document.getElementById('outputBox')?.classList.remove('visible');
     alert('AOG report resolved and closed.');
   } catch(e) { alert('Could not resolve AOG session. Try again.'); }
 }
