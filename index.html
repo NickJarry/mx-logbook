@@ -1280,7 +1280,7 @@ function requiresPro(feature) {
   const plan = currentUser ? currentUser.plan : 'trial';
   const status = currentUser ? currentUser.subscription_status : null;
   const isTrialing = status === 'trialing' || plan === 'trial';
-  const hasPro = isTrialing || ['pro','pro_indefinite','shop','proshop','enterprise'].includes(plan);
+  const hasPro = isTrialing || ['pro','pro_indefinite','shop','proshop','enterprise','mechanic','lead','inspector','admin'].includes(plan);
   if (!hasPro) {
     alert('Upgrade to Pro to access ' + feature + '.');
     return false;
@@ -1304,7 +1304,7 @@ function applyPlanUI() {
 function activateTool() {
   // Redirect company plan admins to the admin portal
   // Skip redirect if they explicitly navigated to main site with ?tool=1
-  const companyPlans = ['shop','proshop','enterprise'];
+  const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
    // Hide all marketing sections - user is logged in, just show the tool
   document.querySelectorAll('.hero, section, footer').forEach(el => el.style.display = 'none');
 
