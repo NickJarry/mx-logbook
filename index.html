@@ -1290,14 +1290,20 @@ function requiresPro(feature) {
 
 function applyPlanUI() {
   const plan = currentUser ? currentUser.plan : 'trial';
-  const status = currentUser ? currentUser.subscription_status : null;
+  const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
+  const hasAOG = companyPlans.includes(plan);
 
-  // AOG card - all plans have access (Pro and up)
   const aogCard = document.getElementById('aogCard');
   if (aogCard) {
-    aogCard.style.opacity = '';
-    aogCard.style.cursor = '';
-    aogCard.title = '';
+    if (hasAOG) {
+      aogCard.style.opacity = '';
+      aogCard.style.cursor = '';
+      aogCard.title = '';
+    } else {
+      aogCard.style.opacity = '0.4';
+      aogCard.style.cursor = 'not-allowed';
+      aogCard.title = 'AOG Reports are available on Shop plans and above.';
+    }
   }
 }
 
@@ -1534,8 +1540,12 @@ function toggleOptional() {
 }
 
 function selectAOG(el) {
+  const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
+  if (!companyPlans.includes(currentUser?.plan)) {
+    alert('AOG Reports are available on Shop plans and above. Upgrade to unlock this feature.');
+    return;
+  }
   selectType(el, 'AOG Report');
-  // Session will be created when first entry is added
 }
 
 let activeAOGSessionId = null;
