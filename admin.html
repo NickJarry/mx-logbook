@@ -564,7 +564,7 @@ let aogPollingInterval = null;
 function startAOGPolling() {
   loadAOG();
   if (aogPollingInterval) clearInterval(aogPollingInterval);
-  aogPollingInterval = setInterval(loadAOG, 30000);
+  aogPollingInterval = setInterval(loadAOG, 10000);
 }
 
 async function loadAOG() {
