@@ -12,6 +12,7 @@
     { "src": "/(.*\\.(js|css|png|jpg|ico|svg|json|webmanifest|woff2?))", "dest": "/$1" },
     { "src": "/reference.html", "dest": "/reference.html" },
     { "src": "/admin.html", "dest": "/admin.html" },
+    { "src": "/invite.html", "dest": "/invite.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
