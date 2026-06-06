@@ -1759,7 +1759,7 @@ function addToRunningReport() {
   if (currentUser) {
     saveRunningReport(true);
     // If AOG report on company plan -- create session if needed, then add entry
-    const companyPlans = ['shop','proshop','enterprise','mechanic'];
+    const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
     if (selectedType === 'AOG Report' && companyPlans.includes(currentUser.plan) && currentUser.company_id) {
       const tech = document.getElementById('techName')?.value.trim() || '';
       const cert = document.getElementById('certNum')?.value.trim() || '';
