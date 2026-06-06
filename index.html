@@ -2381,7 +2381,7 @@ function downloadPDF(){
 function copyEntry(){navigator.clipboard.writeText(document.getElementById('outputText').value).then(()=>{const btn=document.getElementById('copyBtn');btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy to clipboard';},2000);});}
 
 function resumeAOG(){
-  const companyPlans = ['shop','proshop','enterprise'];
+  const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
   if (companyPlans.includes(currentUser?.plan) && currentUser?.company_id) {
     openAOGPicker(document.getElementById('aogCard'));
     return;
@@ -2428,7 +2428,7 @@ async function updateResumeBtn(){
   btn.style.display='none';
   const resolveBtn = document.getElementById('resolveAOGBtn');
   if (resolveBtn) resolveBtn.style.display = (activeAOGSessionId && selectedType === 'AOG Report') ? 'inline-block' : 'none';
-  const companyPlans = ['shop','proshop','enterprise'];
+  const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
   if (companyPlans.includes(currentUser?.plan) && currentUser?.company_id) {
     try {
       const resp = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'get_company_aog', company_id: currentUser.company_id, user_id: currentUser.id }) });
