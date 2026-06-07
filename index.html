@@ -2658,7 +2658,7 @@ async function loadDashboard(){
   if(showAdmin) document.getElementById('adminTabBtn').style.display='inline-block';
 
   // Show company info section for account admins only
-  const isAccountAdmin = ['shop','proshop','enterprise'].includes(currentUser.plan) && (!currentUser.role || currentUser.role === 'admin');
+  const isAccountAdmin = ['pro','pro_indefinite','shop','proshop','enterprise'].includes(currentUser.plan) && (!currentUser.role || currentUser.role === 'admin');
  if (isAccountAdmin) {
     const cpBtn = document.getElementById('changePlanBtn');
     const csBtn = document.getElementById('cancelSubBtn');
