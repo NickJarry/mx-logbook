@@ -786,7 +786,7 @@
     <div class="dash-header"><div class="dash-title">MX-LOGBOOK ACCOUNT</div><div style="display:flex;align-items:center;gap:6px;"><button onclick="toggleTheme()" style="background:transparent;border:0.5px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;transition:color 0.2s;">&#9790; DARK</button><button onclick="toggleTextSize()" style="background:transparent;border:0.5px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;transition:color 0.2s;">A+</button></div><button class="dash-close" onclick="closeDashboard()">Close X</button></div>
     <div class="dash-tabs">
       <button class="dash-tab active" onclick="showDashTab('overview',this)">Overview</button>
-      <button class="dash-tab" onclick="showDashTab('history',this)">Closed Reports</button>
+      <button class="dash-tab" onclick="showDashTab('history',this)">My Closed Reports</button>
       <button class="dash-tab" onclick="showDashTab('referrals',this)">Referrals</button>
       <button class="dash-tab" onclick="showDashTab('glossary',this)">Glossary</button>
       <button class="dash-tab" id="adminTabBtn" onclick="window.location.href='/admin.html'" style="display:none;background:var(--amber);color:#000;">Team Admin</button>
@@ -3443,7 +3443,7 @@ handlePackReturn();
     </div>
     <div style="display:flex;gap:0;border-bottom:0.5px solid var(--border);">
       <button id="tabSavedReports" onclick="switchReportsTab('saved')" style="flex:1;padding:10px;font-family:var(--font-mono);font-size:11px;background:var(--bg2);color:var(--green);border:none;border-bottom:2px solid var(--green);cursor:pointer;letter-spacing:1px;">SAVED REPORTS</button>
-      <button id="tabEntryHistory" onclick="switchReportsTab('entries')" style="flex:1;padding:10px;font-family:var(--font-mono);font-size:11px;background:transparent;color:var(--text3);border:none;border-bottom:2px solid transparent;cursor:pointer;letter-spacing:1px;">Closed Reports</button>
+      <button id="tabEntryHistory" onclick="switchReportsTab('entries')" style="flex:1;padding:10px;font-family:var(--font-mono);font-size:11px;background:transparent;color:var(--text3);border:none;border-bottom:2px solid transparent;cursor:pointer;letter-spacing:1px;">My Closed Reports</button>
     </div>
     <div style="padding:0.75rem 1.5rem;border-bottom:0.5px solid var(--border);">
       <input type="text" id="reportsSearchInput" placeholder="Search by tail number..." oninput="filterReportsModal(this.value)"
