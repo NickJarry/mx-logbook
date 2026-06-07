@@ -2518,7 +2518,8 @@ async function loadDashboard(){
   const planLabels={trial:'Free Trial',pro:'Pro',pro_indefinite:'Pro (Lifetime)',shop:'Shop', proshop:'Shop Pro',enterprise:'Enterprise'};
   document.getElementById('dashPlan').textContent=planLabels[currentUser.plan]||currentUser.plan;
   const adminRoles = ['admin','lead','inspector'];
-  const showAdmin = ['shop','proshop','enterprise'].includes(currentUser.plan) && (!currentUser.role || adminRoles.includes(currentUser.role));
+  const companyMemberPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
+  const showAdmin = companyMemberPlans.includes(currentUser.plan) && (!currentUser.role || adminRoles.includes(currentUser.role));
   if(showAdmin) document.getElementById('adminTabBtn').style.display='inline-block';
   // Populate tech info fields from localStorage
   const savedTech = localStorage.getItem('mxl_tech');
