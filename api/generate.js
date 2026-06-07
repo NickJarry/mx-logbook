@@ -220,7 +220,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({ password })
       });
-      if (update.ok) return res.status(200).json({ success: true });
+      
       const err = await update.json();
       return res.status(400).json({ error: err.msg || err.message || 'Password change failed.' });
     }
