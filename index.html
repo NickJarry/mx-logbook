@@ -2967,6 +2967,11 @@ async function confirmChangePlan(currentPlan, newPlan, priceId, isDowngrade) {
 
 function handleLogout(){
   localStorage.removeItem('mxl_user');
+  localStorage.removeItem('mxl_active_aog');
+  localStorage.removeItem('mxl_tech');
+  localStorage.removeItem('mxl_cert');
+  localStorage.removeItem('mxl_aircraft');
+  localStorage.removeItem('mxl_pending_signup');
   currentUser=null;
   document.getElementById('dashOverlay').classList.remove('open');
 
