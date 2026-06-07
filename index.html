@@ -1269,7 +1269,7 @@ async function handleLogin() {
       }
       alert(data.error); btn.textContent = 'Log in'; btn.disabled = false; return;
     }
-    currentUser = { email, plan: data.profile?.plan || data.user?.user_metadata?.plan || 'trial', id: data.user?.id, company_id: data.profile?.company_id || null, subscription_status: data.profile?.subscription_status || null };
+    currentUser = { email, plan: data.profile?.plan || data.user?.user_metadata?.plan || 'trial', id: data.user?.id, company_id: data.profile?.company_id || null, subscription_status: data.profile?.subscription_status || null, role: data.profile?.role || null };
     localStorage.setItem('mxl_user', JSON.stringify(currentUser));
     closeModal(); activateTool(); setTimeout(updateResumeBtn, 800);
   } catch (err) { alert('Login error. Please try again.'); btn.textContent = 'Log in'; btn.disabled = false; }
