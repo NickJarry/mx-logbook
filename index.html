@@ -2665,7 +2665,7 @@ async function loadDashboard(){
     if (cpBtn) cpBtn.style.display = 'inline-block';
     if (csBtn) csBtn.style.display = 'inline-block';
   }
-  if (isAccountAdmin) {
+  if (isAccountAdmin && ['shop','proshop','enterprise'].includes(currentUser.plan)) {
     const section = document.getElementById('companyInfoSection');
     if (section) section.style.display = 'block';
     // Load company name
