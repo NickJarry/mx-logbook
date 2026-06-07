@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX-Logbook - Admin Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #00e5a0; --green-dark: #00c48c;
+    --bg: #0a0a0a; --bg2: #121212; --bg3: #1a1a1a;
+    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f0; --text2: #888; --text3: #444;
+    --amber: #ef9f27; --red: #e24b4a;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-cond: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+  body.light-mode {
+    --bg: #f5f5f0; --bg2: #eaeae6; --bg3: #dcdcd8;
+    --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.15);
+    --text: #111111; --text2: #444; --text3: #888;
+  }
+  body.light-mode nav { background: rgba(245,245,240,0.97); }
+  body.light-mode input, body.light-mode select, body.light-mode textarea { background: #fff; color: var(--text); }
+  body.large-text * { font-size: 115% !important; line-height: 1.75 !important; }
+  body.large-text .stat-num { font-size: 28px !important; }
+  body.large-text .nav-logo { font-size: 15px !important; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--green); text-decoration: none; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.97); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 54px; backdrop-filter: blur(8px); gap: 12px; }
+  .nav-logo { font-family: var(--font-mono); font-size: 13px; color: var(--green); letter-spacing: 2px; }
+  .nav-badge { font-family: var(--font-mono); font-size: 10px; background: rgba(0,229,160,0.1); color: var(--green); border: 0.5px solid rgba(0,229,160,0.25); padding: 3px 10px; border-radius: 20px; margin-left: 10px; }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .btn-sm { font-family: var(--font-mono); font-size: 11px; background: transparent; border: 0.5px solid var(--border2); padding: 5px 12px; border-radius: 4px; cursor: pointer; color: var(--text2); transition: color 0.2s; white-space: nowrap; }
+  .btn-sm:hover { color: var(--text); }
+
+  /* MAIN */
+  .main { padding: 2rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+  /* SECTION HEADERS */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; margin-top: 2rem; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; gap: 8px; }
+  .section-header:first-child { margin-top: 0; }
+  .section-title { font-family: var(--font-cond); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* STAT GRID */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; }
+  .stat-card.green { border-color: rgba(0,229,160,0.2); }
+  .stat-card.amber { border-color: rgba(239,159,39,0.2); }
+  .stat-num { font-family: var(--font-cond); font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .stat-num.green { color: var(--green); }
+  .stat-num.amber { color: var(--amber); }
+  .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; }
+
+  /* CARDS */
+  .card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+  .card-title { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; }
+
+  /* PROGRESS */
+  .progress-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.5s; }
+  .progress-fill.amber { background: var(--amber); }
+  .progress-fill.red { background: var(--red); }
+
+  /* TABLE */
+  .table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .table th { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; padding: 8px 12px; text-align: left; border-bottom: 0.5px solid var(--border); }
+  .table td { padding: 10px 12px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+  .table tr:last-child td { border-bottom: none; }
+  .table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* INPUTS */
+  input[type=text], input[type=email], select, textarea { background: var(--bg); border: 0.5px solid var(--border2); border-radius: 4px; color: var(--text); font-family: var(--font-body); font-size: 13px; padding: 8px 12px; width: 100%; transition: border-color 0.2s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--green); }
+  input::placeholder, textarea::placeholder { color: var(--text3); }
+  label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+  .btn-primary { background: var(--green); color: #0a0a0a; font-family: var(--font-mono); font-size: 12px; padding: 9px 20px; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; font-weight: 500; transition: background 0.2s; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-ghost { background: transparent; color: var(--text2); font-family: var(--font-mono); font-size: 12px; padding: 9px 20px; border: 0.5px solid var(--border2); border-radius: 4px; cursor: pointer; transition: color 0.2s; }
+  .btn-ghost:hover { color: var(--text); }
+  .btn-danger { background: transparent; color: var(--red); font-family: var(--font-mono); font-size: 11px; padding: 5px 12px; border: 0.5px solid rgba(226,75,74,0.3); border-radius: 4px; cursor: pointer; }
+
+  .row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field-grow { flex: 1; min-width: 180px; }
+
+  /* ENTRY */
+  .entry-item { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 6px; cursor: pointer; transition: border-color 0.2s; }
+  .entry-item:hover { border-color: var(--border2); }
+  .entry-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 6px; }
+  .entry-type { font-family: var(--font-mono); font-size: 10px; color: var(--green); letter-spacing: 1px; }
+  .entry-date { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+  .entry-preview { font-size: 13px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* SEARCH */
+  .search-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .search-input { flex: 1; min-width: 200px; }
+
+  /* EMPTY / LOADING */
+  .empty { font-family: var(--font-mono); font-size: 11px; color: var(--text3); padding: 2rem; text-align: center; }
+  .loading { font-family: var(--font-mono); font-size: 11px; color: var(--text3); animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 10px; padding: 1.5rem; width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto; position: relative; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: var(--text3); cursor: pointer; font-size: 18px; }
+  .modal-label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; margin-bottom: 8px; }
+
+  @media (max-width: 768px) {
+    .main { padding: 1rem; }
+    .stat-num { font-size: 24px; }
+    .table { font-size: 12px; }
+    .table th, .table td { padding: 8px; }
+    nav { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;">
+    <div class="nav-logo">MX-LOGBOOK</div>
+    <div class="nav-badge">ADMIN</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;">
+    <button id="themeToggle" onclick="toggleTheme()" style="background:transparent;border:0.5px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;transition:color 0.2s;">&#9790; DARK</button>
+    <button id="textSizeToggle" onclick="toggleTextSize()" style="background:transparent;border:0.5px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;transition:color 0.2s;">A+</button>
+  </div>
+  <div class="nav-right">
+    <a href="/?tool=1&account=1" class="btn-sm" onclick="sessionStorage.setItem('mxl_stay_on_tool','1')">My Account</a> <a href="/?tool=1" class="btn-sm" onclick="sessionStorage.setItem('mxl_stay_on_tool','1')">&#128295; Tool</a>
+    <button class="btn-sm" onclick="handleLogout()">Log out</button>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stat-grid">
+    <div class="stat-card green"><div class="stat-num green" id="statMembers">--</div><div class="stat-label">Team members</div></div>
+    <div class="stat-card"><div class="stat-num" id="statEntries">--</div><div class="stat-label">Total entries</div></div>
+    <div class="stat-card"><div class="stat-num" id="statThisMonth">--</div><div class="stat-label">This month</div></div>
+    <div class="stat-card amber"><div class="stat-num amber" id="statSeats">--</div><div class="stat-label">Seats remaining</div></div>
+  </div>
+
+  <!-- SEAT USAGE -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Seat usage</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);" id="seatLabel"></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="seatProgress" style="width:0%"></div></div>
+  </div>
+
+  <!-- OVERAGE WARNING -->
+  <div id="overageWarning" style="display:none;background:rgba(226,75,74,0.08);border:0.5px solid rgba(226,75,74,0.4);border-radius:8px;padding:1.25rem;margin-bottom:1rem;">
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--red);letter-spacing:1px;margin-bottom:8px;">&#9888; SEAT LIMIT REACHED</div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:1rem;">You have reached your plan's mechanic limit. To add more team members you must either upgrade your plan or remove existing members.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="showChangePlan(currentUser.plan)">Upgrade plan</button>
+      <button class="btn-ghost" onclick="document.getElementById('teamTable').scrollIntoView({behavior:'smooth'})">Remove a member</button>
+    </div>
+  </div>
+
+  <!-- TEAM MEMBERS -->
+  <div class="section-header">
+    <div class="section-title">Team members</div>
+    <button class="btn-primary" id="inviteBtn" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite mechanic</button>
+  </div>
+  <div class="search-row">
+    <input type="text" class="search-input" placeholder="Search by email or role..." oninput="filterTeam(this.value)">
+  </div>
+  <div id="teamTable"><div class="loading">Loading team...</div></div>
+
+  <!-- INVITE -->
+  <div id="inviteAdminOnly">
+  <div class="section-header" id="inviteSection">
+    <div class="section-title">Invite a mechanic</div>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);" id="inviteSeatsLeft"></div>
+  </div>
+  <div class="card" style="max-width:500px;">
+    <div class="field" style="margin-bottom:12px;">
+      <label>Email address</label>
+      <input type="email" id="inviteEmailInput" placeholder="mechanic@email.com">
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label>Role</label>
+      <select id="inviteRoleInput">
+        <option value="mechanic">Mechanic</option>
+        <option value="lead">Lead Mechanic</option>
+        <option value="inspector">Inspector / IA</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="sendInvite()">Send invite</button>
+    <div id="inviteMsg" style="font-family:var(--font-mono);font-size:11px;margin-top:10px;"></div>
+  </div>
+  <div class="card" style="max-width:500px;">
+    <div class="card-header"><div class="card-title">How invites work</div></div>
+    <p style="font-family:var(--font-body);font-size:13px;color:var(--text2);line-height:1.7;">If the mechanic already has an MX-Logbook account, they are added to your team immediately. If they don't have an account, they'll receive an invite email and their account will be linked to your team when they sign up.</p>
+  </div>
+  </div><!-- end inviteAdminOnly -->
+
+  <!-- TOP CONTRIBUTORS -->
+  <div class="section-header">
+    <div class="section-title">Top contributors this month</div>
+  </div>
+  <div class="card">
+    <div id="topContributors"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- ALL ENTRIES -->
+  <div class="section-header">
+    <div class="section-title">All entries</div>
+  </div>
+  <div class="search-row">
+    <input type="text" class="search-input" placeholder="Search by tail number, type, or mechanic..." oninput="filterEntries(this.value)">
+    <select onchange="filterEntriesByMechanic(this.value)" id="mechanicFilter" style="width:auto;min-width:160px;">
+      <option value="">All mechanics</option>
+    </select>
+    <select onchange="filterEntriesByType(this.value)" style="width:auto;min-width:140px;">
+      <option value="">All entry types</option>
+      <option value="Maintenance Log Entry">Maintenance</option>
+      <option value="Squawk Write-Up">Squawk</option>
+      <option value="Return to Service">RTS</option>
+      <option value="AD Compliance">AD Compliance</option>
+      <option value="Inspection Sign-Off">Inspection</option>
+      <option value="Repair Record">Repair</option>
+      <option value="AOG Report">AOG Report</option>
+    </select>
+  </div>
+  <div id="entriesList"><div class="loading">Loading entries...</div></div>
+
+  <!-- AOG SESSIONS -->
+  <div class="section-header">
+    <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">AOG sessions <span id="aogLastRefresh" style="font-family:var(--font-mono);font-size:10px;color:var(--amber);font-weight:400;text-transform:none;letter-spacing:0;margin-left:16px;"></span></div>
+  </div>
+  <div id="aogList"><div class="loading">Loading AOG sessions...</div></div>
+
+  <!-- BILLING -->
+  <div id="billingSection">
+  <div class="section-header">
+    <div class="section-title">Billing</div>
+  </div>
+  <div class="card" style="max-width:500px;">
+    <div class="card-header"><div class="card-title">Current plan</div></div>
+    <div style="margin-bottom:1rem;">
+      <div style="font-family:var(--font-cond);font-size:24px;font-weight:700;text-transform:uppercase;margin-bottom:4px;" id="billingPlan">Loading...</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);" id="billingSeats"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="showChangePlan(currentUser.plan)">Change plan</button>
+      <button class="btn-ghost" onclick="openBillingPortal()">Manage billing</button>
+      <button class="btn-ghost" onclick="openBillingPortal()">Update payment method</button>
+    </div>
+    <p style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:12px;line-height:1.7;">You will be redirected to the Stripe billing portal to manage your subscription, update payment methods, or cancel.</p>
+  </div>
+  <div class="card" style="max-width:500px;margin-bottom:3rem;">
+    <div class="card-header"><div class="card-title">Need more seats?</div></div>
+    <p style="font-family:var(--font-body);font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:1rem;">To upgrade your plan and add more mechanic seats, contact us and we'll handle it same day.</p>
+    <a href="mailto:hello@mx-logbook.com?subject=Plan upgrade request" class="btn-primary" style="display:inline-block;">Contact us to upgrade</a>
+  </div>
+  </div><!-- end billingSection -->
+
+</div>
+
+<!-- ENTRY DETAIL MODAL -->
+<div class="modal-overlay" id="entryModal" onclick="if(event.target===this)closeEntryModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEntryModal()">&#10005;</button>
+    <div class="modal-label">ENTRY DETAIL</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+      <span id="modalType" style="font-family:var(--font-mono);font-size:11px;color:var(--green);"></span>
+      <span id="modalDate" style="font-family:var(--font-mono);font-size:10px;color:#ffffff;"></span>
+      <span id="modalMechanic" style="font-family:var(--font-mono);font-size:10px;color:#ffffff;"></span>
+    </div>
+    <textarea id="modalContent" style="font-size:13px;line-height:1.8;color:#f0f0f0;background:var(--bg);border:0.5px solid var(--border2);border-radius:4px;padding:12px;resize:vertical;width:100%;outline:none;min-height:200px;font-family:'Barlow',sans-serif;" readonly></textarea>
+    <div id="modalAOGContent" style="display:none;background:var(--bg);border:0.5px solid var(--border2);border-radius:4px;padding:12px;min-height:200px;max-height:400px;overflow-y:auto;"></div>
+    <!-- AOG toolbar -->
+    <div id="modalAOGToolbar" style="display:none;margin-top:1rem;padding:10px 12px;background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="btn-primary" onclick="copyAOGReport()" id="aogCopyBtn" style="font-size:11px;padding:7px 14px;">Copy report</button>
+        <button class="btn-ghost" onclick="exportAOGText()" style="font-size:11px;padding:7px 14px;">Export .txt</button>
+        <button class="btn-ghost" onclick="exportAOGPDF()" style="font-size:11px;padding:7px 14px;">Export PDF</button>         <button class="btn-ghost" onclick="exportAOGCSV()" style="font-size:11px;padding:7px 14px;">Export CSV</button>
+        <button class="btn-ghost" id="utcToggleBtn" onclick="toggleAOGUtc()" style="font-size:11px;padding:7px 14px;">Show UTC</button>
+        <select id="aogTranslateLang" style="font-family:var(--font-mono);font-size:11px;background:var(--bg);border:0.5px solid var(--border2);color:var(--text2);padding:6px 10px;border-radius:4px;cursor:pointer;">
+          <option value="">Translate to...</option>
+          <option value="English">English (restore)</option>
+          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="Portuguese">Portuguese</option>
+          <option value="Korean">Korean</option>
+          <option value="Japanese">Japanese</option>
+          <option value="Mandarin Chinese">Mandarin Chinese</option>
+          <option value="Arabic">Arabic</option>
+          <option value="German">German</option>
+          <option value="Italian">Italian</option>
+          <option value="Hindi">Hindi</option>
+          <option value="Russian">Russian</option>
+          <option value="Turkish">Turkish</option>
+        </select>
+        <button class="btn-ghost" onclick="translateAOGReport()" id="aogTranslateBtn" style="font-size:11px;padding:7px 14px;">Translate</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn-primary" id="modalCopyBtn" onclick="copyModalEntry()">Copy to clipboard</button>
+      <button class="btn-ghost" onclick="closeEntryModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let teamData = [];
+let allEntries = [];
+let allEntriesRaw = [];
+const PLAN_SEATS = { shop:5, proshop:10, enterprise:25 };
+const PLAN_LABELS = { shop:'Shop — up to 5 mechanics', proshop:'Shop Pro — up to 10 mechanics', enterprise:'Enterprise — up to 25 mechanics' };
+
+async function api(body) {
+  const r = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return r.json();
+}
+
+async function init() {
+  const stored = localStorage.getItem('mxl_user');
+  if (!stored) { window.location.href = '/'; return; }
+  currentUser = JSON.parse(stored);
+
+  const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
+  if (!companyPlans.includes(currentUser.plan)) {
+    window.location.href = '/';
+    return;
+  }
+
+  // Mechanics cannot access admin portal
+  if (currentUser.role === 'mechanic') {
+    window.location.href = '/';
+    return;
+  }
+
+  try {
+    const check = await api({ type: 'check_access', user_id: currentUser.id, email: currentUser.email });
+    if (check.blocked) { localStorage.removeItem('mxl_user'); window.location.href = '/'; return; }
+    if (check.plan) currentUser.plan = check.plan;
+  } catch(e) {}
+
+  document.getElementById('billingPlan').textContent = PLAN_LABELS[currentUser.plan] || currentUser.plan;
+  const seats = PLAN_SEATS[currentUser.plan] || 10;
+  document.getElementById('billingSeats').textContent = `Up to ${seats} mechanics`;
+
+  // Role-based access: only admins see billing and invite sections
+  const isAdmin = !currentUser.role || currentUser.role === 'admin';
+  if (!isAdmin) {
+    const inviteAdminOnly = document.getElementById('inviteAdminOnly');
+    if (inviteAdminOnly) inviteAdminOnly.style.display = 'none';
+    const inviteBtn = document.getElementById('inviteBtn');
+    if (inviteBtn) inviteBtn.style.display = 'none';
+    const billing = document.getElementById('billingSection');
+    if (billing) billing.style.display = 'none';
+  }
+
+  // For invited users (lead/inspector/mechanic), get seat count from company plan
+  const effectivePlan = PLAN_SEATS[currentUser.plan] ? currentUser.plan : null;
+  if (!effectivePlan) {
+    // Fetch company plan from API
+    try {
+      const companyData = await api({ type: 'get_company_plan', company_id: currentUser.company_id });
+      if (companyData.plan) {
+        currentUser.companyPlan = companyData.plan;
+        const companySeats = PLAN_SEATS[companyData.plan] || 5;
+        document.getElementById('billingPlan').textContent = PLAN_LABELS[companyData.plan] || companyData.plan;
+        document.getElementById('billingSeats').textContent = `Up to ${companySeats} mechanics`;
+      }
+    } catch(e) {}
+  }
+
+  loadAll();
+}
+
+async function loadAll() {
+  loadDashboard();
+  loadTeam();
+  loadEntries();
+  startAOGPolling();
+  updateInviteSeats();
+}
+
+async function loadDashboard() {
+  try {
+    const data = await api({ type: 'get_team', company_id: currentUser.company_id, user_id: currentUser.id });
+    teamData = data.team || [];
+    const seats = PLAN_SEATS[currentUser.plan] || 10;
+    const used = teamData.filter(m => m.id !== currentUser.company_id).length;
+    const remaining = Math.max(0, seats - used);
+    const pct = Math.round((used / seats) * 100);
+
+    document.getElementById('statMembers').textContent = used;
+    document.getElementById('statSeats').textContent = remaining;
+    document.getElementById('seatLabel').textContent = `${used} of ${seats} seats used`;
+
+    // Show overage warning and disable invite if at capacity
+    const atCapacity = used >= seats;
+    const warning = document.getElementById('overageWarning');
+    const inviteBtn = document.getElementById('inviteBtn');
+    const isAdmin = !currentUser.role || currentUser.role === 'admin';
+    if (warning) warning.style.display = atCapacity ? 'block' : 'none';
+    if (inviteBtn && isAdmin) { inviteBtn.disabled = atCapacity; inviteBtn.style.opacity = atCapacity ? '0.4' : '1'; inviteBtn.title = atCapacity ? 'Seat limit reached' : ''; }
+
+    const bar = document.getElementById('seatProgress');
+    bar.style.width = pct + '%';
+    if (pct >= 90) bar.classList.add('red');
+    else if (pct >= 70) bar.classList.add('amber');
+
+    const sorted = [...teamData].sort((a,b) => (b.entry_count||0) - (a.entry_count||0)).slice(0,5);
+    const max = sorted[0]?.entry_count || 1;
+    document.getElementById('topContributors').innerHTML = sorted.length ?
+      sorted.map(m => `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text2);width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.email}</div>
+          <div style="flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;">
+            <div style="height:100%;background:var(--green);width:${Math.round((m.entry_count||0)/max*100)}%;border-radius:2px;"></div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text);width:30px;text-align:right;">${m.entry_count||0}</div>
+        </div>`).join('') :
+      '<div class="empty">No entries yet.</div>';
+
+    const totalEntries = teamData.reduce((s,m) => s + (m.entry_count||0), 0);
+    document.getElementById('statEntries').textContent = totalEntries;
+  } catch(e) {}
+
+  try {
+    const data = await api({ type: 'get_company_entries', company_id: currentUser.company_id, user_id: currentUser.id, limit: 5 });
+    const entries = data.entries || [];
+    const now = new Date();
+    const thisMonth = entries.filter(e => {
+      const d = new Date(e.created_at);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    document.getElementById('statThisMonth').textContent = thisMonth.length;
+  } catch(e) {
+    document.getElementById('statThisMonth').textContent = '0';
+  }
+}
+
+function entryItemHTML(e) {
+  return `<div class="entry-item" onclick="showEntry(${JSON.stringify(e).replace(/"/g,'&quot;')})">
+    <div class="entry-meta">
+      <span class="entry-type">${e.entry_type||'Entry'}</span>
+      <span class="entry-date">${e.tail_number?e.tail_number+' · ':''} ${e.mechanic_email||''} · ${e.created_at?new Date(e.created_at).toLocaleDateString():''}</span>
+    </div>
+    <div class="entry-preview">${(e.content||'').substring(0,120)}...</div>
+  </div>`;
+}
+
+async function loadTeam() {
+  document.getElementById('teamTable').innerHTML = '<div class="loading">Loading...</div>';
+  try {
+    const data = await api({ type: 'get_team', company_id: currentUser.company_id, user_id: currentUser.id });
+    teamData = data.team || [];
+    renderTeam(teamData);
+    updateInviteSeats();
+  } catch(e) { document.getElementById('teamTable').innerHTML = '<div class="empty">Could not load team.</div>'; }
+}
+
+function renderTeam(team) {
+  document.getElementById('teamTable').innerHTML = team.length ? `
+    <table class="table">
+      <thead><tr>
+        <th>Email</th><th>Role</th><th>Entries</th><th>Joined</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${team.map(m => `
+        <tr>
+          <td style="font-family:var(--font-body);font-size:13px;">${m.email}</td>
+          <td>
+            <select onchange="updateRole('${m.id}',this.value)" style="font-family:var(--font-mono);font-size:10px;background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:3px 8px;border-radius:4px;cursor:pointer;width:auto;">
+              <option value="mechanic" ${m.role==='mechanic'?'selected':''}>Mechanic</option>
+              <option value="lead" ${m.role==='lead'?'selected':''}>Lead</option>
+              <option value="inspector" ${m.role==='inspector'?'selected':''}>Inspector</option>
+              <option value="admin" ${m.role==='admin'?'selected':''}>Admin</option>
+            </select>
+          </td>
+          <td style="font-family:var(--font-mono);font-size:12px;">${m.entry_count||0}</td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--text3);">${m.created_at?new Date(m.created_at).toLocaleDateString():''}</td>
+          <td><button class="btn-danger" onclick="removeMember('${m.id}','${m.email}')">Remove</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` :
+    '<div class="empty">No team members yet. Invite your first mechanic above.</div>';
+}
+
+function filterTeam(q) {
+  const filtered = teamData.filter(m =>
+    m.email.toLowerCase().includes(q.toLowerCase()) ||
+    (m.role||'').toLowerCase().includes(q.toLowerCase())
+  );
+  renderTeam(filtered);
+}
+
+async function updateRole(memberId, role) {
+  await api({ type: 'update_member_role', user_id: currentUser.id, member_id: memberId, role }).catch(()=>{});
+}
+
+async function removeMember(memberId, email) {
+  if (!confirm(`Remove ${email} from your team? They will lose access immediately.`)) return;
+  const data = await api({ type: 'remove_member', user_id: currentUser.id, company_id: currentUser.company_id, member_id: memberId });
+  if (data.success) loadTeam();
+}
+
+function updateInviteSeats() {
+  const effectivePlan = PLAN_SEATS[currentUser.plan] ? currentUser.plan : (currentUser.companyPlan || 'shop');
+  const seats = PLAN_SEATS[effectivePlan] || 5;
+  const used = teamData.filter(m => m.id !== currentUser.company_id).length;
+  const remaining = seats - used;
+  const el = document.getElementById('inviteSeatsLeft');
+  if (el) el.textContent = `${remaining} seat${remaining !== 1 ? 's' : ''} remaining`;
+}
+
+async function sendInvite() {
+  const email = document.getElementById('inviteEmailInput').value.trim();
+  const role = document.getElementById('inviteRoleInput').value;
+  const msg = document.getElementById('inviteMsg');
+  if (!email) { msg.textContent = 'Please enter an email.'; msg.style.color = 'var(--red)'; return; }
+  msg.textContent = 'Sending...'; msg.style.color = 'var(--text3)';
+  const data = await api({ type: 'invite_member', company_id: currentUser.company_id, user_id: currentUser.id, email, role, plan: currentUser.plan });
+  if (data.error) { msg.textContent = data.error; msg.style.color = 'var(--red)'; return; }
+  msg.textContent = `Invite sent to ${email}.`; msg.style.color = 'var(--green)';
+  document.getElementById('inviteEmailInput').value = '';
+  setTimeout(() => { loadTeam(); }, 1500);
+}
+
+async function loadEntries() {
+  document.getElementById('entriesList').innerHTML = '<div class="loading">Loading entries...</div>';
+  try {
+    const data = await api({ type: 'get_company_entries', company_id: currentUser.company_id, user_id: currentUser.id, limit: 200 });
+    allEntriesRaw = data.entries || [];
+    allEntries = [...allEntriesRaw];
+    const mechanics = [...new Set(allEntriesRaw.map(e => e.mechanic_email).filter(Boolean))];
+    const sel = document.getElementById('mechanicFilter');
+    sel.innerHTML = '<option value="">All mechanics</option>' + mechanics.map(m => `<option value="${m}">${m}</option>`).join('');
+    renderEntries(allEntries);
+  } catch(e) { document.getElementById('entriesList').innerHTML = '<div class="empty">Could not load entries.</div>'; }
+}
+
+function renderEntries(entries) {
+  document.getElementById('entriesList').innerHTML = entries.length ?
+    entries.map(e => entryItemHTML(e)).join('') :
+    '<div class="empty">No entries found.</div>';
+}
+
+function filterEntries(q) {
+  const filtered = allEntriesRaw.filter(e =>
+    (e.tail_number||'').toLowerCase().includes(q.toLowerCase()) ||
+    (e.entry_type||'').toLowerCase().includes(q.toLowerCase()) ||
+    (e.mechanic_email||'').toLowerCase().includes(q.toLowerCase()) ||
+    (e.content||'').toLowerCase().includes(q.toLowerCase())
+  );
+  allEntries = filtered;
+  renderEntries(filtered);
+}
+
+function filterEntriesByMechanic(email) {
+  const filtered = email ? allEntriesRaw.filter(e => e.mechanic_email === email) : allEntriesRaw;
+  allEntries = filtered;
+  renderEntries(filtered);
+}
+
+function filterEntriesByType(type) {
+  const filtered = type ? allEntriesRaw.filter(e => e.entry_type === type) : allEntriesRaw;
+  allEntries = filtered;
+  renderEntries(filtered);
+}
+
+async function adminResolveAOG(sessionId) {
+  const confirmed = confirm('Are you sure you want to resolve and finalize this AOG report? This will close the session for all team members.');
+  if (!confirmed) return;
+  await api({ type: 'close_aog_session', user_id: currentUser.id, session_id: sessionId }).catch(() => {});
+  closeEntryModal();
+  loadAOG();
+}
+
+let aogPollingInterval = null;
+
+function startAOGPolling() {
+  loadAOG();
+  if (aogPollingInterval) clearInterval(aogPollingInterval);
+  aogPollingInterval = setInterval(loadAOG, 10000);
+}
+
+async function loadAOG() {
+  const container = document.getElementById('aogList');
+  if (!container.innerHTML || container.innerHTML.includes('Loading AOG')) {
+    container.innerHTML = '<div class="loading">Loading AOG sessions...</div>';
+  }
+  try {
+    const data = await api({ type: 'get_company_aog', company_id: currentUser.company_id, user_id: currentUser.id });
+    const sessions = data.sessions || [];
+    const lastRefresh = document.getElementById('aogLastRefresh');
+    if (lastRefresh) { const n=new Date(); lastRefresh.textContent = 'Updated ' + String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0'); }
+    container.innerHTML = sessions.length ?
+      sessions.map(s => {
+        const entries = (() => { try { return JSON.parse(s.entries || '[]'); } catch(e) { return []; } })();
+        const lastEntry = entries[entries.length - 1];
+        const lastActivity = (() => { const d = new Date(lastEntry ? lastEntry.created_at : s.created_at); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); })();
+        return `<div class="card" style="cursor:pointer;border-left:3px solid var(--amber);" onclick="showAOGDetail(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--amber);">&#9888; ACTIVE AOG</div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Last activity: ${lastActivity}</div>
+          </div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:4px;">${s.tail_number||'No tail'}${s.aircraft?' &middot; '+s.aircraft:''}</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);">Started by ${s.mechanic_name||'Unknown'} &middot; ${entries.length} entr${entries.length===1?'y':'ies'}</div>
+          ${lastEntry ? `<div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);font-style:italic;">"${(lastEntry.text||'').substring(0,80)}${(lastEntry.text||'').length>80?'...':''}"</div>` : ''}
+        </div>`;
+      }).join('') :
+      '<div class="empty">No active AOG sessions.</div>';
+  } catch(e) { container.innerHTML = '<div class="empty">Could not load AOG sessions.</div>'; }
+}
+
+async function openBillingPortal() {
+  if (currentUser.role && currentUser.role !== 'admin') {
+    alert('Only account admins can manage billing.');
+    return;
+  }
+  const btn = event.target;
+  btn.textContent = 'Loading...'; btn.disabled = true;
+  try {
+    const data = await api({ type: 'create_portal_session', customer_email: currentUser.email });
+    if (data.url) window.location.href = data.url;
+    else { alert(data.error || data.message || 'Could not open billing portal. Contact hello@mx-logbook.com'); }
+  } catch(e) { alert('Could not open billing portal. Contact hello@mx-logbook.com'); }
+  btn.textContent = 'Manage billing'; btn.disabled = false;
+}
+
+function showEntry(entry) {
+  document.getElementById('modalType').textContent = entry.entry_type || 'Entry';
+  document.getElementById('modalDate').textContent = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : '';
+  document.getElementById('modalMechanic').textContent = entry.mechanic_email ? '· ' + entry.mechanic_email : '';
+  document.getElementById('modalContent').value = entry.content || '';
+  document.getElementById('entryModal').classList.add('open');
+}
+
+let _aogModalSession = null;
+let _aogUtcMode = false;
+let _aogOriginalEntries = [];
+
+function formatAOGTime(entry, utc) {
+  if (utc) {
+    if (entry.created_at) {
+      const d = new Date(entry.created_at);
+      const hh = String(d.getUTCHours()).padStart(2, '0');
+      const mm = String(d.getUTCMinutes()).padStart(2, '0');
+      return hh + mm + 'Z';
+    }
+    // Legacy entries without created_at: can't reliably convert, label as unknown
+    return (entry.time || '').replace(/L$/, '') + 'Z (approx)';
+  }
+  if (entry.created_at) { const d = new Date(entry.created_at); return String(d.getHours()).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0') + 'L'; }   return entry.time || '';
+}
+
+function buildAOGEntriesHtml(entries, utc) {
+  if (!entries.length) return '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);">No entries yet.</div>';
+  return entries.map(e => `
+    <div style="padding:10px 0;border-bottom:0.5px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--amber);">${formatAOGTime(e, utc)}</span>
+        <div style="text-align:right;">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text2);">${e.tech_name||'Unknown'}</div>
+          ${e.user_email ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">${e.user_email}</div>` : ''}
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;">${e.text||''}</div>
+    </div>`).join('');
+}
+
+function renderAOGModal(session, entries, utc) {
+  const aogDiv = document.getElementById('modalAOGContent');
+  const entriesHtml = buildAOGEntriesHtml(entries, utc);
+  aogDiv.innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px;">${session.tail_number||'No tail'}${session.aircraft?' &middot; '+session.aircraft:''}</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Started by ${session.mechanic_name||session.mechanic_email||'Unknown'} &middot; ${entries.length} entr${entries.length===1?'y':'ies'}</div>
+    </div>
+    ${entriesHtml}
+    <div style="margin-top:16px;padding-top:16px;border-top:0.5px solid var(--border);">
+      <button onclick="adminResolveAOG('${session.id}')" style="background:var(--amber);color:#0a0a0a;border:none;padding:8px 20px;border-radius:4px;font-family:var(--font-mono);font-size:12px;cursor:pointer;font-weight:600;">Resolve &amp; Close AOG</button>
+    </div>
+  `;
+}
+
+function showAOGDetail(session) {
+  const entries = (() => { try { return JSON.parse(session.entries || '[]'); } catch(e) { return []; } })();
+  _aogModalSession = session;
+  _aogOriginalEntries = entries;
+  _aogUtcMode = false;
+
+  document.getElementById('modalType').textContent = 'AOG Report';
+  document.getElementById('modalDate').textContent = session.created_at ? new Date(session.created_at).toLocaleDateString() : '';
+  document.getElementById('modalMechanic').textContent = session.tail_number ? '· ' + session.tail_number : '';
+  document.getElementById('modalContent').style.display = 'none';
+  document.getElementById('modalCopyBtn').style.display = 'none';
+  document.getElementById('modalAOGToolbar').style.display = 'block';
+
+  const utcBtn = document.getElementById('utcToggleBtn');
+  if (utcBtn) utcBtn.textContent = 'Show UTC';
+
+  const aogDiv = document.getElementById('modalAOGContent');
+  aogDiv.style.display = 'block';
+  renderAOGModal(session, entries, false);
+  document.getElementById('entryModal').classList.add('open');
+}
+
+function closeEntryModal() {
+  document.getElementById('entryModal').classList.remove('open');
+  document.getElementById('modalContent').style.display = '';
+  document.getElementById('modalCopyBtn').style.display = '';
+  document.getElementById('modalAOGContent').style.display = 'none';
+  document.getElementById('modalAOGContent').innerHTML = '';
+  document.getElementById('modalAOGToolbar').style.display = 'none';
+  const sel = document.getElementById('aogTranslateLang');
+  if (sel) sel.value = '';
+  _aogModalSession = null;
+  _aogOriginalEntries = [];
+  _aogUtcMode = false;
+}
+
+function buildAOGReportText(session, entries, utc) {
+  const lines = [];
+  lines.push('AOG REPORT');
+  lines.push(`Aircraft: ${session.tail_number||'N/A'}${session.aircraft?' · '+session.aircraft:''}`);
+  lines.push(`Date: ${session.created_at ? new Date(session.created_at).toLocaleDateString() : 'N/A'}`);
+  lines.push(`Started by: ${session.mechanic_name||session.mechanic_email||'Unknown'}`);
+  lines.push(`Entries: ${entries.length}`);
+  lines.push('');
+  lines.push('─'.repeat(40));
+  entries.forEach(e => {
+    lines.push('');
+    const timeStr = formatAOGTime(e, utc);
+    const who = [e.tech_name, e.user_email].filter(Boolean).join(' · ');
+    lines.push(`${timeStr}  ${who}`);
+    lines.push(e.text||'');
+  });
+  lines.push('');
+  lines.push('─'.repeat(40));
+  lines.push('Generated by MX-Logbook · mx-logbook.com');
+  return lines.join('\n');
+}
+
+function copyAOGReport() {
+  if (!_aogModalSession) return;
+  const text = buildAOGReportText(_aogModalSession, _aogOriginalEntries, _aogUtcMode);
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('aogCopyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy report', 2000);
+  });
+}
+
+function exportAOGText() {
+  if (!_aogModalSession) return;
+  const text = buildAOGReportText(_aogModalSession, _aogOriginalEntries, _aogUtcMode);
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `AOG_${_aogModalSession.tail_number||'report'}_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+}
+function exportAOGCSV() {
+  if (!_aogModalSession) return;
+  const s = _aogModalSession;
+  const rows = [];
+  rows.push(`Aircraft: ${s.tail_number||'N/A'}${s.aircraft?' · '+s.aircraft:''}`);
+  rows.push(`Date: ${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'N/A'}`);
+  rows.push(`Started by: ${s.mechanic_name||s.mechanic_email||'Unknown'}`);
+  rows.push('');
+  rows.push(['Time (Local)','Time (UTC)','Technician','Email','Entry'].join(','));
+  _aogOriginalEntries.forEach(e => {
+    const local = e.time || '';
+    const utc = e.created_at ? (() => { const d=new Date(e.created_at); return String(d.getUTCHours()).padStart(2,'0')+String(d.getUTCMinutes()).padStart(2,'0')+'Z'; })() : '';
+    const tech = e.tech_name || 'MX';
+    const email = e.user_email || '';
+    const text = '"' + (e.text||'').replace(/"/g,'""') + '"';
+    rows.push([local, utc, tech, email, text].join(','));
+  });
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `AOG_${s.tail_number||'report'}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+function exportAOGPDF() {
+  if (!_aogModalSession) return;
+  const text = buildAOGReportText(_aogModalSession, _aogOriginalEntries, _aogUtcMode);
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>AOG Report</title>
+  <style>
+    body { font-family: monospace; font-size: 13px; line-height: 1.8; padding: 2rem; max-width: 700px; margin: 0 auto; color: #111; }
+    pre { white-space: pre-wrap; word-break: break-word; }
+  </style></head><body><pre>${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+  <script>window.onload=function(){window.print();}<\/script></body></html>`);
+  win.document.close();
+}
+
+function toggleAOGUtc() {
+  if (!_aogModalSession) return;
+  _aogUtcMode = !_aogUtcMode;
+  const btn = document.getElementById('utcToggleBtn');
+  if (btn) btn.textContent = _aogUtcMode ? 'Show Local' : 'Show UTC';
+  renderAOGModal(_aogModalSession, _aogOriginalEntries, _aogUtcMode);
+}
+
+async function translateAOGReport() {
+  const lang = document.getElementById('aogTranslateLang').value;
+  if (!lang) { alert('Please select a language.'); return; }
+  if (!_aogOriginalEntries.length) return;
+  const btn = document.getElementById('aogTranslateBtn');
+  btn.textContent = 'Translating...'; btn.disabled = true;
+  try {
+    const combinedText = _aogOriginalEntries.map((e, i) => `[${i}] ${e.text||''}`).join('\n');
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5', max_tokens: 3000,
+        messages: [{ role: 'user', content: `Translate each numbered entry below into ${lang}. Preserve all technical aviation terms, part numbers, timestamps, and proper nouns. Return ONLY the translated entries in the same [N] numbered format, nothing else.\n\n${combinedText}` }]
+      })
+    });
+    const data = await resp.json();
+    const translated = (data.content?.[0]?.text || '').trim();
+    const translatedLines = translated.split('\n').filter(l => /^\[\d+\]/.test(l.trim()));
+    if (translatedLines.length === _aogOriginalEntries.length) {
+      const translatedEntries = _aogOriginalEntries.map((e, i) => ({
+        ...e,
+        text: translatedLines[i].replace(/^\[\d+\]\s*/, '')
+      }));
+      renderAOGModal(_aogModalSession, translatedEntries, _aogUtcMode);
+      btn.textContent = lang === 'English' ? 'Restored' : 'Translated';
+    } else {
+      btn.textContent = 'Try again';
+    }
+  } catch(e) {
+    btn.textContent = 'Error';
+  }
+  setTimeout(() => { btn.textContent = 'Translate'; btn.disabled = false; }, 2500);
+}
+
+function copyModalEntry() {
+  navigator.clipboard.writeText(document.getElementById('modalContent').value)
+    .then(() => { const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy to clipboard', 2000); });
+}
+
+function handleLogout() {
+  localStorage.removeItem('mxl_user');
+  window.location.href = '/';
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light-mode');
+  localStorage.setItem('mxl_theme', isLight ? 'light' : 'dark');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.innerHTML = isLight ? '&#9728; LIGHT' : '&#9790; DARK';
+}
+
+function toggleTextSize() {
+  const isLarge = document.body.classList.toggle('large-text');
+  localStorage.setItem('mxl_textsize', isLarge ? 'large' : 'normal');
+  const btn = document.getElementById('textSizeToggle');
+  if (btn) btn.innerHTML = isLarge ? 'A-' : 'A+';
+}
+
+function loadPreferences() {
+  if (localStorage.getItem('mxl_theme') === 'light') {
+    document.body.classList.add('light-mode');
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.innerHTML = '&#9728; LIGHT';
+  }
+  if (localStorage.getItem('mxl_textsize') === 'large') {
+    document.body.classList.add('large-text');
+    const btn = document.getElementById('textSizeToggle');
+    if (btn) btn.innerHTML = 'A-';
+  }
+}
+
+const FOUNDING_PRICES = {
+  solo:       { price_id: 'price_1TYrNjF0p7ZYm2D2ShrJKeWL', label: 'Solo',       cost: '$9.99/mo' },
+  pro:        { price_id: 'price_1TYrPqF0p7ZYm2D2PBSK3IU6', label: 'Pro',        cost: '$16.99/mo' },
+  shop:       { price_id: 'price_1Tb7HjF0p7ZYm2D2rlVittmR', label: 'Shop',       cost: '$299/mo' },
+  proshop:    { price_id: 'price_1Tb7fDF0p7ZYm2D2DakiP9X7', label: 'Shop Pro',   cost: '$599/mo' },
+  enterprise: { price_id: 'price_1Tb7fyF0p7ZYm2D2oEvUzv9C', label: 'Enterprise', cost: '$999/mo' }
+};
+const PLAN_ORDER_A = ['solo','pro','shop','proshop','enterprise'];
+const PLAN_FEATURES_A = {
+  solo:       ['50 entries/month','Voice input','6 entry types'],
+  pro:        ['Unlimited entries','AOG report','PDF export','Translation'],
+  shop:       ['Up to 5 mechanics','Shared AOG sessions','Admin portal'],
+  proshop:    ['Up to 10 mechanics','Priority support','Custom reporting'],
+  enterprise: ['Up to 25 mechanics','API access','SLA support']
+};
+
+function showChangePlan(currentPlan) {
+  const currentIdx = PLAN_ORDER_A.indexOf(currentPlan);
+  const upgrades = PLAN_ORDER_A.filter(p => PLAN_ORDER_A.indexOf(p) > currentIdx);
+  const downgrades = PLAN_ORDER_A.filter(p => PLAN_ORDER_A.indexOf(p) < currentIdx);
+
+  function planRow(p, isDowngrade) {
+    const plan = FOUNDING_PRICES[p];
+    if (!plan) return '';
+    const features = (PLAN_FEATURES_A[p] || []).join(' · ');
+    const btn = isDowngrade
+      ? `<button data-plan="${p}" data-price="${plan.price_id}" data-downgrade="1" onclick="handleAdminPlanClick(this)" style="background:transparent;color:var(--amber);font-family:var(--font-mono);font-size:11px;padding:7px 16px;border:0.5px solid var(--amber);border-radius:4px;cursor:pointer;">Select</button>`
+      : `<button data-plan="${p}" data-price="${plan.price_id}" data-downgrade="0" onclick="handleAdminPlanClick(this)" style="background:var(--green);color:#0a0a0a;font-family:var(--font-mono);font-size:11px;padding:7px 16px;border:none;border-radius:4px;cursor:pointer;font-weight:600;">Upgrade</button>`;
+    return `<div style="background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text);">${plan.label}</div>
+        <div style="font-family:var(--font-mono);font-size:11px;color:${isDowngrade ? 'var(--text2)' : 'var(--green)'};">${plan.cost} - founding rate</div>
+        ${features ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">${features}</div>` : ''}
+      </div>${btn}</div>`;
+  }
+
+  const upgradeHTML = upgrades.length
+    ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:8px;">UPGRADE TO</div>${upgrades.map(p => planRow(p, false)).join('')}`
+    : '';
+  const downgradeHTML = downgrades.length
+    ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);letter-spacing:1px;margin-bottom:8px;margin-top:16px;">CHANGE TO LOWER PLAN</div>${downgrades.map(p => planRow(p, true)).join('')}`
+    : '';
+
+  const modal = document.createElement('div');
+  modal.id = 'changePlanModal';
+  modal.setAttribute('data-current-plan', currentPlan);
+  modal.style.cssText = 'position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:1rem;';
+  modal.innerHTML = `<div style="background:var(--bg2);border:0.5px solid var(--border2);border-radius:12px;padding:1.5rem;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;position:relative;">
+    <button onclick="document.getElementById('changePlanModal').remove()" style="position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:18px;">&#10005;</button>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:2px;margin-bottom:6px;">FOUNDING RATE GUARANTEED</div>
+    <div style="font-size:22px;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Change plan</div>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);margin-bottom:1.25rem;">Currently on: <span style="color:var(--text);">${FOUNDING_PRICES[currentPlan] ? FOUNDING_PRICES[currentPlan].label : currentPlan}</span></div>
+    <div id="changePlanStatus" style="font-family:var(--font-mono);font-size:11px;margin-bottom:10px;"></div>
+    ${upgradeHTML}${downgradeHTML}
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target === modal) modal.remove(); });
+}
+
+function handleAdminPlanClick(btn) {
+  const newPlan = btn.getAttribute('data-plan');
+  const priceId = btn.getAttribute('data-price');
+  const isDowngrade = btn.getAttribute('data-downgrade') === '1';
+  const modal = document.getElementById('changePlanModal');
+  const currentPlan = modal ? modal.getAttribute('data-current-plan') : currentUser.plan;
+  confirmChangePlan(currentPlan, newPlan, priceId, isDowngrade);
+}
+
+async function confirmChangePlan(currentPlan, newPlan, priceId, isDowngrade) {
+  if (isDowngrade) {
+    const losing = (PLAN_FEATURES_A[currentPlan]||[]).filter(f=>!(PLAN_FEATURES_A[newPlan]||[]).includes(f));
+    const msg = losing.length
+      ? 'Switching to ' + (FOUNDING_PRICES[newPlan]?FOUNDING_PRICES[newPlan].label:newPlan) + ' means you will lose these features:\n\n- ' + losing.join('\n- ') + '\n\nAre you sure?'
+      : 'Switch to ' + (FOUNDING_PRICES[newPlan]?FOUNDING_PRICES[newPlan].label:newPlan) + '?';
+    if (!confirm(msg)) return;
+  }
+  const statusEl = document.getElementById('changePlanStatus');
+  if (statusEl){statusEl.textContent='Updating...';statusEl.style.color='var(--text3)';}
+  try {
+    const resp = await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'change_plan',customer_email:currentUser?currentUser.email:'',new_price_id:priceId,current_plan:currentPlan,new_plan:newPlan,user_id:currentUser?currentUser.id:''})});
+    const data = await resp.json();
+    if (data.error){if(statusEl){statusEl.textContent=data.error;statusEl.style.color='var(--red)';}return;}
+    currentUser.plan = newPlan;
+    localStorage.setItem('mxl_user', JSON.stringify(currentUser));
+    document.getElementById('changePlanModal')&&document.getElementById('changePlanModal').remove();
+    const msg = document.createElement('div');
+    msg.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:400;background:var(--green);color:#0a0a0a;font-family:var(--font-mono);font-size:12px;padding:10px 20px;border-radius:6px;font-weight:600;';
+    msg.textContent = 'Plan updated to ' + (FOUNDING_PRICES[newPlan]?FOUNDING_PRICES[newPlan].label:newPlan) + '. Founding rate locked in.';
+    document.body.appendChild(msg);
+    setTimeout(()=>msg.remove(), 4000);
+    const bp = document.getElementById('billingPlan');
+    const bs = document.getElementById('billingSeats');
+    if(bp) bp.textContent = PLAN_LABELS[newPlan]||newPlan;
+    if(bs) { const s = PLAN_SEATS[newPlan]; bs.textContent = s ? 'Up to '+s+' mechanics' : ''; }
+  } catch(e){if(statusEl){statusEl.textContent='Error. Please try again.';statusEl.style.color='var(--red)';}}
+}
+
+loadPreferences();
+init();
+</script>
+</body>
+</html>
