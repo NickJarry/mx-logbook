@@ -402,7 +402,8 @@ async function loadDashboard() {
   try {
     const data = await api({ type: 'get_team', company_id: currentUser.company_id, user_id: currentUser.id });
     teamData = data.team || [];
-    const seats = PLAN_SEATS[currentUser.plan] || 10;
+    const effectivePlan = PLAN_SEATS[currentUser.plan] ? currentUser.plan : (currentUser.companyPlan || 'shop');
+    const seats = PLAN_SEATS[effectivePlan] || 5;
     const used = teamData.filter(m => m.id !== currentUser.company_id).length;
     const remaining = Math.max(0, seats - used);
     const pct = Math.round((used / seats) * 100);
