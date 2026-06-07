@@ -335,7 +335,7 @@ async function init() {
   if (!stored) { window.location.href = '/'; return; }
   currentUser = JSON.parse(stored);
 
-  const companyPlans = ['shop','proshop','enterprise'];
+  const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
   if (!companyPlans.includes(currentUser.plan)) {
     window.location.href = '/';
     return;
