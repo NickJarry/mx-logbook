@@ -836,8 +836,8 @@
         <span id="changePasswordStatus" style="font-family:var(--font-mono);font-size:11px;margin-left:10px;display:none;"></span>
       </div>
       <button class="btn-ghost" style="font-size:12px;padding:8px 16px;" onclick="handleLogout()">Log out</button>
-      <button class="btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:8px;" onclick="showChangePlan(currentUser.plan)">Change plan</button>
-      <button class="btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:8px;color:var(--red);border-color:var(--red);" onclick="showCancelFlow()">Cancel subscription</button>
+      <button class="btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:8px;display:none;" id="changePlanBtn" onclick="showChangePlan(currentUser.plan)">Change plan</button>
+      <button class="btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:8px;color:var(--red);border-color:var(--red);display:none;" id="cancelSubBtn" onclick="showCancelFlow()">Cancel subscription</button>
     </div>
     <div id="dash-reports" class="dash-panel">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
@@ -2659,6 +2659,12 @@ async function loadDashboard(){
 
   // Show company info section for account admins only
   const isAccountAdmin = ['shop','proshop','enterprise'].includes(currentUser.plan) && (!currentUser.role || currentUser.role === 'admin');
+ if (isAccountAdmin) {
+    const cpBtn = document.getElementById('changePlanBtn');
+    const csBtn = document.getElementById('cancelSubBtn');
+    if (cpBtn) cpBtn.style.display = 'inline-block';
+    if (csBtn) csBtn.style.display = 'inline-block';
+  }
   if (isAccountAdmin) {
     const section = document.getElementById('companyInfoSection');
     if (section) section.style.display = 'block';
