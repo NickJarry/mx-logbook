@@ -520,6 +520,7 @@
           <button class="btn-copy" onclick="generateFinalReport()" style="background:var(--green);color:#0a0a0a;border-color:var(--green);font-weight:600;">Generate final report</button>
           <button class="btn-copy" onclick="closeReport()" style="color:var(--text3);border-color:var(--border);">Close</button>
           <button class="btn-copy" id="resolveAOGBtn" onclick="resolveAOGSession()" style="display:none;color:var(--amber);border-color:var(--amber);">Resolve AOG</button>
+          <button class="btn-copy" onclick="exportRunningReportPDF()" style="color:var(--text3);border-color:var(--border);">Export PDF</button>
           <button class="btn-copy" onclick="clearSession()" style="color:var(--text3);border-color:var(--border);font-size:10px;">Clear</button>
         </div>
         <p style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:8px;letter-spacing:0.5px;">Unsaved running reports are automatically deleted after 48 hours. Hit Save report to keep permanently.</p>
@@ -2379,7 +2380,69 @@ async function generateEntry(){
     }
   }catch(err){textEl.value='Connection error. Please try again.';statusEl.textContent='Error';}
 }
-
+function exportRunningReportPDF(){
+  if(!sessionEntries.length){alert('No entries to export.');return;}
+  const tail=document.getElementById('tailNum').value.trim();
+  const aircraft=document.getElementById('aircraft').value.trim();
+  const tech=document.getElementById('techName').value.trim();
+  const cert=document.getElementById('certNum').value.trim();
+  const date=document.getElementById('workDate').value;
+  const woNum='WO-'+(date?date.replace(/-/g,''):new Date().toISOString().slice(0,10).replace(/-/g,''))+'-'+(tail||'XXX').replace(/\s+/g,'');
+  const entryRows=sessionEntries.map(e=>{
+    const t=(e.time||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const txt=(e.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const init=e.initials||'MX';
+    return`<div class="entry-row"><span class="entry-time">${t} [${init}]</span><span class="entry-text">${txt}</span>${e.editedBy?`<div class="entry-edited">${e.editedBy.replace(/&/g,'&amp;')}</div>`:''}</div>`;
+  }).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Work Order ${woNum}</title><style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Arial,sans-serif;font-size:11pt;color:#111;padding:2cm;}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #ccc;}
+    .header-left h1{font-size:16pt;font-weight:700;text-transform:uppercase;margin-bottom:4px;}
+    .header-left .wo-num{font-size:9pt;color:#666;font-family:'Courier New',monospace;}
+    .header-right{font-size:11pt;font-weight:700;letter-spacing:2px;color:#444;}
+    .meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;padding:12px;background:#f8f8f8;border:0.5px solid #ddd;}
+    .meta-field .label{font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
+    .meta-field .value{font-size:10pt;font-weight:600;font-family:'Courier New',monospace;}
+    .section-title{font-size:8pt;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:10px;}
+    .entries{margin-bottom:24px;border:0.5px solid #ddd;}
+    .entry-row{padding:8px 12px;border-bottom:0.5px solid #eee;font-size:10.5pt;line-height:1.6;}
+    .entry-row:last-child{border-bottom:none;}
+    .entry-time{font-family:'Courier New',monospace;font-size:9pt;color:#666;margin-right:10px;}
+    .entry-text{color:#111;}
+    .entry-edited{font-size:8pt;color:#999;font-family:'Courier New',monospace;margin-top:2px;}
+    .sig-section{display:grid;grid-template-columns:1fr 1fr;gap:2cm;margin-top:24px;padding-top:16px;border-top:1px solid #ccc;}
+    .sig-box .sig-line{border-bottom:1px solid #999;height:48px;margin-bottom:6px;}
+    .sig-box .sig-label{font-size:9pt;color:#444;}
+    .sig-box .sig-sub{font-size:8pt;color:#999;margin-top:3px;font-family:'Courier New',monospace;}
+    .disclaimer{margin-top:20px;padding-top:12px;border-top:0.5px solid #ddd;font-size:7.5pt;color:#999;line-height:1.6;}
+    @media print{body{padding:1.5cm;}@page{margin:1.5cm;}}
+  </style></head><body>
+  <div class="header">
+    <div class="header-left"><h1>Maintenance work order</h1><div class="wo-num">${woNum}</div></div>
+    <div class="header-right">MX-LOGBOOK</div>
+  </div>
+  <div class="meta">
+    <div class="meta-field"><div class="label">Tail number</div><div class="value">${tail||'N/A'}</div></div>
+    <div class="meta-field"><div class="label">Aircraft</div><div class="value">${aircraft||'N/A'}</div></div>
+    <div class="meta-field"><div class="label">Date</div><div class="value">${date||'N/A'}</div></div>
+    <div class="meta-field"><div class="label">Entry type</div><div class="value">${selectedType}</div></div>
+    <div class="meta-field"><div class="label">Technician</div><div class="value">${tech||'N/A'}</div></div>
+    <div class="meta-field"><div class="label">Certificate no.</div><div class="value">${cert||'N/A'}</div></div>
+  </div>
+  <div class="section-title">Work performed</div>
+  <div class="entries">${entryRows}</div>
+  <div class="sig-section">
+    <div class="sig-box"><div class="sig-line"></div><div class="sig-label">A&amp;P technician signature</div><div class="sig-sub">Certificate no. ____________</div></div>
+    <div class="sig-box"><div class="sig-line"></div><div class="sig-label">Inspector / IA signature</div><div class="sig-sub">Certificate no. ____________</div></div>
+  </div>
+  <div class="disclaimer">DRAFT ONLY: NOT AN OFFICIAL FAA DOCUMENT. All entries must be reviewed and signed by the responsible A&amp;P or IA certificate holder before use. Not affiliated with or approved by the FAA. Generated by MX-Logbook (mx-logbook.com)</div>
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`;
+  const win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+}
 function downloadPDF(){
   const text=document.getElementById('outputText').value,tail=document.getElementById('tailNum').value.trim(),aircraft=document.getElementById('aircraft').value.trim(),tech=document.getElementById('techName').value.trim(),date=document.getElementById('workDate').value;
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>MX-Logbook Entry</title><style>body{font-family:'Courier New',monospace;font-size:11pt;margin:2cm;}.logo{font-size:16pt;font-weight:bold;letter-spacing:3px;margin-bottom:16px;}.content{white-space:pre-wrap;border:1px solid #ccc;padding:16px;background:#fafafa;line-height:1.8;}.footer{margin-top:20px;border-top:1px solid #ccc;padding-top:10px;font-size:8pt;color:#666;}</style></head><body><div class="logo">MX-LOGBOOK</div><div style="font-size:13pt;font-weight:bold;text-transform:uppercase;margin-bottom:12px;">${selectedType}</div><div style="font-size:9pt;color:#444;margin-bottom:16px;">${tail?'Tail: '+tail+'   ':''} ${aircraft?'Aircraft: '+aircraft+'   ':''} ${date?'Date: '+date+'   ':''} ${tech?'Tech: '+tech:''}</div><div class="content">${text}</div><div class="footer">DRAFT ONLY: NOT AN OFFICIAL FAA DOCUMENT. Review and sign before use per 14 CFR Part 43. Generated by MX-Logbook (mx-logbook.com)</div></body></html>`;
