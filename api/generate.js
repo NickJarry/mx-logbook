@@ -622,6 +622,9 @@ export default async function handler(req, res) {
       if (profile.plan === 'cancelled') {
         return res.status(200).json({ blocked: true, message: 'Your subscription has been cancelled. Please resubscribe at mx-logbook.com to continue.' });
       }
+      if (profile.plan === 'company_cancelled') {
+        return res.status(200).json({ blocked: true, message: 'Access denied. Please contact your company\'s administrator.' });
+      }
       if (profile.subscription_status === 'past_due') {
         return res.status(200).json({ blocked: true, message: 'Your payment is past due. Please update your billing information to continue.' });
       }
