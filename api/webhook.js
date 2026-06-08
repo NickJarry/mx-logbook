@@ -87,6 +87,27 @@ export default async function handler(req, res) {
             cancelled_at: new Date().toISOString()
           });
           console.log(`Cancelled plan for ${email}`);
+
+          // Cancel all team members associated with this company
+          const profileResp = await fetch(`${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=company_id`, {
+            headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` }
+          });
+          const profileData = await profileResp.json();
+          const company_id = profileData?.[0]?.company_id;
+          if (company_id) {
+            await fetch(`${SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&plan=neq.cancelled`, {
+              method: 'PATCH',
+              headers: {
+                'apikey': SUPABASE_SERVICE_KEY,
+                'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({ plan: 'company_cancelled' })
+            });
+            console.log(`Cancelled all team members for company ${company_id}`);
+          }
+        }
         }
         break;
       }
