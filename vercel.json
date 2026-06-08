@@ -13,6 +13,7 @@
     { "src": "/reference.html", "dest": "/reference.html" },
     { "src": "/admin.html", "dest": "/admin.html" },
     { "src": "/invite.html", "dest": "/invite.html" },
+    { "src": "/turnover.html", "dest": "/turnover.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
