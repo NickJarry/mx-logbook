@@ -108,7 +108,6 @@ export default async function handler(req, res) {
             console.log(`Cancelled all team members for company ${company_id}`);
           }
         }
-        }
         break;
       }
 
