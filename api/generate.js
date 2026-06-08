@@ -976,6 +976,185 @@ if (type === 'update_aog_entries') {
       });
       return res.status(200).json({ success: true });
     }
+    if (type === 'check_turnover_access') {
+      const { company_id } = req.body;
+      if (!company_id) return res.status(200).json({ allowed: false });
+      const profileResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${user_id}&select=plan,role`, {
+        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` }
+      });
+      const profiles = await profileResp.json();
+      const profile = profiles?.[0];
+      if (!profile) return res.status(200).json({ allowed: false });
+      const allowedPlans = ['proshop', 'enterprise', 'mechanic', 'lead', 'inspector', 'admin'];
+      // For invited members, check their company owner's plan
+      if (['mechanic','lead','inspector','admin'].includes(profile.plan)) {
+        const ownerResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&select=plan&order=created_at.asc&limit=1`, {
+          headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` }
+        });
+        const owners = await ownerResp.json();
+        const ownerPlan = owners?.[0]?.plan;
+        const allowed = ['proshop','enterprise'].includes(ownerPlan);
+        return res.status(200).json({ allowed, plan: profile.plan, role: profile.role || null });
+      }
+      const allowed = ['proshop','enterprise'].includes(profile.plan);
+      return res.status(200).json({ allowed, plan: profile.plan, role: profile.role || null });
+    }
+
+    if (type === 'get_turnover_reports') {
+      const { company_id } = req.body;
+      if (!company_id) return res.status(200).json({ reports: [] });
+      const resp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports?company_id=eq.${company_id}&order=created_at.desc&limit=20`, {
+        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` }
+      });
+      const reports = await resp.json();
+      return res.status(200).json({ reports: Array.isArray(reports) ? reports : [] });
+    }
+
+    if (type === 'update_turnover_item') {
+      const { report_id, company_id, items } = req.body;
+      if (!report_id || !company_id) return res.status(400).json({ error: 'Missing fields.' });
+      await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports?id=eq.${report_id}&company_id=eq.${company_id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': process.env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ items, updated_at: new Date().toISOString() })
+      });
+      return res.status(200).json({ success: true });
+    }
+
+    if (type === 'generate_turnover') {
+      const { company_id, shift, lead_notes } = req.body;
+      if (!company_id || !shift) return res.status(400).json({ error: 'Missing required fields.' });
+
+      const svcHeaders = {
+        'apikey': process.env.SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+        'Content-Type': 'application/json'
+      };
+
+      // Get last turnover report timestamp
+      const lastResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports?company_id=eq.${company_id}&order=created_at.desc&limit=1&select=created_at`, {
+        headers: svcHeaders
+      });
+      const lastReports = await lastResp.json();
+      const lastCreated = lastReports?.[0]?.created_at;
+      const sinceClause = lastCreated ? `&created_at=gt.${lastCreated}` : '';
+
+      // Get all team member IDs for this company
+      const teamResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&select=id,email`, { headers: svcHeaders });
+      const team = await teamResp.json();
+      const memberMap = {};
+      (Array.isArray(team) ? team : []).forEach(m => { memberMap[m.id] = m.email; });
+      const ids = Object.keys(memberMap);
+
+      let entriesText = '';
+      let newEntriesCount = 0;
+
+      if (ids.length) {
+        // Get entries since last turnover
+        const entriesResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/entries?user_id=in.(${ids.join(',')})${sinceClause}&order=created_at.desc&limit=100`, { headers: svcHeaders });
+        const entries = await entriesResp.json();
+        newEntriesCount = Array.isArray(entries) ? entries.length : 0;
+        if (newEntriesCount > 0) {
+          entriesText = entries.map(e => `[${e.entry_type||'Entry'}] ${memberMap[e.user_id]||''} — ${e.tail_number||''}: ${e.content||''}`).join('\n');
+        }
+
+        // Get active AOG sessions
+        const aogResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?company_id=eq.${company_id}&status=eq.active&select=id,tail_number,aircraft,created_at`, { headers: svcHeaders });
+        const aogSessions = await aogResp.json();
+        const aogItems = (Array.isArray(aogSessions) ? aogSessions : []).map(s => ({
+          id: s.id,
+          title: `AOG — ${s.tail_number||'Unknown'}${s.aircraft ? ' · ' + s.aircraft : ''}`,
+          category: 'aog',
+          tag: 'aog',
+          checked: false,
+          notes: `Active since ${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'unknown'}`
+        }));
+
+        // Ask Claude to generate summary + structured items
+        const prompt = `You are an aviation maintenance shift lead writing a formal shift turnover report.
+
+Shift: ${shift}
+${lead_notes ? `Lead notes: ${lead_notes}` : ''}
+${entriesText ? `Activity since last turnover:\n${entriesText}` : 'No logged entries since last turnover.'}
+
+Generate a JSON response with exactly this structure:
+{
+  "summary": "2-4 sentence plain language shift narrative",
+  "items": [
+    {
+      "id": "unique_string",
+      "title": "brief description",
+      "category": "completed|inprogress|deferred",
+      "tag": "rts|deferred|null",
+      "notes": "additional context or null",
+      "checked": false
+    }
+  ]
+}
+
+Rules:
+- summary: concise, professional, factual — what was done, what's carrying over, any critical items
+- items: extract discrete work items from the entries. Use "completed" for finished work with RTS, "inprogress" for ongoing, "deferred" for postponed items
+- tag: use "rts" if return to service was signed, "deferred" if item was intentionally deferred, otherwise null
+- Return ONLY valid JSON, no markdown, no explanation`;
+
+        const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1500,
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+        const aiData = await aiResp.json();
+        const aiText = aiData.content?.[0]?.text || '{}';
+
+        let summary = '';
+        let items = [];
+        try {
+          const parsed = JSON.parse(aiText.replace(/```json|```/g, '').trim());
+          summary = parsed.summary || '';
+          items = [...(parsed.items || []), ...aogItems];
+        } catch(e) {
+          summary = 'Shift turnover generated.';
+          items = [...aogItems];
+        }
+
+        // Save to Supabase
+        const leadProfile = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${user_id}&select=email`, { headers: svcHeaders });
+        const leadData = await leadProfile.json();
+        const leadEmail = leadData?.[0]?.email || '';
+
+        await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports`, {
+          method: 'POST',
+          headers: { ...svcHeaders, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({
+            company_id,
+            created_by: user_id,
+            shift,
+            summary,
+            items: JSON.stringify(items),
+            status: 'active',
+            new_entries_count: newEntriesCount,
+            lead_email: leadEmail
+          })
+        });
+
+        return res.status(200).json({ success: true });
+      }
+
+      return res.status(200).json({ success: true });
+    }
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
