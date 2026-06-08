@@ -298,7 +298,8 @@ export default async function handler(req, res) {
 
     if (type === 'invite_member') {
       const { company_id, email, role, plan } = req.body;
-      if (!company_id || !email) return res.status(400).json({ error: 'Missing required fields.' });
+      if (!email) return res.status(400).json({ error: 'Missing required fields.' });
+if (!company_id) return res.status(400).json({ error: 'Account setup is still in progress. Please log out, log back in, and try again.' });
 
       // Check seat limit
       const planSeats = { shop: 5, proshop: 10, enterprise: 25 };
