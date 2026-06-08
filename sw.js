@@ -52,6 +52,11 @@ self.addEventListener('fetch', event => {
   }
 
   if (request.method === 'GET') {
+    // Never cache HTML navigation requests — always fetch fresh
+    if (request.mode === 'navigate') {
+      event.respondWith(fetch(request));
+      return;
+    }
     event.respondWith(
       caches.match(request).then(cached => {
         if (cached) return cached;
