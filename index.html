@@ -1279,7 +1279,13 @@ async function handleLogin() {
       }
       alert(data.error); btn.textContent = 'Log in'; btn.disabled = false; return;
     }
-    currentUser = { email, plan: data.profile?.plan || data.user?.user_metadata?.plan || 'trial', id: data.user?.id, company_id: data.profile?.company_id || null, subscription_status: data.profile?.subscription_status || null, role: data.profile?.role || null };
+    const resolvedPlan = data.profile?.plan || data.user?.user_metadata?.plan || 'trial';
+    if (resolvedPlan === 'company_cancelled') {
+      btn.textContent = 'Log in'; btn.disabled = false;
+      alert('Access denied. Please contact your company\'s administrator.');
+      return;
+    }
+    currentUser = { email, plan: resolvedPlan, id: data.user?.id, company_id: data.profile?.company_id || null, subscription_status: data.profile?.subscription_status || null, role: data.profile?.role || null };
     localStorage.setItem('mxl_user', JSON.stringify(currentUser));
     closeModal(); activateTool(); setTimeout(updateResumeBtn, 800);
   } catch (err) { alert('Login error. Please try again.'); btn.textContent = 'Log in'; btn.disabled = false; }
