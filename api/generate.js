@@ -890,7 +890,7 @@ if (!company_id) return res.status(400).json({ error: 'Account setup is still in
       const team = await sbFetch(`/profiles?company_id=eq.${company_id}&select=id,email`);
       const memberMap = {};
       (Array.isArray(team) ? team : []).forEach(m => { memberMap[m.id] = m.email; });
-      const sessions = await sbFetch(`/aog_sessions?company_id=eq.${company_id}&status=eq.active&order=created_at.desc&limit=50`);
+      const sessionsResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?company_id=eq.${company_id}&status=eq.active&order=created_at.desc&limit=50`, {   headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` } }); const sessions = await sessionsResp.json();
       const enriched = (Array.isArray(sessions) ? sessions : []).map(s => {
         const entries = (() => { try { return JSON.parse(s.entries || '[]'); } catch(e) { return []; } })();
         const enrichedEntries = entries.map(e => ({
