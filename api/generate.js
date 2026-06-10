@@ -1076,7 +1076,7 @@ if (type === 'update_aog_entries') {
         }));
 
         // Get saved running reports since last turnover
-        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})${sinceClause}&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id`, { headers: svcHeaders });
+        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})${sinceClause}&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved`, { headers: svcHeaders });
         const runningRaw = await runningResp.json().catch(() => []);
         const runningText = (Array.isArray(runningRaw) ? runningRaw : []).map(r => {
           const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
