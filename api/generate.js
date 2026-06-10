@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
   try {
     const { type, user_id } = req.body;
-
+    console.log('API called with type:', type);
     if (type === 'auth_signup') {
       const { email, password, plan, referral_code } = req.body;
       const data = await sbAuth('/signup', { email, password });
