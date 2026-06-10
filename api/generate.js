@@ -1065,7 +1065,7 @@ if (type === 'update_aog_entries') {
 
         // Get active AOG sessions
         const aogResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?company_id=eq.${company_id}&status=eq.active&select=id,tail_number,aircraft,created_at`, { headers: svcHeaders });
-        const aogSessions = await aogResp.json();
+        const aogSessions = await aogResp.json().catch(() => []);
         const aogItems = (Array.isArray(aogSessions) ? aogSessions : []).map(s => ({
           id: s.id,
           title: `AOG — ${s.tail_number||'Unknown'}${s.aircraft ? ' · ' + s.aircraft : ''}`,
@@ -1074,6 +1074,16 @@ if (type === 'update_aog_entries') {
           checked: false,
           notes: `Active since ${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'unknown'}`
         }));
+
+        // Get saved running reports since last turnover
+        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&is_saved=eq.true${sinceClause}&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id`, { headers: svcHeaders });
+        const runningRaw = await runningResp.json().catch(() => []);
+        const runningText = (Array.isArray(runningRaw) ? runningRaw : []).map(r => {
+          const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
+          return `[Running Report] ${memberMap[r.user_id]||''} — ${r.tail_number||''}: ${rEntries.map(e => e.content || e.text || '').filter(Boolean).join(' | ')}`;
+        }).join('\n');
+        if (runningText) entriesText = entriesText ? entriesText + '\n' + runningText : runningText;
+        newEntriesCount += Array.isArray(runningRaw) ? runningRaw.length : 0;
 
         // Ask Claude to generate summary + structured items
         const prompt = `You are an aviation maintenance shift lead writing a formal shift turnover report.
