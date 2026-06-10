@@ -1050,7 +1050,7 @@ if (type === 'update_aog_entries') {
       const memberMap = {};
       (Array.isArray(team) ? team : []).forEach(m => { memberMap[m.id] = m.email; });
       const ids = Object.keys(memberMap);
-
+      console.log(`generate_turnover: company_id=${company_id}, team_count=${ids.length}, team_raw=${JSON.stringify(team)}`);
       let entriesText = '';
       let newEntriesCount = 0;
 
