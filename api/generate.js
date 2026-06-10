@@ -1093,9 +1093,11 @@ Shift: ${shift}
 ${lead_notes ? `Lead notes: ${lead_notes}` : ''}
 ${entriesText ? `Activity since last turnover:\n${entriesText}` : 'No logged entries since last turnover.'}
 
+Each line above represents work performed. Running reports use " | " to separate individual tasks on the same aircraft.
+
 Generate a JSON response with exactly this structure:
 {
-  "summary": "2-4 sentence plain language shift narrative",
+  "summary": "2-4 sentence plain language shift narrative covering all aircraft",
   "items": [
     {
       "id": "unique_string",
@@ -1109,12 +1111,12 @@ Generate a JSON response with exactly this structure:
 }
 
 Rules:
-- summary: concise, professional, factual — what was done, what's carrying over, any critical items
-- items: create ONE item per individual entry or task — never combine multiple entries into one item
-- Each item title must start with the tail number followed by a dash, then a brief description of that specific task only
-- category: "completed" for finished work with RTS signed, "inprogress" for work still in progress or needing further action, "deferred" for intentionally postponed items
-- tag: "rts" if return to service was signed for that specific task, "deferred" if that specific item was deferred, otherwise null
-- If an entry has both completed and incomplete elements, create two separate items — one completed, one inprogress
+- Create ONE item per individual task — split pipe-separated entries into separate items
+- Each item title must start with the tail number
+- category rules: "completed" = work finished, tests passed, AC serviceable; "inprogress" = work started but not finished, awaiting parts, needs further action; "deferred" = explicitly deferred to another base or shift
+- tag: "rts" only if aircraft was explicitly returned to service; "deferred" if explicitly deferred; otherwise null
+- Never combine tasks from different entries into one item
+- Never infer completion — if the entry says "needs inspection" or "awaiting parts" it is inprogress, not completed
 - Return ONLY valid JSON, no markdown, no explanation`;
 console.log('entriesText being sent to Claude:', entriesText);
         const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
