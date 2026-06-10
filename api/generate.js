@@ -1116,7 +1116,7 @@ Rules:
 - tag: "rts" if return to service was signed for that specific task, "deferred" if that specific item was deferred, otherwise null
 - If an entry has both completed and incomplete elements, create two separate items — one completed, one inprogress
 - Return ONLY valid JSON, no markdown, no explanation`;
-
+console.log('entriesText being sent to Claude:', entriesText);
         const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
