@@ -1099,7 +1099,7 @@ Generate a JSON response with exactly this structure:
   "items": [
     {
       "id": "unique_string",
-      "title": "brief description",
+      "title": "TAIL_NUMBER - brief description of this specific task",
       "category": "completed|inprogress|deferred",
       "tag": "rts|deferred|null",
       "notes": "additional context or null",
@@ -1110,8 +1110,11 @@ Generate a JSON response with exactly this structure:
 
 Rules:
 - summary: concise, professional, factual — what was done, what's carrying over, any critical items
-- items: extract discrete work items from the entries. Use "completed" for finished work with RTS, "inprogress" for ongoing, "deferred" for postponed items
-- tag: use "rts" if return to service was signed, "deferred" if item was intentionally deferred, otherwise null
+- items: create ONE item per individual entry or task — never combine multiple entries into one item
+- Each item title must start with the tail number followed by a dash, then a brief description of that specific task only
+- category: "completed" for finished work with RTS signed, "inprogress" for work still in progress or needing further action, "deferred" for intentionally postponed items
+- tag: "rts" if return to service was signed for that specific task, "deferred" if that specific item was deferred, otherwise null
+- If an entry has both completed and incomplete elements, create two separate items — one completed, one inprogress
 - Return ONLY valid JSON, no markdown, no explanation`;
 
         const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
