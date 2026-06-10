@@ -1084,7 +1084,7 @@ if (type === 'update_aog_entries') {
       if (ids.length) {
         // Get entries since last turnover
         const entriesResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/entries?user_id=in.(${ids.join(',')})${sinceClause}&order=created_at.desc&limit=100`, { headers: svcHeaders });
-        const entries = await entriesResp.json();
+        const entries = await entriesResp.json().catch(() => []);
         newEntriesCount = Array.isArray(entries) ? entries.length : 0;
         if (newEntriesCount > 0) {
           entriesText = entries.map(e => `[${e.entry_type||'Entry'}] ${memberMap[e.user_id]||''} — ${e.tail_number||''}: ${e.content||''}`).join('\n');
