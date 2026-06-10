@@ -460,7 +460,7 @@
             onblur="setTimeout(hideAircraftDropdown,200)">
           <div id="aircraftDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;max-height:200px;overflow-y:auto;margin-top:2px;box-shadow:0 4px 12px rgba(0,0,0,0.3);"></div>
         </div>
-        <div class="field"><label>Make / Model</label><input type="text" id="aircraft" placeholder="Cessna 172S" oninput="saveFieldMemory()"></div>
+        <div class="field"><label>AC Type</label><input type="text" id="aircraft" placeholder="C172, B737, A320..." oninput="saveFieldMemory()"></div>
       </div>
       <div style="margin-bottom:10px;"><button onclick="toggleOptional()" id="optionalToggle" style="background:transparent;border:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);cursor:pointer;padding:0;letter-spacing:0.5px;">+ Show optional fields</button></div>
       <div id="optionalFields" style="display:none;">
@@ -1672,7 +1672,13 @@ function selectType(el, type) {
     clearActiveAOG();
     renderSession();
     document.getElementById('outputBox')?.classList.remove('visible');
+    document.getElementById('tailNum').value = '';
+    document.getElementById('aircraft').value = '';
   }
+  selectedType = type;
+  const aogTip = document.getElementById('aogTip');
+  if (aogTip) aogTip.style.display = type === 'AOG Report' ? 'block' : 'none';
+}
   selectedType = type;
   const aogTip = document.getElementById('aogTip');
   if (aogTip) aogTip.style.display = type === 'AOG Report' ? 'block' : 'none';
@@ -2137,7 +2143,7 @@ async function saveReportPermanent(reportId, btn) {
   } catch(e) { btn.textContent = 'Save'; btn.disabled = false; }
 }
 
-function resumeReportFromModal(reportId, entries, type) {
+function resumeReportFromModal(reportId, entries, type, tailNumber, aircraft) {
   activeReportId = reportId;
   sessionEntries = entries;
   if (type && type !== selectedType) {
@@ -2151,6 +2157,8 @@ function resumeReportFromModal(reportId, entries, type) {
     const aogTip = document.getElementById('aogTip');
     if (aogTip) aogTip.style.display = type === 'AOG Report' ? 'block' : 'none';
   }
+  if (tailNumber) document.getElementById('tailNum').value = tailNumber;
+  if (aircraft) document.getElementById('aircraft').value = aircraft;
   renderSession();
   document.getElementById('sessionBox').style.display = 'block';
   closeSavedReportsModal();
