@@ -1076,11 +1076,12 @@ if (type === 'update_aog_entries') {
         }));
 
         // Get saved running reports since last turnover
-        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&is_saved=eq.true${sinceClause}&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id`, { headers: svcHeaders });
+        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})${sinceClause}&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id`, { headers: svcHeaders });
         const runningRaw = await runningResp.json().catch(() => []);
         const runningText = (Array.isArray(runningRaw) ? runningRaw : []).map(r => {
           const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
-          return `[Running Report] ${memberMap[r.user_id]||''} — ${r.tail_number||''}: ${rEntries.map(e => e.content || e.text || '').filter(Boolean).join(' | ')}`;
+          const status = r.is_saved ? 'Completed' : 'Active/In Progress';
+          return `[Running Report - ${status}] ${memberMap[r.user_id]||''} — ${r.tail_number||''}: ${rEntries.map(e => e.content || e.text || '').filter(Boolean).join(' | ')}`;
         }).join('\n');
         if (runningText) entriesText = entriesText ? entriesText + '\n' + runningText : runningText;
         newEntriesCount += Array.isArray(runningRaw) ? runningRaw.length : 0;
