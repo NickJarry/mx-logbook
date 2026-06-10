@@ -1103,9 +1103,8 @@ if (type === 'update_aog_entries') {
         }));
 
         // Get active and recently released running reports
-        const activeFilter = `status.eq.active`;
         const releasedFilter = lastCreated ? `and(status.eq.released,released_at.gt.${lastCreated})` : `status.eq.released`;
-        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&or=(${activeFilter},${releasedFilter})&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved,status,released_at`, { headers: svcHeaders });
+        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&or=(status.eq.active,${releasedFilter})&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved,status,released_at`, { headers: svcHeaders });
         const runningRaw = await runningResp.json().catch(() => []);
         const runningText = (Array.isArray(runningRaw) ? runningRaw : []).map(r => {
           const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
