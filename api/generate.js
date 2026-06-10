@@ -1066,9 +1066,10 @@ if (type === 'update_aog_entries') {
       const lastResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports?company_id=eq.${company_id}&order=created_at.desc&limit=1&select=created_at`, {
         headers: svcHeaders
       });
-      const lastReports = await lastResp.json();
+      const lastReports = await lastResp.json().catch(() => []);
       const lastCreated = lastReports?.[0]?.created_at;
-      const sinceClause = '';
+      const sinceClause = lastCreated ? `&created_at=gt.${lastCreated}` : '';
+      const releasedSinceClause = lastCreated ? `&released_at=gt.${lastCreated}` : '';
 
       // Get all team member IDs for this company
       const teamResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&select=id,email`, { headers: svcHeaders });
@@ -1102,7 +1103,9 @@ if (type === 'update_aog_entries') {
         }));
 
         // Get active and recently released running reports
-        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&or=(status.eq.active,status.eq.released)&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved,status,released_at`, { headers: svcHeaders });
+        const activeFilter = `status.eq.active`;
+        const releasedFilter = lastCreated ? `and(status.eq.released,released_at.gt.${lastCreated})` : `status.eq.released`;
+        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&or=(${activeFilter},${releasedFilter})&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved,status,released_at`, { headers: svcHeaders });
         const runningRaw = await runningResp.json().catch(() => []);
         const runningText = (Array.isArray(runningRaw) ? runningRaw : []).map(r => {
           const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
