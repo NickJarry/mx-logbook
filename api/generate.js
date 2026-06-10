@@ -756,13 +756,39 @@ if (!company_id) return res.status(400).json({ error: 'Account setup is still in
         return res.status(200).json({ report: Array.isArray(data) ? data[0] : data });
       }
     }
+if (type === 'release_running_report') {
+      const { report_id } = req.body;
+      if (!user_id || !report_id) return res.status(400).json({ error: 'Missing params.' });
+      await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?id=eq.${report_id}&user_id=eq.${user_id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': process.env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ status: 'released', is_saved: true, expires_at: null, released_at: new Date().toISOString() })
+      });
+      return res.status(200).json({ success: true });
+    }
 
+    if (type === 'get_released_reports') {
+      if (!user_id) return res.status(200).json({ reports: [] });
+      const resp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=eq.${user_id}&status=eq.released&order=released_at.desc&limit=100&select=id,tail_number,aircraft,entries,released_at,updated_at`, {
+        headers: {
+          'apikey': process.env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`
+        }
+      });
+      const reports = await resp.json();
+      return res.status(200).json({ reports: Array.isArray(reports) ? reports : [] });
+    }
     if (type === 'get_running_reports') {
       const { user_id } = req.body;
       if (!user_id) return res.status(200).json({ reports: [] });
       const now = new Date().toISOString();
       // Get all reports -- both saved and unexpired unsaved
-      const reports = await sbFetch(`/running_reports?user_id=eq.${user_id}&order=updated_at.desc&select=id,tail_number,aircraft,status,created_at,updated_at,entries,is_saved,expires_at`);
+      const reports = await sbFetch(`/running_reports?user_id=eq.${user_id}&status=neq.released&order=updated_at.desc&select=id,tail_number,aircraft,status,created_at,updated_at,entries,is_saved,expires_at`);
       const filtered = Array.isArray(reports) ? reports.filter(r => r.is_saved || !r.expires_at || r.expires_at > now) : [];
       return res.status(200).json({ reports: filtered });
     }
@@ -1075,12 +1101,12 @@ if (type === 'update_aog_entries') {
           notes: `Active since ${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'unknown'}`
         }));
 
-        // Get saved running reports since last turnover
-        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})${sinceClause}&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved`, { headers: svcHeaders });
+        // Get active and recently released running reports
+        const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&or=(status.eq.active,status.eq.released)&order=updated_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved,status,released_at`, { headers: svcHeaders });
         const runningRaw = await runningResp.json().catch(() => []);
         const runningText = (Array.isArray(runningRaw) ? runningRaw : []).map(r => {
           const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
-          const status = r.is_saved ? 'Completed' : 'Active/In Progress';
+          const status = r.status === 'released' ? 'Completed/Released' : 'Active/In Progress';
           return `[Running Report - ${status}] ${memberMap[r.user_id]||''} — ${r.tail_number||''}: ${rEntries.map(e => e.content || e.text || '').filter(Boolean).join(' | ')}`;
         }).join('\n');
         if (runningText) entriesText = entriesText ? entriesText + '\n' + runningText : runningText;
