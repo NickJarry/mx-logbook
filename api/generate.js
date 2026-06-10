@@ -1042,7 +1042,7 @@ if (type === 'update_aog_entries') {
       });
       const lastReports = await lastResp.json();
       const lastCreated = lastReports?.[0]?.created_at;
-      const sinceClause = lastCreated ? `&created_at=gt.${lastCreated}` : '';
+      const sinceClause = '';
 
       // Get all team member IDs for this company
       const teamResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&select=id,email`, { headers: svcHeaders });
