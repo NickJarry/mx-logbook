@@ -109,6 +109,16 @@
   /* CHECKLIST */
   .check-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 1.25rem; border-bottom: 0.5px solid var(--border); transition: background 0.15s; }
   .check-item:last-child { border-bottom: none; }
+ .aircraft-group { border-bottom: 0.5px solid var(--border); }
+  .aircraft-group:last-child { border-bottom: none; }
+  .aircraft-group-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 1.25rem; cursor: pointer; transition: background 0.15s; }
+  .aircraft-group-header:hover { background: rgba(255,255,255,0.02); }
+  .aircraft-group-title { display: flex; align-items: center; gap: 10px; }
+  .aircraft-group-tail { font-family: var(--font-mono); font-size: 13px; color: var(--text); font-weight: 600; letter-spacing: 1px; }
+  .aircraft-group-count { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+  .aircraft-group-chevron { font-size: 12px; color: var(--text3); transition: transform 0.15s; }
+  .aircraft-group-items { }
+  .aircraft-group-items .check-item { padding-left: 2rem; }
   .check-item:hover { background: rgba(255,255,255,0.02); }
   .check-box { width: 16px; height: 16px; border: 1.5px solid var(--border2); border-radius: 3px; flex-shrink: 0; margin-top: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
   .check-box.checked { background: var(--green); border-color: var(--green); }
@@ -509,17 +519,57 @@ function showReport(id) {
   document.getElementById('exportBtn').style.display = '';
 }
 
-function checkItemHTML(item, editable) {
+function groupedByAircraftHTML(items, editable) {
+  // Extract tail number from title (format: "TAIL - description")
+  const groups = {};
+  items.forEach(item => {
+    const dashIdx = item.title.indexOf(' - ');
+    const tail = dashIdx > -1 ? item.title.substring(0, dashIdx).trim() : 'Other';
+    const shortTitle = dashIdx > -1 ? item.title.substring(dashIdx + 3).trim() : item.title;
+    if (!groups[tail]) groups[tail] = [];
+    groups[tail].push({ ...item, shortTitle });
+  });
+
+  return Object.entries(groups).map(([tail, groupItems]) => {
+    const groupId = 'grp_' + tail.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Math.random().toString(36).substr(2, 5);
+    const count = groupItems.length;
+    const itemsHTML = groupItems.map(item => checkItemHTML(item, editable, true)).join('');
+    return `<div class="aircraft-group">
+      <div class="aircraft-group-header" onclick="toggleGroup('${groupId}')">
+        <div class="aircraft-group-title">
+          <span class="aircraft-group-tail">${escapeHTML(tail)}</span>
+          <span class="aircraft-group-count">${count} item${count !== 1 ? 's' : ''}</span>
+        </div>
+        <span class="aircraft-group-chevron" id="chev_${groupId}">▾</span>
+      </div>
+      <div class="aircraft-group-items" id="${groupId}">
+        ${itemsHTML}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function checkItemHTML(item, editable, useShortTitle) {
   const isChecked = item.checked;
-  const tag = item.tag ? `<span class="item-tag tag-${item.tag}">${escapeHTML(item.tag.toUpperCase())}</span>` : '';
+  const title = useShortTitle && item.shortTitle ? item.shortTitle : item.title;
+  const tag = item.tag && item.tag !== 'null' ? `<span class="item-tag tag-${item.tag}">${escapeHTML(item.tag.toUpperCase())}</span>` : '';
   const editAttr = editable ? `onclick="toggleItem('${item.id}')"` : '';
   return `<div class="check-item">
     <div class="check-box${isChecked ? ' checked' : ''}${!editable ? ' readonly' : ''}" ${editAttr}></div>
     <div class="check-item-body">
-      <div class="check-item-title${isChecked ? ' done' : ''}">${escapeHTML(item.title)}${tag}</div>
+      <div class="check-item-title${isChecked ? ' done' : ''}">${escapeHTML(title)}${tag}</div>
       ${item.notes ? `<div class="check-item-meta">${escapeHTML(item.notes)}</div>` : ''}
     </div>
   </div>`;
+}
+
+function toggleGroup(groupId) {
+  const el = document.getElementById(groupId);
+  const chev = document.getElementById('chev_' + groupId);
+  if (!el) return;
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (chev) chev.textContent = isOpen ? '▸' : '▾';
 }
 
 // ── TOGGLE ITEM ───────────────────────────────────────────────────────────────
