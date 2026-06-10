@@ -455,7 +455,7 @@ function showReport(id) {
   if (completed.length) {
     html += `<div class="report-card">
       <div class="report-card-header"><div class="card-title green">✓ Completed This Shift</div><div class="card-count">${completed.length} item${completed.length !== 1 ? 's' : ''}</div></div>
-      ${completed.map(item => checkItemHTML(item, showEditControls)).join('')}
+      ${groupedByAircraftHTML(completed, showEditControls)}
     </div>`;
   }
 
@@ -463,7 +463,7 @@ function showReport(id) {
   if (inprogress.length) {
     html += `<div class="report-card">
       <div class="report-card-header"><div class="card-title amber">⟳ In Progress — Carry to Next Shift</div><div class="card-count">${inprogress.length} item${inprogress.length !== 1 ? 's' : ''}</div></div>
-      ${inprogress.map(item => checkItemHTML(item, showEditControls)).join('')}
+      ${groupedByAircraftHTML(inprogress, showEditControls)}
     </div>`;
   }
 
@@ -471,7 +471,7 @@ function showReport(id) {
   if (deferred.length) {
     html += `<div class="report-card">
       <div class="report-card-header"><div class="card-title red">↷ Deferred Items</div><div class="card-count">${deferred.length} item${deferred.length !== 1 ? 's' : ''}</div></div>
-      ${deferred.map(item => checkItemHTML(item, showEditControls)).join('')}
+      ${groupedByAircraftHTML(deferred, showEditControls)}
     </div>`;
   }
 
