@@ -2094,7 +2094,7 @@ async function loadSavedReportsTab() {
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
             ${!isSaved ? `<button onclick="saveReportPermanent('${r.id}',this)" style="font-family:var(--font-mono);font-size:11px;background:var(--amber);color:#0a0a0a;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:600;">Save</button>` : ''}
-            <button onclick="resumeReportFromModal('${r.id}',${JSON.stringify(entries).replace(/"/g,'&quot;')},'${(entries[0]&&entries[0].type)||'Maintenance Log Entry'}')" style="font-family:var(--font-mono);font-size:11px;background:var(--green);color:#0a0a0a;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:600;">Resume</button>
+            <button onclick="resumeReportFromModal('${r.id}',${JSON.stringify(entries).replace(/"/g,'&quot;')},'${(entries[0]&&entries[0].type)||'Maintenance Log Entry'}','${(r.tail_number||'').replace(/'/g,"\\'")}','${(r.aircraft||'').replace(/'/g,"\\'")}');" style="font-family:var(--font-mono);font-size:11px;background:var(--green);color:#0a0a0a;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-weight:600;">Resume</button>
             <button onclick="deleteReportFromModal('${r.id}',this)" style="font-family:var(--font-mono);font-size:11px;background:transparent;color:var(--red);border:0.5px solid rgba(226,75,74,0.3);padding:6px 14px;border-radius:4px;cursor:pointer;">Delete</button>
           </div>
         </div>
