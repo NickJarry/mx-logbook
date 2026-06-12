@@ -1067,9 +1067,9 @@ if (type === 'update_aog_entries') {
         headers: svcHeaders
       });
       const lastReports = await lastResp.json().catch(() => []);
-      const lastCreated = lastReports?.[0]?.created_at;
-      const sinceClause = lastCreated ? `&created_at=gt.${lastCreated}` : '';
-      const releasedSinceClause = lastCreated ? `&released_at=gt.${lastCreated}` : '';
+      const lastCreated = lastReports?.[0]?.created_at || new Date(new Date().setUTCHours(0,0,0,0)).toISOString();
+      const sinceClause = `&created_at=gt.${lastCreated}`;
+      const releasedClause = `&released_at=gt.${lastCreated}`;
 
       // Get all team member IDs for this company
       const teamResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&select=id,email`, { headers: svcHeaders });
