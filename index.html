@@ -1851,6 +1851,7 @@ function addToRunningReport() {
   document.getElementById('sessionBox').style.display = 'block';
   // Silent auto-save to Supabase
   if (currentUser) {
+    if (selectedType !== 'AOG Report') { saveRunningReport(true); }
     // If AOG report on company plan -- create session if needed, then add entry
     const companyPlans = ['shop','proshop','enterprise','mechanic','lead','inspector','admin'];
     if (selectedType === 'AOG Report' && companyPlans.includes(currentUser.plan) && currentUser.company_id) {
