@@ -2042,6 +2042,7 @@ let activeReportId = null;
 async function saveRunningReport(silent) {
   if (!currentUser) { if (!silent) alert('Please log in to save reports.'); return; }
   if (!sessionEntries.length) { if (!silent) alert('No entries to save yet.'); return; }
+  if (activeAOGSessionId) { if (!silent) alert('AOG mode is active — entries are being tracked in the AOG session automatically.'); return; }
   const btn = document.getElementById('saveReportBtn');
   if (!silent) btn.textContent = 'Saving...';
   const tail = document.getElementById('tailNum').value.trim() || 'No tail';
