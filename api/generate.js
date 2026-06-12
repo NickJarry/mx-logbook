@@ -1140,13 +1140,31 @@ if (type === 'update_aog_entries') {
         const releasedRunning = await releasedRunningResp.json().catch(() => []);
 
         const runningRaw = [...(Array.isArray(activeRunning) ? activeRunning : []), ...(Array.isArray(releasedRunning) ? releasedRunning : [])];
-        const runningText = (Array.isArray(runningRaw) ? runningRaw : []).map(r => {
+        // Split released and active reports — handle separately
+        const activeReports = runningRaw.filter(r => r.status !== 'released');
+        const releasedReports = runningRaw.filter(r => r.status === 'released');
+
+        // Active reports go to Claude for categorization
+        const runningText = activeReports.map(r => {
           const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
-          const status = r.status === 'released' ? 'Completed/Released' : 'Active/In Progress';
-          return `[Running Report - ${status}] ${memberMap[r.user_id]||''} — ${r.tail_number||''}: ${rEntries.map(e => e.content || e.text || '').filter(Boolean).join(' | ')}`;
+          return `[Running Report - Active/In Progress] ${memberMap[r.user_id]||''} — ${r.tail_number||''}: ${rEntries.map(e => e.content || e.text || '').filter(Boolean).join(' | ')}`;
         }).join('\n');
         if (runningText) entriesText = entriesText ? entriesText + '\n' + runningText : runningText;
-        newEntriesCount += Array.isArray(runningRaw) ? runningRaw.length : 0;
+
+        // Released reports bypass Claude — every item is forced to completed
+        const forcedCompletedItems = releasedReports.flatMap(r => {
+          const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
+          return rEntries.filter(e => e.text || e.content).map((e, i) => ({
+            id: `rel_${r.id}_${i}`,
+            title: `${r.tail_number||'Unknown'} - ${(e.text || e.content || '').substring(0, 80)}`,
+            category: 'completed',
+            tag: null,
+            notes: null,
+            checked: false
+          }));
+        });
+
+        newEntriesCount += runningRaw.length;
 
         // Ask Claude to generate summary + structured items
         const prompt = `You are an aviation maintenance shift lead writing a formal shift turnover report.
@@ -1202,10 +1220,10 @@ console.log('entriesText being sent to Claude:', entriesText);
         try {
           const parsed = JSON.parse(aiText.replace(/```json|```/g, '').trim());
           summary = parsed.summary || '';
-          items = [...(parsed.items || []), ...aogItems];
+          items = [...(parsed.items || []), ...aogItems, ...forcedCompletedItems];
         } catch(e) {
           summary = 'Shift turnover generated.';
-          items = [...aogItems];
+          items = [...aogItems, ...forcedCompletedItems];
         }
 
         // Save to Supabase
