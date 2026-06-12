@@ -2617,18 +2617,27 @@ function clearActiveAOG(){localStorage.removeItem('mxl_active_aog');setTimeout(u
 
 async function resolveAOGSession() {
   if (!activeAOGSessionId) return;
-  const confirmed = confirm('Are you sure you want to resolve and finalize this AOG report? This will close the session for all team members.');
+  const confirmed = confirm('Are you sure you want to resolve this AOG? The session will be closed and work will continue as a running report until the AC is released.');
   if (!confirmed) return;
   try {
-    await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'close_aog_session', user_id: currentUser.id, session_id: activeAOGSessionId }) });
+    const resp = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'close_aog_session', user_id: currentUser.id, session_id: activeAOGSessionId }) });
+    const data = await resp.json();
     activeAOGSessionId = null;
-    sessionEntries = [];
-    draftHistory = [];
-    activeReportId = null;
     clearActiveAOG();
+    // Load the new running report that was created from the AOG session
+    const reportsResp = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'get_running_reports', user_id: currentUser.id }) });
+    const reportsData = await reportsResp.json();
+    const reports = reportsData.reports || [];
+    const carried = reports.find(r => r.aog_session_id);
+    if (carried) {
+      activeReportId = carried.id;
+      sessionEntries = (() => { try { return JSON.parse(carried.entries || '[]'); } catch(e) { return []; } })();
+      document.getElementById('tailNum').value = carried.tail_number || '';
+      document.getElementById('aircraft').value = carried.aircraft || '';
+    }
     renderSession();
     document.getElementById('outputBox')?.classList.remove('visible');
-    alert('AOG report resolved and closed.');
+    alert('AOG resolved. The aircraft has been moved to your running reports. Continue adding work and hit Release AC when complete.');
   } catch(e) { alert('Could not resolve AOG session. Try again.'); }
 }
 
