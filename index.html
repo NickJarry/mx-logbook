@@ -1724,6 +1724,8 @@ function selectType(el, type) {
     document.getElementById('outputBox')?.classList.remove('visible');
     document.getElementById('tailNum').value = '';
     document.getElementById('aircraft').value = '';
+    const workDesc = document.getElementById('workDesc');
+    if (workDesc) workDesc.value = '';
   }
   selectedType = type;
   const aogTip = document.getElementById('aogTip');
