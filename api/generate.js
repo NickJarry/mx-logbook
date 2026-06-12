@@ -985,11 +985,39 @@ if (type === 'release_running_report') {
     if (type === 'close_aog_session') {
       const { session_id } = req.body;
       if (!session_id) return res.status(200).json({ error: 'Missing session_id' });
+      const svcHeaders = { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json' };
+      // Close the AOG session
+      const closedAt = new Date().toISOString();
       await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?id=eq.${session_id}`, {
         method: 'PATCH',
-        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
-        body: JSON.stringify({ status: 'closed', closed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        headers: { ...svcHeaders, 'Prefer': 'return=representation' },
+        body: JSON.stringify({ status: 'closed', closed_at: closedAt, updated_at: closedAt })
       });
+      // Fetch the AOG session to get its entries, tail number, and aircraft
+      const aogResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?id=eq.${session_id}&select=entries,tail_number,aircraft,company_id`, { headers: svcHeaders });
+      const aogData = await aogResp.json();
+      const aog = aogData?.[0];
+      if (aog && user_id) {
+        // Create a running report carrying over the AOG entries
+        const aogNote = { time: closedAt.substring(11,16).replace(':','')+'Z', initials: 'AOG', text: `AOG session resolved at ${closedAt.substring(11,16)}Z. Aircraft may require additional work before release.`, type: 'AOG Report', raw: true };
+        const entries = (() => { try { return JSON.parse(aog.entries || '[]'); } catch(e) { return []; } })();
+        await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports`, {
+          method: 'POST',
+          headers: { ...svcHeaders, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({
+            user_id,
+            tail_number: aog.tail_number,
+            aircraft: aog.aircraft,
+            entries: JSON.stringify([...entries, aogNote]),
+            status: 'active',
+            is_saved: true,
+            expires_at: null,
+            aog_session_id: session_id,
+            created_at: closedAt,
+            updated_at: closedAt
+          })
+        });
+      }
       return res.status(200).json({ success: true });
     }
 if (type === 'update_aog_entries') {
