@@ -1960,7 +1960,7 @@ function appendToSession(){
   const text=document.getElementById('outputText').value;if(!text)return;
   const now=new Date(),ts=isUTC?String(now.getUTCHours()).padStart(2,'0')+String(now.getUTCMinutes()).padStart(2,'0')+'Z':String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'L';
   sessionEntries.push({time:ts,initials:getInitials(),text,type:selectedType});
-  renderSession();saveActiveAOG();saveRunningReport(true);
+  renderSession();saveActiveAOG();if(!activeAOGSessionId){saveRunningReport(true);}
   const btn=document.getElementById('appendBtn');if(btn){btn.textContent='Added!';setTimeout(()=>{btn.textContent='+ Add to running report';},2000);}
 }
 
