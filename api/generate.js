@@ -1136,7 +1136,7 @@ if (type === 'update_aog_entries') {
         // Get released running reports since last turnover only
         const releasedClause = `&released_at=gt.${lastCreated}`;
         const releasedRunningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&status=eq.released${releasedClause}&order=released_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved,status,released_at`, { headers: svcHeaders });
-        const releasedRunning = await releasedRunningResp.json().catch(() => []);
+        const releasedRunning = await releasedRunningResp.json().catch(() => []);         console.log('releasedRunning:', JSON.stringify(releasedRunning));
 
         const runningRaw = [...(Array.isArray(activeRunning) ? activeRunning : []), ...(Array.isArray(releasedRunning) ? releasedRunning : [])];
         // Split released and active reports — handle separately
