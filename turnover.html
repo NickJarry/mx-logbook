@@ -596,6 +596,7 @@ async function saveItemEdit(el, itemId) {
   report.items = JSON.stringify(items);
   try {
     await api({ type: 'update_turnover_item', report_id: activeReportId, company_id: currentUser.company_id, items: report.items });
+    showReport(activeReportId);
   } catch(e) {
     // Silent fail
   }
