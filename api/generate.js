@@ -788,7 +788,7 @@ if (type === 'release_running_report') {
       if (!user_id) return res.status(200).json({ reports: [] });
       const now = new Date().toISOString();
       // Get all reports -- both saved and unexpired unsaved
-      const reports = await sbFetch(`/running_reports?user_id=eq.${user_id}&status=neq.released&order=updated_at.desc&select=id,tail_number,aircraft,status,created_at,updated_at,entries,is_saved,expires_at`);
+      const reports = await sbFetch(`/running_reports?user_id=eq.${user_id}&status=neq.released&order=updated_at.desc&select=id,tail_number,aircraft,status,created_at,updated_at,entries,is_saved,expires_at,aog_session_id`);
       const filtered = Array.isArray(reports) ? reports.filter(r => r.is_saved || !r.expires_at || r.expires_at > now) : [];
       return res.status(200).json({ reports: filtered });
     }
