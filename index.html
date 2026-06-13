@@ -1840,7 +1840,7 @@ function addToRunningReport() {
   const now = new Date();
   const ts = String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0') + 'L';
   const initials = getInitials();
-  sessionEntries.push({ time: ts, initials: initials || 'MX', text: work, type: selectedType, raw: true });
+  sessionEntries.push({ time: ts, initials: initials || 'MX', text: work, type: selectedType, raw: true, created_at: new Date().toISOString() });
   renderSession();
   saveActiveAOG();
   document.getElementById('workDesc').value = '';
@@ -1886,7 +1886,7 @@ async function generateFinalReport() {
     if (!work) { alert('Please describe the work performed, or add entries to the running report first.'); return; }
     const now = new Date();
     const ts = String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0') + 'L';
-    sessionEntries.push({ time: ts, initials: getInitials() || 'MX', text: work, type: selectedType, raw: true });
+    sessionEntries.push({ time: ts, initials: getInitials() || 'MX', text: work, type: selectedType, raw: true, created_at: new Date().toISOString() });
   }
   const tail = document.getElementById('tailNum').value.trim();
   const aircraft = document.getElementById('aircraft').value.trim();
