@@ -1167,7 +1167,7 @@ if (type === 'update_aog_entries') {
             beforeAOG.filter(e => e.text || e.content).forEach((e, i) => {
               forcedCompletedFromActive.push({
                 id: `aog_${r.id}_${i}`,
-                title: `${r.tail_number||'Unknown'} - ${(e.text || e.content || '').substring(0, 80)}`,
+                title: `${r.tail_number||'Unknown'} - ${(e.text || e.content || '')}`,
                 category: 'completed',
                 tag: null,
                 notes: 'AOG work completed',
@@ -1195,7 +1195,7 @@ if (type === 'update_aog_entries') {
             });
             return shiftEntries.map((e, i) => ({
               id: `rel_${r.id}_${i}`,
-              title: `${r.tail_number||'Unknown'} - ${(e.text || e.content || '').substring(0, 80)}`,
+              title: `${r.tail_number||'Unknown'} - ${(e.text || e.content || '')}`,
               category: 'completed',
               tag: null,
               notes: null,
