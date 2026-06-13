@@ -127,6 +127,9 @@
   .check-item-body { flex: 1; min-width: 0; }
   .check-item-title { font-size: 13px; color: var(--text); line-height: 1.4; margin-bottom: 2px; }
   .check-item-title.done { text-decoration: line-through; color: var(--text3); }
+  .check-item-title[contenteditable="true"] { outline: none; border-bottom: 1px dashed var(--border2); cursor: text; }
+  .check-item-title[contenteditable="true"]:focus { border-bottom-color: var(--green); }
+  .edit-signature { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-top: 2px; }
   .check-item-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
   .item-tag { display: inline-block; font-family: var(--font-mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
   .tag-aog { background: rgba(239,159,39,0.12); color: var(--amber); border: 0.5px solid rgba(239,159,39,0.2); }
