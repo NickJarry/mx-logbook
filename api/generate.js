@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
   try {
     const { type, user_id } = req.body;
-    console.log('API called with type:', type);
+    
     if (type === 'auth_signup') {
       const { email, password, plan, referral_code } = req.body;
       const data = await sbAuth('/signup', { email, password });
@@ -1104,7 +1104,7 @@ if (type === 'update_aog_entries') {
       const memberMap = {};
       (Array.isArray(team) ? team : []).forEach(m => { memberMap[m.id] = m.email; });
       const ids = Object.keys(memberMap);
-      console.log(`generate_turnover: company_id=${company_id}, team_count=${ids.length}, team_raw=${JSON.stringify(team)}`);
+      
       let entriesText = '';
       let newEntriesCount = 0;
 
@@ -1242,7 +1242,7 @@ Rules:
 - Never combine tasks from different entries into one item
 - Never infer completion — if the entry says "needs inspection" or "awaiting parts" it is inprogress, not completed
 - Return ONLY valid JSON, no markdown, no explanation`;
-console.log('entriesText being sent to Claude:', entriesText);
+
         const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
