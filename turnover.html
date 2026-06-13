@@ -556,16 +556,50 @@ function checkItemHTML(item, editable, useShortTitle) {
   const isChecked = item.checked;
   const title = useShortTitle && item.shortTitle ? item.shortTitle : item.title;
   const tag = item.tag && item.tag !== 'null' ? `<span class="item-tag tag-${item.tag}">${escapeHTML(item.tag.toUpperCase())}</span>` : '';
-  const editAttr = editable ? `onclick="toggleItem('${item.id}')"` : '';
+  const checkAttr = editable ? `onclick="toggleItem('${item.id}')"` : '';
+  const signature = item.editSignature ? `<div class="edit-signature">${escapeHTML(item.editSignature)}</div>` : '';
+  if (editable) {
+    return `<div class="check-item">
+      <div class="check-box${isChecked ? ' checked' : ''}" ${checkAttr}></div>
+      <div class="check-item-body">
+        <div class="check-item-title${isChecked ? ' done' : ''}" contenteditable="true" data-item-id="${item.id}" onblur="saveItemEdit(this, '${item.id}')" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHTML(title)}${tag}</div>
+        ${item.notes ? `<div class="check-item-meta">${escapeHTML(item.notes)}</div>` : ''}
+        ${signature}
+      </div>
+    </div>`;
+  }
   return `<div class="check-item">
-    <div class="check-box${isChecked ? ' checked' : ''}${!editable ? ' readonly' : ''}" ${editAttr}></div>
+    <div class="check-box readonly"></div>
     <div class="check-item-body">
       <div class="check-item-title${isChecked ? ' done' : ''}">${escapeHTML(title)}${tag}</div>
       ${item.notes ? `<div class="check-item-meta">${escapeHTML(item.notes)}</div>` : ''}
+      ${signature}
     </div>
   </div>`;
 }
-
+async function saveItemEdit(el, itemId) {
+  const newText = el.innerText.trim();
+  if (!newText) return;
+  const report = allReports.find(r => r.id === activeReportId);
+  if (!report) return;
+  const items = (() => { try { return JSON.parse(report.items || '[]'); } catch(e) { return []; } })();
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+  const oldTitle = item.shortTitle || item.title;
+  if (newText === oldTitle) return; // no change
+  const initials = (currentUser.email || '?').substring(0, 2).toUpperCase();
+  const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const sig = `Edited by ${initials} at ${ts}`;
+  item.title = item.title.replace(oldTitle, newText);
+  if (item.shortTitle) item.shortTitle = newText;
+  item.editSignature = sig;
+  report.items = JSON.stringify(items);
+  try {
+    await api({ type: 'update_turnover_item', report_id: activeReportId, company_id: currentUser.company_id, items: report.items });
+  } catch(e) {
+    // Silent fail
+  }
+}
 function toggleGroup(groupId) {
   const el = document.getElementById(groupId);
   const chev = document.getElementById('chev_' + groupId);
