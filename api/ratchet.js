@@ -16,13 +16,13 @@ export default async function handler(req, res) {
   const MARKET_PRICES = {
     shop:       'price_1Tcs3cF0p7ZYm2D2gUC1CfaW',  // $599/mo
     proshop:    'price_1Tcs3xF0p7ZYm2D2XIpjn6j0',  // $1,199/mo
-    enterprise: 'price_1Tcs4KF0p7ZYm2D281i2nTKq',  // $2,000/mo
+    enterprise: 'price_1Tcs4KF0p7ZYm2D281i2nTKq',  // $1,999/mo
   };
 
   const MARKET_LABELS = {
     shop:       '$599/mo',
     proshop:    '$1,199/mo',
-    enterprise: '$2,000/mo',
+    enterprise: '$1,999/mo',
   };
 
   const PLAN_LABELS = {
