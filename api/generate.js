@@ -1096,7 +1096,7 @@ if (type === 'update_aog_entries') {
       });
       const lastReports = await lastResp.json().catch(() => []);
       const lastCreated = lastReports?.[0]?.created_at || new Date(new Date().setUTCHours(0,0,0,0)).toISOString();
-      const sinceClause = `&created_at=gt.${lastCreated}`;
+      const sinceClause = `&created_at=gt.${encodeURIComponent(lastCreated)}`;
 
       // Get all team member IDs for this company
       const teamResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&select=id,email`, { headers: svcHeaders });
@@ -1134,7 +1134,7 @@ if (type === 'update_aog_entries') {
         const activeRunning = await activeRunningResp.json().catch(() => []);
 
         // Get released running reports since last turnover only
-        const releasedClause = `&released_at=gt.${lastCreated}`;
+        const releasedClause = `&released_at=gt.${encodeURIComponent(lastCreated)}`;
         const releasedRunningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&status=eq.released${releasedClause}&order=released_at.desc&limit=50&select=id,tail_number,aircraft,entries,user_id,is_saved,status,released_at`, { headers: svcHeaders });
         const releasedRunning = await releasedRunningResp.json().catch(() => []);         console.log('releasedRunning:', JSON.stringify(releasedRunning));
 
