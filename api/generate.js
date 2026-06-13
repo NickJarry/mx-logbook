@@ -1188,10 +1188,14 @@ if (type === 'update_aog_entries') {
           ...releasedReports.flatMap(r => {
             const rEntries = (() => { try { return JSON.parse(r.entries || '[]'); } catch(e) { return []; } })();
             const cutoff = new Date(lastCreated);
+            const releasedAt = r.released_at ? new Date(r.released_at) : null;
             const shiftEntries = rEntries.filter(e => {
               if (!e.text && !e.content) return false;
               const entryTime = e.created_at ? new Date(e.created_at) : null;
-              return !entryTime || entryTime > cutoff;
+              if (!entryTime) return true;
+              const afterLastTurnover = entryTime > cutoff;
+              const beforeOrAtRelease = !releasedAt || entryTime <= releasedAt;
+              return afterLastTurnover && beforeOrAtRelease;
             });
             return shiftEntries.map((e, i) => ({
               id: `rel_${r.id}_${i}`,
