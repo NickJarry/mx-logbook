@@ -123,7 +123,7 @@ export default async function handler(req, res) {
           if (referrer) {
             const planValues = {
               trial: 0, pro: 19.99,
-              shop: 149, proshop: 499, enterprise: 899
+              shop: 299, proshop: 599, enterprise: 999
             };
             const referrerValue = planValues[referrer.plan] || 0;
             const referredValue = planValues[plan] || 0;
