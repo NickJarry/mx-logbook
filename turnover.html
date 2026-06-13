@@ -78,6 +78,15 @@
   .shift-tab.live-tab { color: var(--green); }
   .live-dot { display: inline-block; width: 6px; height: 6px; background: var(--green); border-radius: 50%; margin-right: 4px; animation: blink 1.2s ease-in-out infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .shift-tab-more { position: relative; }
+  .shift-tab-more-btn { flex: 1; padding: 10px 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; text-align: center; color: var(--text3); border: none; background: transparent; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .shift-tab-more-btn:hover { color: var(--text2); }
+  .shift-more-dropdown { display: none; position: absolute; top: 100%; right: 0; background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 6px; min-width: 160px; z-index: 50; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+  .shift-more-dropdown.open { display: block; }
+  .shift-more-item { display: block; width: 100%; text-align: left; padding: 10px 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); background: transparent; border: none; cursor: pointer; border-bottom: 0.5px solid var(--border); line-height: 1.4; transition: background 0.15s; }
+  .shift-more-item:last-child { border-bottom: none; }
+  .shift-more-item:hover { background: var(--bg3); color: var(--text); }
+  .shift-more-item.active { color: var(--green); }
 
   /* GENERATE BANNER */
   .generate-banner { background: rgba(0,229,160,0.05); border: 0.5px solid rgba(0,229,160,0.2); border-radius: 8px; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap; }
@@ -393,13 +402,21 @@ async function loadReports() {
 // ── SHIFT TABS ────────────────────────────────────────────────────────────────
 function renderShiftTabs() {
   const bar = document.getElementById('shiftBar');
+  const generateBtn = document.getElementById('generateBtn');
+
   if (!allReports.length) {
     bar.innerHTML = '<div style="padding:10px 1rem;font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;">No reports yet</div>';
+    if (generateBtn) generateBtn.style.display = '';
     return;
   }
-  // Show up to 5 most recent + mark newest as live
+
+  // Hide header generate button once reports exist -- banner button takes over
+  if (generateBtn) generateBtn.style.display = 'none';
+
   const shown = allReports.slice(0, 5);
-  bar.innerHTML = shown.map((r, i) => {
+  const overflow = allReports.slice(5);
+
+  let html = shown.map((r, i) => {
     const isNewest = i === 0;
     const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
     const isActive = r.id === activeReportId;
@@ -408,7 +425,39 @@ function renderShiftTabs() {
       <span class="tab-date">${date}</span>
     </button>`;
   }).join('');
+
+  if (overflow.length) {
+    const anyOverflowActive = overflow.some(r => r.id === activeReportId);
+    html += `<div class="shift-tab-more">
+      <button class="shift-tab-more-btn${anyOverflowActive ? ' active' : ''}" onclick="toggleMoreDropdown(event)">Older ▾</button>
+      <div class="shift-more-dropdown" id="shiftMoreDropdown">
+        ${overflow.map(r => {
+          const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+          const isActive = r.id === activeReportId;
+          return `<button class="shift-more-item${isActive ? ' active' : ''}" onclick="showReport('${r.id}');closeMoreDropdown()">${r.shift || 'Shift'} <span style="color:var(--text3);margin-left:6px;">${date}</span></button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  bar.innerHTML = html;
 }
+
+function toggleMoreDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('shiftMoreDropdown');
+  if (dd) dd.classList.toggle('open');
+}
+
+function closeMoreDropdown() {
+  const dd = document.getElementById('shiftMoreDropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function() {
+  closeMoreDropdown();
+});
 
 // ── SHOW REPORT ───────────────────────────────────────────────────────────────
 function showReport(id) {
