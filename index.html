@@ -2635,6 +2635,13 @@ async function resolveAOGSession() {
       document.getElementById('tailNum').value = carried.tail_number || '';
       document.getElementById('aircraft').value = carried.aircraft || '';
     }
+    // Switch away from AOG card to Maintenance to prevent new AOG session being created
+    selectedType = 'Maintenance Log Entry';
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector('.type-card')?.classList.add('selected');
+    document.getElementById('aogTip').style.display = 'none';
+    const resolveBtn = document.getElementById('resolveAOGBtn');
+    if (resolveBtn) resolveBtn.style.display = 'none';
     renderSession();
     document.getElementById('outputBox')?.classList.remove('visible');
     alert('AOG resolved. The aircraft has been moved to your running reports. Continue adding work and hit Release AC when complete.');
