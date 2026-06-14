@@ -855,25 +855,16 @@ if (type === 'release_running_report') {
       const ids = Object.keys(memberMap);
       if (!ids.length) return res.status(200).json({ records: [] });
 
-      // 1. Individual entries for all team members
-      const entriesResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/entries?user_id=in.(${ids.join(',')})&order=created_at.desc&limit=200`, { headers: svcHeaders });
-      const entriesRaw = await entriesResp.json().catch(() => []);
-      const entries = (Array.isArray(entriesRaw) ? entriesRaw : []).map(e => ({
-        ...e,
-        _type: 'entry',
-        mechanic_email: memberMap[e.user_id] || ''
-      }));
-
-      // 2. Saved and active running reports for all team members
-      const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&or=(is_saved.eq.true,status.eq.active)&order=updated_at.desc&limit=200&select=id,tail_number,aircraft,status,created_at,updated_at,entries,user_id`, { headers: svcHeaders });
+      // 1. Closed reports (released running reports)
+      const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&status=eq.released&order=updated_at.desc&limit=200&select=id,tail_number,aircraft,status,created_at,updated_at,released_at,entries,user_id`, { headers: svcHeaders });
       const runningRaw = await runningResp.json().catch(() => []);
       const running = (Array.isArray(runningRaw) ? runningRaw : []).map(r => ({
         ...r,
-        _type: 'running',
+        _type: 'closed_report',
         mechanic_email: memberMap[r.user_id] || ''
       }));
 
-      // 3. Closed AOG sessions for this company
+      // 2. Closed AOG sessions for this company
       const aogResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/aog_sessions?company_id=eq.${company_id}&status=eq.closed&order=updated_at.desc&limit=200&select=id,tail_number,aircraft,status,created_at,updated_at,closed_at,entries,created_by`, { headers: svcHeaders });
       const aogRaw = await aogResp.json().catch(() => []);
       const aog = (Array.isArray(aogRaw) ? aogRaw : []).map(s => ({
@@ -882,8 +873,16 @@ if (type === 'release_running_report') {
         mechanic_email: memberMap[s.created_by] || ''
       }));
 
+      // 3. Turnover reports for this company
+      const turnoverResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports?company_id=eq.${company_id}&order=created_at.desc&limit=200&select=id,shift,summary,created_at,lead_email,new_entries_count`, { headers: svcHeaders });
+      const turnoverRaw = await turnoverResp.json().catch(() => []);
+      const turnovers = (Array.isArray(turnoverRaw) ? turnoverRaw : []).map(t => ({
+        ...t,
+        _type: 'turnover'
+      }));
+
       // Merge all, sort newest first
-      const all = [...entries, ...running, ...aog].sort((a, b) =>
+      const all = [...running, ...aog, ...turnovers].sort((a, b) =>
         new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
       );
       return res.status(200).json({ records: all });
