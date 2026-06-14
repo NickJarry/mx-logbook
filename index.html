@@ -1703,6 +1703,8 @@ async function releaseAC() {
     document.getElementById('aircraft').value = '';
     document.getElementById('sessionBox').style.display = 'none';
     document.getElementById('outputBox')?.classList.remove('visible');
+    btn.textContent = 'Release AC';
+    btn.disabled = false;
     alert(`${tail} released. Report saved to My Closed Reports.`);
   } catch(e) {
     alert('Something went wrong. Please try again.');
