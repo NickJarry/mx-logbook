@@ -1253,6 +1253,7 @@ Rules:
 - tag: "rts" only if aircraft was explicitly returned to service; "deferred" if explicitly deferred; otherwise null
 - Never combine tasks from different entries into one item
 - Never infer completion — if the entry says "needs inspection" or "awaiting parts" it is inprogress, not completed
+- Lead notes are forward-looking instructions from the outgoing shift lead, not records of completed work. If lead notes mention requirements, cautions, or tasks for the incoming shift (e.g. "ETOPS required next shift", "crew rest ends at 0600"), create an inprogress item for each one titled "NOTE - [the requirement]" so it carries forward until resolved
 - Return ONLY valid JSON, no markdown, no explanation`;
 
         const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
