@@ -438,10 +438,9 @@ async function loadDashboard() {
 
   try {
     const data = await api({ type: 'get_company_records', company_id: currentUser.company_id, user_id: currentUser.id });
-    const entries = (data.records || []).filter(r => r._type === 'entry');
     const now = new Date();
-    const thisMonth = entries.filter(e => {
-      const d = new Date(e.created_at);
+    const thisMonth = (data.records || []).filter(r => {
+      const d = new Date(r.created_at);
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     });
     document.getElementById('statThisMonth').textContent = thisMonth.length;
@@ -451,12 +450,12 @@ async function loadDashboard() {
 }
 
 function recordItemHTML(r) {
-  if (r._type === 'running') {
+  if (r._type === 'closed_report') {
     const entryCount = (() => { try { return JSON.parse(r.entries || '[]').length; } catch(e) { return 0; } })();
-    const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString() : (r.created_at ? new Date(r.created_at).toLocaleDateString() : '');
+    const date = r.released_at ? new Date(r.released_at).toLocaleDateString() : (r.updated_at ? new Date(r.updated_at).toLocaleDateString() : '');
     return `<div class="entry-item" onclick="showRunningReport(${JSON.stringify(r).replace(/"/g,'&quot;')})">
       <div class="entry-meta">
-        <span class="entry-type" style="color:var(--green);">Running Report</span>
+        <span class="entry-type" style="color:var(--green);">Closed Report</span>
         <span class="entry-date">${r.tail_number ? r.tail_number + (r.aircraft ? ' · ' + r.aircraft : '') + ' · ' : ''}${r.mechanic_email||''} · ${date}</span>
       </div>
       <div class="entry-preview">${entryCount} entr${entryCount === 1 ? 'y' : 'ies'}</div>
@@ -473,14 +472,17 @@ function recordItemHTML(r) {
       <div class="entry-preview">${entryCount} entr${entryCount === 1 ? 'y' : 'ies'}</div>
     </div>`;
   }
-  // Individual entry
-  return `<div class="entry-item" onclick="showEntry(${JSON.stringify(r).replace(/"/g,'&quot;')})">
-    <div class="entry-meta">
-      <span class="entry-type">${r.entry_type||'Entry'}</span>
-      <span class="entry-date">${r.tail_number ? r.tail_number + ' · ' : ''}${r.mechanic_email||''} · ${r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}</span>
-    </div>
-    <div class="entry-preview">${(r.content||'').substring(0,120)}...</div>
-  </div>`;
+  if (r._type === 'turnover') {
+    const date = r.created_at ? new Date(r.created_at).toLocaleDateString() : '';
+    return `<div class="entry-item">
+      <div class="entry-meta">
+        <span class="entry-type" style="color:var(--text2);">Turnover Report</span>
+        <span class="entry-date">${r.shift ? r.shift + ' Shift · ' : ''}${r.lead_email||''} · ${date}</span>
+      </div>
+      <div class="entry-preview">${(r.summary||'No summary available.').substring(0,120)}...</div>
+    </div>`;
+  }
+  return '';
 }
 
 async function loadRecords() {
