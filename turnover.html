@@ -972,7 +972,11 @@ function setupRecognition(mode) {
   };
 
   r.onend = function() {
-    stopVoice();
+    if (isRecording) {
+      try { r.start(); } catch(e) { stopVoice(); }
+    } else {
+      stopVoice();
+    }
   };
 
   return r;
