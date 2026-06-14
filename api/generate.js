@@ -1057,11 +1057,23 @@ if (type === 'update_aog_entries') {
     if (type === 'get_turnover_reports') {
       const { company_id } = req.body;
       if (!company_id) return res.status(200).json({ reports: [] });
-      const resp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports?company_id=eq.${company_id}&order=created_at.desc&limit=20`, {
-        headers: { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` }
-      });
+      const svcH = { 'apikey': process.env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}` };
+      const resp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/turnover_reports?company_id=eq.${company_id}&order=created_at.desc&limit=20`, { headers: svcH });
       const reports = await resp.json();
-      return res.status(200).json({ reports: Array.isArray(reports) ? reports : [] });
+      let releasedTails = [];
+      try {
+        const teamResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/profiles?company_id=eq.${company_id}&select=id`, { headers: svcH });
+        const team = await teamResp.json();
+        const ids = (Array.isArray(team) ? team : []).map(m => m.id);
+        if (ids.length) {
+          const rrResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&status=eq.released&select=tail_number`, { headers: svcH });
+          const rr = await rrResp.json();
+          releasedTails = [...new Set((Array.isArray(rr) ? rr : []).map(r => r.tail_number).filter(Boolean))];
+        }
+      } catch(e) {
+        console.log('get_turnover_reports: released tails fetch failed:', e.message);
+      }
+      return res.status(200).json({ reports: Array.isArray(reports) ? reports : [], releasedTails });
     }
 
     if (type === 'update_turnover_item') {
