@@ -864,8 +864,8 @@ if (type === 'release_running_report') {
         mechanic_email: memberMap[e.user_id] || ''
       }));
 
-      // 2. Saved running reports for all team members
-      const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&is_saved=eq.true&order=updated_at.desc&limit=200&select=id,tail_number,aircraft,status,created_at,updated_at,entries,user_id`, { headers: svcHeaders });
+      // 2. Saved and active running reports for all team members
+      const runningResp = await fetch(`${process.env.SUPABASE_URL}/rest/v1/running_reports?user_id=in.(${ids.join(',')})&or=(is_saved.eq.true,status.eq.active)&order=updated_at.desc&limit=200&select=id,tail_number,aircraft,status,created_at,updated_at,entries,user_id`, { headers: svcHeaders });
       const runningRaw = await runningResp.json().catch(() => []);
       const running = (Array.isArray(runningRaw) ? runningRaw : []).map(r => ({
         ...r,
