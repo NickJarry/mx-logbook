@@ -76,7 +76,7 @@ export default async function handler(req, res) {
             <div style="font-size:13px;color:#00e5a0;letter-spacing:2px;margin-bottom:8px;font-family:monospace;">MX-LOGBOOK</div>
             <h1 style="font-size:24px;margin-bottom:16px;">Your founding rate ends in 14 days</h1>
             <p style="color:#666;line-height:1.7;margin-bottom:16px;">
-              You signed up as a founding member of MX-Logbook two years ago, and we've honored your locked-in rate ever since. That 2-year founding period is coming to an end.
+              You signed up as a founding member of MX-Logbook one year ago, and we've honored your locked-in rate ever since. That 1-year founding period is coming to an end.
             </p>
             <p style="color:#666;line-height:1.7;margin-bottom:16px;">
               In 14 days, your <strong>${PLAN_LABELS[plan]}</strong> plan will move to the current market rate of <strong>${newPrice}</strong>.
@@ -147,7 +147,7 @@ export default async function handler(req, res) {
             <div style="font-size:13px;color:#00e5a0;letter-spacing:2px;margin-bottom:8px;font-family:monospace;">MX-LOGBOOK</div>
             <h1 style="font-size:24px;margin-bottom:16px;">Your plan has been updated</h1>
             <p style="color:#666;line-height:1.7;margin-bottom:16px;">
-              Your 2-year founding rate period has ended. Your <strong>${PLAN_LABELS[plan]}</strong> plan has been updated to the current market rate of <strong>${newPrice}</strong>, effective at your next billing cycle.
+              Your 1-year founding rate period has ended. Your <strong>${PLAN_LABELS[plan]}</strong> plan has been updated to the current market rate of <strong>${newPrice}</strong>, effective at your next billing cycle.
             </p>
             <p style="color:#666;line-height:1.7;margin-bottom:16px;">
               Thank you for being a founding member. Your support helped build MX-Logbook from the ground up.
@@ -163,11 +163,11 @@ export default async function handler(req, res) {
   }
 
   const now = new Date();
-  const twoYearsAgo = new Date(now);
-  twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+  const oneYearAgo = new Date(now);
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-  const warningDate = new Date(twoYearsAgo);
-  warningDate.setDate(warningDate.getDate() + 14); // 14 days before 2-year mark
+  const warningDate = new Date(oneYearAgo);
+  warningDate.setDate(warningDate.getDate() + 14); // 14 days before 1-year mark
 
   const results = { warnings_sent: [], migrations_done: [], errors: [] };
 
@@ -179,10 +179,10 @@ export default async function handler(req, res) {
       if (!profile.trial_start || !profile.email) continue;
 
       const startDate = new Date(profile.trial_start);
-      const twoYearMark = new Date(startDate);
-      twoYearMark.setFullYear(twoYearMark.getFullYear() + 2);
+      const oneYearMark = new Date(startDate);
+      oneYearMark.setFullYear(oneYearMark.getFullYear() + 1);
 
-      const daysUntilMigration = Math.round((twoYearMark - now) / (1000 * 60 * 60 * 24));
+      const daysUntilMigration = Math.round((oneYearMark - now) / (1000 * 60 * 60 * 24));
 
       // Send warning email 14 days before migration
       if (daysUntilMigration === 14) {
@@ -195,7 +195,7 @@ export default async function handler(req, res) {
         }
       }
 
-      // Migrate on the 2-year mark
+      // Migrate on the 1-year mark
       if (daysUntilMigration === 0) {
         try {
           const newPriceId = MARKET_PRICES[profile.plan];
