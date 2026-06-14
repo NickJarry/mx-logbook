@@ -78,6 +78,20 @@
   .shift-tab.live-tab { color: var(--green); }
   .live-dot { display: inline-block; width: 6px; height: 6px; background: var(--green); border-radius: 50%; margin-right: 4px; animation: blink 1.2s ease-in-out infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .shift-search-wrap { position: relative; margin-bottom: 2rem; margin-top: -1.5rem; }
+  .shift-search-input { width: 100%; background: var(--bg2) !important; -webkit-appearance: none; border: 0.5px solid var(--border); border-radius: 6px; color: var(--text3); font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; padding: 10px 32px 10px 12px; outline: none; box-sizing: border-box; transition: border-color 0.15s; }
+  .shift-search-input::placeholder { color: var(--text3); opacity: 0.5; }
+  .shift-search-input:focus { border-color: rgba(0,229,160,0.2); color: var(--text2); }
+  .shift-search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 13px; pointer-events: none; opacity: 0.4; }
+  .shift-search-dropdown { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 6px; overflow: hidden; position: absolute; width: 100%; z-index: 50; margin-top: 2px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+  .shift-search-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.1s; }
+  .shift-search-item:last-child { border-bottom: none; }
+  .shift-search-item:hover { background: var(--bg3); }
+  .shift-search-item.active { color: var(--green); }
+  .ssi-shift { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); }
+  .ssi-tails { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-left: 10px; letter-spacing: 0.5px; }
+  .ssi-date { font-family: var(--font-mono); font-size: 9px; color: var(--text3); white-space: nowrap; }
+  .ssi-no-results { padding: 10px 12px; font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
   .shift-tab-more { position: relative; }
   .shift-tab-more-btn { flex: 1; padding: 10px 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; text-align: center; color: var(--text3); border: none; background: transparent; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
   .shift-tab-more-btn:hover { color: var(--text2); }
@@ -235,6 +249,15 @@
   <!-- SHIFT HISTORY TABS -->
   <div class="shift-bar" id="shiftBar">
     <div style="padding:10px 1rem;font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;">No reports yet</div>
+  </div>
+
+  <!-- SHIFT SEARCH -->
+  <div class="shift-search-wrap" id="shiftSearchWrap" style="display:none;">
+    <input class="shift-search-input" id="shiftSearchInput" placeholder="Search shifts, dates, tail numbers..." autocomplete="off" />
+    <span class="shift-search-icon">&#9906;</span>
+    <div class="shift-search-dropdown" id="shiftSearchDropdown" style="display:none;">
+      <div id="shiftSearchResults"></div>
+    </div>
   </div>
 
   <!-- REPORT CONTENT -->
@@ -412,6 +435,9 @@ function renderShiftTabs() {
 
   // Hide header generate button once reports exist -- banner button takes over
   if (generateBtn) generateBtn.style.display = 'none';
+  // Show search bar
+  const searchWrap = document.getElementById('shiftSearchWrap');
+  if (searchWrap) searchWrap.style.display = 'block';
 
   const shown = allReports.slice(0, 5);
   const overflow = allReports.slice(5);
@@ -457,6 +483,80 @@ function closeMoreDropdown() {
 // Close dropdown when clicking outside
 document.addEventListener('click', function() {
   closeMoreDropdown();
+  const dd = document.getElementById('shiftSearchDropdown');
+  if (dd) dd.style.display = 'none';
+});
+
+// ── SHIFT SEARCH ──────────────────────────────────────────────────────────────
+function renderSearchResults(list) {
+  const res = document.getElementById('shiftSearchResults');
+  if (!list.length) {
+    res.innerHTML = '<div class="ssi-no-results">No results</div>';
+    return;
+  }
+  res.innerHTML = list.map(r => {
+    const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    const items = (() => { try { return JSON.parse(r.items || '[]'); } catch(e) { return []; } })();
+    const tails = [...new Set(items.map(i => {
+      const dash = i.title ? i.title.indexOf(' - ') : -1;
+      return dash > -1 ? i.title.substring(0, dash).trim() : null;
+    }).filter(Boolean))];
+    const isActive = r.id === activeReportId;
+    return `<div class="shift-search-item${isActive ? ' active' : ''}" onclick="selectSearchReport('${r.id}')">
+      <div style="display:flex;align-items:center;">
+        <span class="ssi-shift">${r.shift || 'Shift'}</span>
+        ${tails.length ? `<span class="ssi-tails">${tails.join(' · ')}</span>` : ''}
+      </div>
+      <span class="ssi-date">${date}</span>
+    </div>`;
+  }).join('');
+}
+
+function openShiftSearch() {
+  const dd = document.getElementById('shiftSearchDropdown');
+  renderSearchResults(allReports);
+  if (dd) dd.style.display = 'block';
+}
+
+function filterShiftSearch(q) {
+  const dd = document.getElementById('shiftSearchDropdown');
+  const term = q.trim().toLowerCase();
+  if (!term) {
+    renderSearchResults(allReports);
+  } else {
+    const filtered = allReports.filter(r => {
+      if ((r.shift || '').toLowerCase().includes(term)) return true;
+      const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toLowerCase() : '';
+      if (date.includes(term)) return true;
+      const items = (() => { try { return JSON.parse(r.items || '[]'); } catch(e) { return []; } })();
+      return items.some(i => {
+        const dash = i.title ? i.title.indexOf(' - ') : -1;
+        const tail = dash > -1 ? i.title.substring(0, dash).trim().toLowerCase() : '';
+        return tail.includes(term);
+      });
+    });
+    renderSearchResults(filtered);
+  }
+  if (dd) dd.style.display = 'block';
+}
+
+function selectSearchReport(id) {
+  const input = document.getElementById('shiftSearchInput');
+  const dd = document.getElementById('shiftSearchDropdown');
+  if (input) input.value = '';
+  if (dd) dd.style.display = 'none';
+  showReport(id);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('shiftSearchInput');
+  if (input) {
+    input.addEventListener('focus', openShiftSearch);
+    input.addEventListener('input', function() { filterShiftSearch(this.value); });
+    input.addEventListener('click', function(e) { e.stopPropagation(); });
+  }
+  const dd = document.getElementById('shiftSearchDropdown');
+  if (dd) dd.addEventListener('click', function(e) { e.stopPropagation(); });
 });
 
 // ── SHOW REPORT ───────────────────────────────────────────────────────────────
