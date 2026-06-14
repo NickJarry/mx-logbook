@@ -193,6 +193,13 @@
   .modal-notes::placeholder { color: var(--text3); }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
   .modal-error { font-family: var(--font-mono); font-size: 11px; color: var(--red); margin-top: 0.75rem; display: none; }
+  .notes-wrap { position: relative; }
+  .mic-btn { position: absolute; bottom: 10px; right: 10px; background: transparent; border: 0.5px solid var(--border2); border-radius: 4px; color: var(--text3); font-size: 14px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; z-index: 1; }
+  .mic-btn:hover { color: var(--text2); border-color: var(--text3); }
+  .mic-btn.recording { color: var(--red); border-color: var(--red); animation: pulse-mic 1s ease-in-out infinite; }
+  @keyframes pulse-mic { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .mic-status { font-family: var(--font-mono); font-size: 9px; color: var(--red); letter-spacing: 1px; margin-top: 4px; display: none; }
+  .mic-status.visible { display: block; }
 
   /* ADD ITEM MODAL */
   .modal-input { width: 100%; background: var(--bg3); border: 0.5px solid var(--border2); color: var(--text); font-family: var(--font-body); font-size: 13px; padding: 10px 12px; border-radius: 4px; line-height: 1.5; }
@@ -286,7 +293,11 @@
     </div>
     <div class="modal-field">
       <label class="modal-label">Lead Mechanic Notes (optional)</label>
-      <textarea class="modal-notes" id="leadNotes" placeholder="Any additional context for the incoming shift..."></textarea>
+      <div class="notes-wrap">
+        <textarea class="modal-notes" id="leadNotes" placeholder="Any additional context for the incoming shift..." style="padding-bottom:2.5rem;"></textarea>
+        <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Voice input" type="button">&#x1F3A4;</button>
+      </div>
+      <div class="mic-status" id="micStatus">LISTENING...</div>
     </div>
     <div class="modal-error" id="generateError"></div>
     <div class="modal-actions">
@@ -897,6 +908,91 @@ function exportPDF() {
 function escapeHTML(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── VOICE INPUT ───────────────────────────────────────────────────────────────
+let recognition = null;
+let isRecording = false;
+
+function toggleVoice() {
+  if (isRecording) {
+    stopVoice();
+  } else {
+    startVoice();
+  }
+}
+
+function startVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Voice input is not supported in this browser. Please use Chrome or Safari.');
+    return;
+  }
+
+  const existing = document.getElementById('leadNotes').value.trim();
+  if (existing) {
+    const choice = confirm('You already have notes typed. Add voice input to existing notes, or replace them?\n\nOK = Add to existing\nCancel = Replace');
+    recognition = setupRecognition(choice ? 'append' : 'replace');
+  } else {
+    recognition = setupRecognition('replace');
+  }
+
+  recognition.start();
+  isRecording = true;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('micStatus').classList.add('visible');
+
+  // Stop when clicking anywhere outside the mic button
+  document.addEventListener('click', stopVoiceOnOutsideClick, true);
+}
+
+function setupRecognition(mode) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const r = new SpeechRecognition();
+  r.continuous = true;
+  r.interimResults = false;
+  r.lang = 'en-US';
+
+  r.onresult = function(e) {
+    const transcript = Array.from(e.results)
+      .map(result => result[0].transcript)
+      .join(' ')
+      .trim();
+    const textarea = document.getElementById('leadNotes');
+    if (mode === 'append' && textarea.value.trim()) {
+      textarea.value = textarea.value.trim() + ' ' + transcript;
+    } else {
+      textarea.value = transcript;
+    }
+  };
+
+  r.onerror = function(e) {
+    console.log('Speech recognition error:', e.error);
+    stopVoice();
+  };
+
+  r.onend = function() {
+    stopVoice();
+  };
+
+  return r;
+}
+
+function stopVoice() {
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+    recognition = null;
+  }
+  isRecording = false;
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('micStatus').classList.remove('visible');
+  document.removeEventListener('click', stopVoiceOnOutsideClick, true);
+}
+
+function stopVoiceOnOutsideClick(e) {
+  if (e.target.id !== 'micBtn') {
+    stopVoice();
+  }
 }
 
 // Close modals on overlay click
