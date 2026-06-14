@@ -225,9 +225,9 @@
     <input type="text" class="search-input" id="recordSearchInput" placeholder="Search by tail number, aircraft, or mechanic..." oninput="filterRecords()">
     <select id="recordTypeFilter" onchange="filterRecords()" style="width:auto;min-width:180px;">
       <option value="">All record types</option>
-      <option value="entry">Individual entries</option>
-      <option value="running">Running reports</option>
+      <option value="closed_report">Closed reports</option>
       <option value="aog">Closed AOG sessions</option>
+      <option value="turnover">Turnover reports</option>
     </select>
   </div>
   <div id="recordsList"><div class="loading">Loading records...</div></div>
