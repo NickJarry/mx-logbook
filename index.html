@@ -3594,12 +3594,10 @@ function showPWAPrompt() {
 
 function toggleTextSize() {
   const current = localStorage.getItem('mxl_textsize') || 'normal';
-  const cycle = { normal: 'medium', medium: 'large', large: 'normal' };
-  const labels = { normal: 'A+', medium: 'A++', large: 'A-' };
-  const next = cycle[current];
+  const next = current === 'normal' ? 'medium' : 'normal';
+  const labels = { normal: 'A+', medium: 'A++' };
   document.body.classList.remove('medium-text', 'large-text');
   if (next === 'medium') document.body.classList.add('medium-text');
-  if (next === 'large') document.body.classList.add('large-text');
   localStorage.setItem('mxl_textsize', next);
   const btn = document.getElementById('textSizeToggle');
   if (btn) btn.innerHTML = labels[next];
@@ -3607,12 +3605,15 @@ function toggleTextSize() {
 
 function loadTextSize() {
   const saved = localStorage.getItem('mxl_textsize') || 'normal';
-  const labels = { normal: 'A+', medium: 'A++', large: 'A-' };
+  const labels = { normal: 'A+', medium: 'A++' };
   document.body.classList.remove('medium-text', 'large-text');
   if (saved === 'medium') document.body.classList.add('medium-text');
-  if (saved === 'large') document.body.classList.add('large-text');
+  // If user had large saved previously, reset to normal
+  if (saved === 'large') {
+    localStorage.setItem('mxl_textsize', 'normal');
+  }
   const btn = document.getElementById('textSizeToggle');
-  if (btn) btn.innerHTML = labels[saved];
+  if (btn) btn.innerHTML = labels[saved] || 'A+';
 }
 
 function reportError(subject, message, data) {
