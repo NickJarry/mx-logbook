@@ -524,31 +524,33 @@ async function loadTeam() {
 }
 
 function renderTeam(team) {
-  document.getElementById('teamTable').innerHTML = team.length ? `
-    <table class="table">
-      <thead><tr>
-        <th>Email</th><th>Role</th><th>Entries</th><th>Joined</th><th>Actions</th>
-      </tr></thead>
-      <tbody>${team.map(m => `
-        <tr>
-          <td style="font-family:var(--font-body);font-size:13px;">${m.email}</td>
-          <td>
-            ${(!currentUser.role || currentUser.role === 'admin') ? 
-              `<select onchange="updateRole('${m.id}',this.value)" style="font-family:var(--font-mono);font-size:10px;background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:3px 8px;border-radius:4px;cursor:pointer;width:auto;">
+  document.getElementById('teamTable').innerHTML = team.length ?
+    team.map(m => {
+      const roleLabel = m.role==='mechanic'?'Mechanic':m.role==='lead'?'Lead':m.role==='inspector'?'Inspector / IA':m.role==='admin'?'Admin':m.role||'Mechanic';
+      const isAdmin = !currentUser.role || currentUser.role === 'admin';
+      const joined = m.created_at ? new Date(m.created_at).toLocaleDateString() : '';
+      return `<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:8px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;">
+          <div style="font-family:var(--font-body);font-size:13px;color:var(--text);word-break:break-all;">${m.email}</div>
+          ${isAdmin ? `<button class="btn-danger" style="flex-shrink:0;font-size:10px;padding:3px 10px;" onclick="removeMember('${m.id}','${m.email}')">Remove</button>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            ${isAdmin ?
+              `<select onchange="updateRole('${m.id}',this.value)" style="font-family:var(--font-mono);font-size:10px;background:var(--bg3);border:0.5px solid var(--border);color:var(--text2);padding:3px 8px;border-radius:4px;cursor:pointer;">
                 <option value="mechanic" ${m.role==='mechanic'?'selected':''}>Mechanic</option>
                 <option value="lead" ${m.role==='lead'?'selected':''}>Lead</option>
                 <option value="inspector" ${m.role==='inspector'?'selected':''}>Inspector / IA</option>
                 <option value="admin" ${m.role==='admin'?'selected':''}>Admin</option>
-              </select>` : 
-              `<span style="font-family:var(--font-mono);font-size:10px;color:var(--text2);">${m.role==='mechanic'?'Mechanic':m.role==='lead'?'Lead':m.role==='inspector'?'Inspector / IA':m.role==='admin'?'Admin':m.role||'Mechanic'}</span>`
+              </select>` :
+              `<span style="font-family:var(--font-mono);font-size:10px;color:var(--text2);">${roleLabel}</span>`
             }
-          </td>
-          <td style="font-family:var(--font-mono);font-size:12px;">${m.entry_count||0}</td>
-          <td style="font-family:var(--font-mono);font-size:11px;color:var(--text3);">${m.created_at?new Date(m.created_at).toLocaleDateString():''}</td>
-          <td><button class="btn-danger" onclick="removeMember('${m.id}','${m.email}')">Remove</button></td>
-        </tr>`).join('')}
-      </tbody>
-    </table>` :
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">${m.entry_count||0} entries</span>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Joined ${joined}</span>
+        </div>
+      </div>`;
+    }).join('') :
     '<div class="empty">No team members yet. Invite your first mechanic above.</div>';
 }
 
