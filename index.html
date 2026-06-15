@@ -177,6 +177,8 @@
   .tier-divider { border: none; border-top: 0.5px solid var(--border); margin-bottom: 12px; }
   .tier-feat { font-size: 13px; color: var(--text2); padding: 3px 0; display: flex; gap: 8px; }
   .tier-feat-check { color: var(--green); flex-shrink: 0; }
+  .tier-feat.disabled { color: var(--text3); opacity: 0.4; }
+  .tier-feat.disabled .tier-feat-check { color: var(--text3); }
 
   .promise { border: 0.5px solid rgba(0,229,160,0.25); border-radius: 8px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
   .promise-hed { font-family: var(--font-mono); font-size: 11px; color: var(--green); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
@@ -636,12 +638,14 @@
         <hr class="tier-divider">
       </div>
       <div class="tier-feats">
-        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>Unlimited entries</div>
-        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>All 8 entry types</div>
-        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>AOG &amp; Delay reports</div>
-        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>PDF export</div>
+        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>Voice &amp; text input</div>
+        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>AI-generated logbook entries</div>
+        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>All standard entry types</div>
+        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>Running reports &amp; closed reports</div>
         <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>Translation &amp; UTC</div>
-        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>Running reports</div>
+        <div class="tier-feat"><span class="tier-feat-check">&#10003;</span>PDF export</div>
+        <div class="tier-feat disabled"><span class="tier-feat-check">&#10003;</span>AOG &amp; shared sessions (company plans)</div>
+        <div class="tier-feat disabled"><span class="tier-feat-check">&#10003;</span>Team admin &amp; shift turnover (company plans)</div>
       </div>
       <div style="margin-top:auto;padding-top:1rem;">
         <a href="#" onclick="selectedPlanKey='pro';openModal();return false;" style="display:block;text-align:center;background:var(--green);color:#0a0a0a;font-family:var(--font-mono);font-size:11px;padding:8px;border-radius:4px;text-decoration:none;font-weight:500;">Start free trial</a>
