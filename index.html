@@ -2830,8 +2830,17 @@ function openDashboard(){
   document.getElementById('dashOverlay').classList.add('open');
   loadDashboard();
   if(currentUser && ['shop','proshop','enterprise'].includes(currentUser.plan)) loadAdmin();
+  const folderBtn = document.getElementById('folderBtn');
+  const speakBtn = document.getElementById('speakBtn');
+  if (folderBtn) folderBtn.style.display = 'none';
+  if (speakBtn) speakBtn.style.display = 'none';
 }
-function closeDashboard(){document.getElementById('dashOverlay').classList.remove('open');}
+function closeDashboard(){
+  document.getElementById('dashOverlay').classList.remove('open');
+  const folderBtn = document.getElementById('folderBtn');
+  if (folderBtn) folderBtn.style.display = 'flex';
+  // speakBtn visibility is managed by activateTool -- don't force show it here
+}
 
 function showDashTab(tab,btn){
   document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
