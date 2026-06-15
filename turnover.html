@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX-Logbook — Shift Turnover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00e5a0">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #00e5a0; --green-dark: #00c48c;
+    --bg: #0d0d0d; --bg2: #151515; --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f0; --text2: #999; --text3: #555;
+    --amber: #ef9f27; --red: #e24b4a;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-cond: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+  body.light-mode {
+    --bg: #f5f5f0; --bg2: #eaeae6; --bg3: #dcdcd8;
+    --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.15);
+    --text: #111111; --text2: #444; --text3: #888;
+  }
+  body.light-mode nav { background: rgba(245,245,240,0.97); }
+
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(13,13,13,0.97); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; backdrop-filter: blur(8px); }
+  .nav-logo { font-family: var(--font-mono); font-size: 13px; color: var(--green); letter-spacing: 2px; text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 8px; }
+  .nav-back { font-family: var(--font-mono); font-size: 11px; color: var(--text3); text-decoration: none; letter-spacing: 1px; padding: 6px 12px; border: 0.5px solid var(--border); border-radius: 4px; transition: color 0.15s; }
+  .nav-back:hover { color: var(--text2); }
+  .nav-page-title { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* GATE */
+  #accessGate { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 200; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; text-align: center; padding: 2rem; }
+  #accessGate.open { display: flex; }
+  .gate-icon { font-size: 48px; opacity: 0.3; }
+  .gate-title { font-family: var(--font-cond); font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .gate-msg { font-family: var(--font-mono); font-size: 12px; color: var(--text3); max-width: 380px; line-height: 1.8; }
+  .gate-btn { margin-top: 0.5rem; background: var(--green); color: #0a0a0a; font-family: var(--font-mono); font-size: 12px; padding: 10px 24px; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; text-decoration: none; display: inline-block; }
+
+  /* LOADING */
+  #pageLoader { display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 199; align-items: center; justify-content: center; }
+  .loader-text { font-family: var(--font-mono); font-size: 12px; color: var(--text3); letter-spacing: 2px; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  /* PAGE */
+  .page { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* PAGE HEADER */
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .page-eyebrow { font-family: var(--font-mono); font-size: 10px; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .page-eyebrow::before { content: ''; display: block; width: 18px; height: 1px; background: var(--green); }
+  .page-title { font-family: var(--font-cond); font-size: 32px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .page-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  /* BUTTONS */
+  .btn-primary { background: var(--green); color: #0a0a0a; font-family: var(--font-mono); font-size: 12px; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--text2); font-family: var(--font-mono); font-size: 12px; padding: 10px 20px; border: 0.5px solid var(--border2); border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: all 0.15s; }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text3); }
+
+  /* SHIFT TABS */
+  .shift-bar { display: flex; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 6px; margin-bottom: 2rem; position: relative; }
+  .shift-tab { flex: 1; padding: 10px 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; text-align: center; color: var(--text3); border: none; background: transparent; cursor: pointer; border-right: 0.5px solid var(--border); transition: all 0.15s; line-height: 1.4; }
+  .shift-tab:last-child { border-right: none; }
+  .shift-tab.active { background: var(--bg3); color: var(--green); }
+  .shift-tab .tab-date { display: block; font-size: 9px; color: var(--text3); margin-top: 2px; }
+  .shift-tab.active .tab-date { color: var(--text2); }
+  .shift-tab.live-tab { color: var(--green); }
+  .live-dot { display: inline-block; width: 6px; height: 6px; background: var(--green); border-radius: 50%; margin-right: 4px; animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .shift-search-wrap { position: relative; margin-bottom: 2rem; margin-top: -1.5rem; }
+  .shift-search-input { width: 100%; background: var(--bg2) !important; -webkit-appearance: none; border: 0.5px solid var(--border); border-radius: 6px; color: var(--text3); font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; padding: 10px 32px 10px 12px; outline: none; box-sizing: border-box; transition: border-color 0.15s; }
+  .shift-search-input::placeholder { color: var(--text3); opacity: 0.5; }
+  .shift-search-input:focus { border-color: rgba(0,229,160,0.2); color: var(--text2); }
+  .shift-search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 13px; pointer-events: none; opacity: 0.4; }
+  .shift-search-dropdown { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 6px; overflow: hidden; position: absolute; width: 100%; z-index: 50; margin-top: 2px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+  .shift-search-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.1s; }
+  .shift-search-item:last-child { border-bottom: none; }
+  .shift-search-item:hover { background: var(--bg3); }
+  .shift-search-item.active { color: var(--green); }
+  .ssi-shift { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); }
+  .ssi-tails { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-left: 10px; letter-spacing: 0.5px; }
+  .ssi-date { font-family: var(--font-mono); font-size: 9px; color: var(--text3); white-space: nowrap; }
+  .ssi-no-results { padding: 10px 12px; font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* GENERATE BANNER */
+  .generate-banner { background: rgba(0,229,160,0.05); border: 0.5px solid rgba(0,229,160,0.2); border-radius: 8px; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap; }
+  .generate-banner-text { font-family: var(--font-mono); font-size: 11px; color: var(--text2); line-height: 1.8; }
+  .generate-banner-text strong { color: var(--green); }
+  .generate-banner.no-data { border-color: var(--border); background: transparent; }
+  .generate-banner.no-data .generate-banner-text strong { color: var(--text2); }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 0.5px solid var(--border); border-radius: 6px; margin-bottom: 2rem; overflow: hidden; }
+  .stat-cell { background: var(--bg2); padding: 1rem 1.25rem; }
+  .stat-num { font-family: var(--font-cond); font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+  .stat-num.green { color: var(--green); }
+  .stat-num.amber { color: var(--amber); }
+  .stat-num.red { color: var(--red); }
+  .stat-num.muted { color: var(--text2); }
+  .stat-label { font-family: var(--font-mono); font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* CARDS */
+  .report-card { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+  .report-card-header { padding: 0.875rem 1.25rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+  .card-title.green { color: var(--green); }
+  .card-title.amber { color: var(--amber); }
+  .card-title.red { color: var(--red); }
+  .card-title.muted { color: var(--text3); }
+  .card-count { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+
+  /* CHECKLIST */
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 1.25rem; border-bottom: 0.5px solid var(--border); transition: background 0.15s; }
+  .check-item:last-child { border-bottom: none; }
+ .aircraft-group { border-bottom: 0.5px solid var(--border); }
+  .aircraft-group:last-child { border-bottom: none; }
+  .aircraft-group-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 1.25rem; cursor: pointer; transition: background 0.15s; }
+  .aircraft-group-header:hover { background: rgba(255,255,255,0.02); }
+  .aircraft-group-title { display: flex; align-items: center; gap: 10px; }
+  .aircraft-group-tail { font-family: var(--font-mono); font-size: 13px; color: var(--text); font-weight: 600; letter-spacing: 1px; }
+  .aircraft-group-count { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+  .aircraft-group-chevron { font-size: 12px; color: var(--text3); transition: transform 0.15s; }
+  .aircraft-group-items { }
+  .aircraft-group-items .check-item { padding-left: 2rem; }
+  .check-item:hover { background: rgba(255,255,255,0.02); }
+  .check-box { width: 16px; height: 16px; border: 1.5px solid var(--border2); border-radius: 3px; flex-shrink: 0; margin-top: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .check-box.checked { background: var(--green); border-color: var(--green); }
+  .check-box.checked::after { content: '✓'; font-size: 10px; color: #0a0a0a; font-weight: 700; }
+  .check-box.readonly { cursor: default; }
+  .check-item-body { flex: 1; min-width: 0; }
+  .check-item-title { font-size: 13px; color: var(--text); line-height: 1.4; margin-bottom: 2px; }
+  .check-item-title.done { text-decoration: line-through; color: var(--text3); }
+  .check-item-title[contenteditable="true"] { outline: none; border-bottom: 1px dashed var(--border2); cursor: text; }
+  .check-item-title[contenteditable="true"]:focus { border-bottom-color: var(--green); }
+  .edit-signature { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-top: 2px; }
+  .check-item-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+  .item-tag { display: inline-block; font-family: var(--font-mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+  .tag-aog { background: rgba(239,159,39,0.12); color: var(--amber); border: 0.5px solid rgba(239,159,39,0.2); }
+  .tag-rts { background: rgba(0,229,160,0.08); color: var(--green); border: 0.5px solid rgba(0,229,160,0.15); }
+  .tag-deferred { background: rgba(226,75,74,0.08); color: var(--red); border: 0.5px solid rgba(226,75,74,0.15); }
+  .tag-inprogress { background: rgba(239,159,39,0.08); color: var(--amber); border: 0.5px solid rgba(239,159,39,0.15); }
+
+  /* NARRATIVE */
+  .narrative-block { padding: 1.25rem; }
+  .narrative-text { font-size: 13px; color: var(--text2); line-height: 1.8; border-left: 2px solid var(--border2); padding-left: 1rem; font-style: italic; }
+
+  /* SIGNATURE */
+  .sig-block { display: flex; gap: 1rem; align-items: center; padding: 1rem 1.25rem; background: var(--bg3); }
+  .sig-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 11px; color: #0a0a0a; font-weight: 700; flex-shrink: 0; }
+  .sig-info { flex: 1; }
+  .sig-name { font-family: var(--font-mono); font-size: 11px; color: var(--text); }
+  .sig-role { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+  .sig-time { font-family: var(--font-mono); font-size: 10px; color: var(--text3); white-space: nowrap; }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 4rem 2rem; }
+  .empty-icon { font-size: 40px; opacity: 0.2; margin-bottom: 1rem; }
+  .empty-title { font-family: var(--font-cond); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; color: var(--text2); }
+  .empty-msg { font-family: var(--font-mono); font-size: 11px; color: var(--text3); line-height: 1.8; }
+
+  /* GENERATE MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 10px; padding: 1.75rem; width: 100%; max-width: 480px; }
+  .modal-title { font-family: var(--font-cond); font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+  .modal-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text3); margin-bottom: 1.5rem; line-height: 1.7; }
+  .modal-field { margin-bottom: 1.25rem; }
+  .modal-label { font-family: var(--font-mono); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .modal-select { width: 100%; background: var(--bg3); border: 0.5px solid var(--border2); color: var(--text); font-family: var(--font-mono); font-size: 13px; padding: 10px 12px; border-radius: 4px; appearance: none; cursor: pointer; }
+  .modal-select:focus { outline: none; border-color: var(--green); }
+  .modal-notes { width: 100%; background: var(--bg3); border: 0.5px solid var(--border2); color: var(--text); font-family: var(--font-body); font-size: 13px; padding: 10px 12px; border-radius: 4px; resize: vertical; min-height: 80px; line-height: 1.5; }
+  .modal-notes:focus { outline: none; border-color: var(--green); }
+  .modal-notes::placeholder { color: var(--text3); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
+  .modal-error { font-family: var(--font-mono); font-size: 11px; color: var(--red); margin-top: 0.75rem; display: none; }
+
+  /* ADD ITEM MODAL */
+  .modal-input { width: 100%; background: var(--bg3); border: 0.5px solid var(--border2); color: var(--text); font-family: var(--font-body); font-size: 13px; padding: 10px 12px; border-radius: 4px; line-height: 1.5; }
+  .modal-input:focus { outline: none; border-color: var(--green); }
+  .modal-input::placeholder { color: var(--text3); }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .page-header { flex-direction: column; }
+    .shift-bar { flex-wrap: wrap; }
+    .shift-tab { flex: 1 1 30%; }
+    .generate-banner { flex-direction: column; align-items: flex-start; }
+    .sig-time { font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">MX-LOGBOOK</a>
+  <div class="nav-right">
+    <span class="nav-page-title">Shift Turnover</span>
+    <a href="/" class="nav-back">← Back</a>
+  </div>
+</nav>
+
+<!-- PAGE LOADER -->
+<div id="pageLoader"><span class="loader-text">LOADING...</span></div>
+
+<!-- ACCESS GATE -->
+<div id="accessGate">
+  <div class="gate-icon">🔒</div>
+  <div class="gate-title">Shop Pro Feature</div>
+  <div class="gate-msg">Shift Turnover Reports are available on Shop Pro and Enterprise plans. Upgrade your account to access this feature.</div>
+  <a href="/" class="gate-btn">Back to MX-Logbook</a>
+</div>
+
+<!-- MAIN PAGE -->
+<div class="page" id="mainPage" style="display:none;">
+
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Shop Pro & Enterprise</div>
+      <div class="page-title">Shift Turnover</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn-ghost" id="exportBtn" onclick="exportPDF()" style="display:none;">Export PDF</button>
+      <button class="btn-ghost" id="addItemBtn" onclick="openAddItem()" style="display:none;">+ Add Item</button>
+      <button class="btn-primary" id="generateBtn" onclick="openGenerateModal()">Generate Turnover</button>
+    </div>
+  </div>
+
+  <!-- SHIFT HISTORY TABS -->
+  <div class="shift-bar" id="shiftBar">
+    <div style="padding:10px 1rem;font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;">No reports yet</div>
+  </div>
+
+  <!-- SHIFT SEARCH -->
+  <div class="shift-search-wrap" id="shiftSearchWrap" style="display:none;">
+    <input class="shift-search-input" id="shiftSearchInput" placeholder="Search shifts, dates, tail numbers..." autocomplete="off" />
+    <span class="shift-search-icon">&#9906;</span>
+    <div class="shift-search-dropdown" id="shiftSearchDropdown" style="display:none;">
+      <div id="shiftSearchResults"></div>
+    </div>
+  </div>
+
+  <!-- REPORT CONTENT -->
+  <div id="reportContent">
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">No Turnover Reports Yet</div>
+      <div class="empty-msg">Generate your first shift turnover report<br>to get started.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- GENERATE MODAL -->
+<div class="modal-overlay" id="generateModal">
+  <div class="modal">
+    <div class="modal-title">Generate Turnover</div>
+    <div class="modal-sub">Claude will compile all activity since the last turnover report into a structured shift summary.</div>
+    <div class="modal-field">
+      <label class="modal-label">Shift</label>
+      <select class="modal-select" id="shiftSelect">
+        <option value="Day">Day Shift</option>
+        <option value="Swing">Swing Shift</option>
+        <option value="Night">Night Shift</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Lead Mechanic Notes (optional)</label>
+      <textarea class="modal-notes" id="leadNotes" placeholder="Any additional context for the incoming shift..."></textarea>
+    </div>
+    <div class="modal-error" id="generateError"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeGenerateModal()">Cancel</button>
+      <button class="btn-primary" id="generateSubmitBtn" onclick="submitGenerate()">Generate ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ITEM MODAL -->
+<div class="modal-overlay" id="addItemModal">
+  <div class="modal">
+    <div class="modal-title">Add Item</div>
+    <div class="modal-sub">Manually add an item to the current turnover report.</div>
+    <div class="modal-field">
+      <label class="modal-label">Description</label>
+      <input type="text" class="modal-input" id="addItemText" placeholder="e.g. Right brake assembly — N442TX">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Category</label>
+      <select class="modal-select" id="addItemCategory">
+        <option value="inprogress">In Progress</option>
+        <option value="deferred">Deferred</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Notes (optional)</label>
+      <input type="text" class="modal-input" id="addItemNotes" placeholder="e.g. Parts on order, ETA tomorrow">
+    </div>
+    <div class="modal-error" id="addItemError"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeAddItem()">Cancel</button>
+      <button class="btn-primary" id="addItemSubmitBtn" onclick="submitAddItem()">Add Item</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+const TURNOVER_PLANS = ['proshop', 'enterprise'];
+const LEAD_ROLES = [null, 'admin', 'lead']; // null = account owner
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let currentUser = null;
+let allReports = [];
+let activeReportId = null;
+let canEdit = false;
+
+// ── API ──────────────────────────────────────────────────────────────────────
+async function api(body) {
+  const r = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...body, user_id: currentUser?.id })
+  });
+  return r.json();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  // Restore theme
+  const theme = localStorage.getItem('mxl_theme');
+  if (theme === 'light') document.body.classList.add('light-mode');
+
+  // Get current user
+  const stored = localStorage.getItem('mxl_user');
+  if (!stored) {
+    window.location.href = '/';
+    return;
+  }
+  currentUser = JSON.parse(stored);
+
+  // Check plan access
+  const plan = currentUser.plan || '';
+  const role = currentUser.role || null;
+
+  // Invited members (mechanic/lead/inspector/admin) inherit company plan
+  // We check the actual plan on the account owner — invited users have plan:'mechanic' etc.
+  // So we check company plan via a server call
+  const companyPlans = ['proshop', 'enterprise', 'mechanic', 'lead', 'inspector', 'admin'];
+  const hasCompanyPlan = companyPlans.includes(plan);
+
+  if (!hasCompanyPlan && !TURNOVER_PLANS.includes(plan)) {
+    // Not on a company plan at all
+    document.getElementById('pageLoader').style.display = 'none';
+    document.getElementById('accessGate').classList.add('open');
+    return;
+  }
+
+  // Verify with server and check company plan
+  try {
+    const d = await api({ type: 'check_turnover_access', company_id: currentUser.company_id });
+    if (!d.allowed) {
+      document.getElementById('pageLoader').style.display = 'none';
+      document.getElementById('accessGate').classList.add('open');
+      return;
+    }
+    // Update role/plan from server
+    if (d.role !== undefined) currentUser.role = d.role;
+    if (d.plan) currentUser.plan = d.plan;
+  } catch(e) {
+    // Network error — allow through if local plan looks right
+  }
+
+  // Determine edit permissions (leads, admins, account owners)
+  canEdit = LEAD_ROLES.includes(currentUser.role);
+
+  // Show/hide edit controls
+  if (canEdit) {
+    document.getElementById('addItemBtn').style.display = '';
+  }
+
+  // Load reports
+  await loadReports();
+
+  document.getElementById('pageLoader').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+});
+
+// ── LOAD REPORTS ─────────────────────────────────────────────────────────────
+let releasedTails = [];
+
+async function loadReports() {
+  try {
+    const data = await api({ type: 'get_turnover_reports', company_id: currentUser.company_id });
+    allReports = data.reports || [];
+    releasedTails = data.releasedTails || [];
+    renderShiftTabs();
+    if (allReports.length > 0) {
+      // Show the most recent
+      showReport(allReports[0].id);
+    }
+  } catch(e) {
+    document.getElementById('reportContent').innerHTML = '<div class="empty-state"><div class="empty-msg">Could not load reports.</div></div>';
+  }
+}
+
+// ── SHIFT TABS ────────────────────────────────────────────────────────────────
+function renderShiftTabs() {
+  const bar = document.getElementById('shiftBar');
+  const generateBtn = document.getElementById('generateBtn');
+
+  if (!allReports.length) {
+    bar.innerHTML = '<div style="padding:10px 1rem;font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;">No reports yet</div>';
+    if (generateBtn) generateBtn.style.display = '';
+    return;
+  }
+
+  // Hide header generate button once reports exist -- banner button takes over
+  if (generateBtn) generateBtn.style.display = 'none';
+  // Show search bar
+  const searchWrap = document.getElementById('shiftSearchWrap');
+  if (searchWrap) searchWrap.style.display = 'block';
+
+  const shown = allReports.slice(0, 5);
+
+  bar.innerHTML = shown.map((r, i) => {
+    const isNewest = i === 0;
+    const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    const isActive = r.id === activeReportId;
+    return `<button class="shift-tab${isActive ? ' active' : ''}${isNewest ? ' live-tab' : ''}" onclick="showReport('${r.id}')">
+      ${isNewest ? '<span class="live-dot"></span>' : ''}${r.shift || 'Shift'}
+      <span class="tab-date">${date}</span>
+    </button>`;
+  }).join('');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function() {
+  const dd = document.getElementById('shiftSearchDropdown');
+  if (dd) dd.style.display = 'none';
+});
+
+// ── SHIFT SEARCH ──────────────────────────────────────────────────────────────
+function renderSearchResults(list) {
+  const res = document.getElementById('shiftSearchResults');
+  if (!list.length) {
+    res.innerHTML = '<div class="ssi-no-results">No results</div>';
+    return;
+  }
+  res.innerHTML = list.map(r => {
+    const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    const items = (() => { try { return JSON.parse(r.items || '[]'); } catch(e) { return []; } })();
+    const tails = [...new Set(items.map(i => {
+      const dash = i.title ? i.title.indexOf(' - ') : -1;
+      return dash > -1 ? i.title.substring(0, dash).trim() : null;
+    }).filter(Boolean))];
+    const isActive = r.id === activeReportId;
+    return `<div class="shift-search-item${isActive ? ' active' : ''}" onclick="selectSearchReport('${r.id}')">
+      <div style="display:flex;align-items:center;">
+        <span class="ssi-shift">${r.shift || 'Shift'}</span>
+        ${tails.length ? `<span class="ssi-tails">${tails.join(' · ')}</span>` : ''}
+      </div>
+      <span class="ssi-date">${date}</span>
+    </div>`;
+  }).join('');
+}
+
+function openShiftSearch() {
+  const dd = document.getElementById('shiftSearchDropdown');
+  renderSearchResults(allReports);
+  if (dd) dd.style.display = 'block';
+}
+
+function filterShiftSearch(q) {
+  const dd = document.getElementById('shiftSearchDropdown');
+  const term = q.trim().toLowerCase();
+  if (!term) {
+    renderSearchResults(allReports);
+  } else {
+    const filtered = allReports.filter(r => {
+      if ((r.shift || '').toLowerCase().includes(term)) return true;
+      const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toLowerCase() : '';
+      if (date.includes(term)) return true;
+      const items = (() => { try { return JSON.parse(r.items || '[]'); } catch(e) { return []; } })();
+      return items.some(i => {
+        const dash = i.title ? i.title.indexOf(' - ') : -1;
+        const tail = dash > -1 ? i.title.substring(0, dash).trim().toLowerCase() : '';
+        return tail.includes(term);
+      });
+    });
+    renderSearchResults(filtered);
+  }
+  if (dd) dd.style.display = 'block';
+}
+
+function selectSearchReport(id) {
+  const input = document.getElementById('shiftSearchInput');
+  const dd = document.getElementById('shiftSearchDropdown');
+  if (input) input.value = '';
+  if (dd) dd.style.display = 'none';
+  showReport(id);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('shiftSearchInput');
+  if (input) {
+    input.addEventListener('focus', openShiftSearch);
+    input.addEventListener('input', function() { filterShiftSearch(this.value); });
+    input.addEventListener('click', function(e) { e.stopPropagation(); });
+  }
+  const dd = document.getElementById('shiftSearchDropdown');
+  if (dd) dd.addEventListener('click', function(e) { e.stopPropagation(); });
+});
+
+// ── SHOW REPORT ───────────────────────────────────────────────────────────────
+function showReport(id) {
+  activeReportId = id;
+  renderShiftTabs();
+  const report = allReports.find(r => r.id === id);
+  if (!report) return;
+
+  const items = (() => { try { return JSON.parse(report.items || '[]'); } catch(e) { return []; } })();
+  const completed = items.filter(i => i.category === 'completed');
+  const inprogress = items.filter(i => i.category === 'inprogress');
+  const deferred = items.filter(i => i.category === 'deferred');
+  const aog = items.filter(i => i.category === 'aog');
+
+  const isNewest = allReports[0]?.id === id;
+  const showEditControls = canEdit && isNewest;
+  const createdDate = report.created_at ? new Date(report.created_at).toLocaleString() : '';
+  const initials = (currentUser.email || '?').substring(0, 2).toUpperCase();
+
+  // Count new entries since last report
+  const newEntriesCount = report.new_entries_count || 0;
+
+  let html = '';
+
+  // Generate banner (only on newest)
+  if (isNewest && canEdit) {
+    html += `<div class="generate-banner${newEntriesCount === 0 ? ' no-data' : ''}">
+      <div class="generate-banner-text">
+        ${newEntriesCount > 0
+          ? `<strong>${newEntriesCount} new entr${newEntriesCount === 1 ? 'y' : 'ies'}</strong> logged since this report was generated.`
+          : `<strong>No new entries</strong> since this report was generated.`}
+      </div>
+      <button class="btn-primary" onclick="openGenerateModal()">Generate New Turnover ↗</button>
+    </div>`;
+  }
+
+  // Stats
+  html += `<div class="stats-row">
+    <div class="stat-cell"><div class="stat-num green">${completed.length}</div><div class="stat-label">Completed</div></div>
+    <div class="stat-cell"><div class="stat-num amber">${inprogress.length}</div><div class="stat-label">In Progress</div></div>
+    <div class="stat-cell"><div class="stat-num red">${deferred.length}</div><div class="stat-label">Deferred</div></div>
+    <div class="stat-cell"><div class="stat-num muted">${aog.length}</div><div class="stat-label">Open AOG</div></div>
+  </div>`;
+
+  // AI Summary
+  if (report.summary) {
+    html += `<div class="report-card">
+      <div class="report-card-header">
+        <div class="card-title green">Shift Summary</div>
+        <div class="card-count">AI Generated · ${createdDate}</div>
+      </div>
+      <div class="narrative-block"><div class="narrative-text">${escapeHTML(report.summary)}</div></div>
+    </div>`;
+  }
+
+  // Completed
+  if (completed.length) {
+    html += `<div class="report-card">
+      <div class="report-card-header"><div class="card-title green">✓ Completed This Shift</div><div class="card-count">${completed.length} item${completed.length !== 1 ? 's' : ''}</div></div>
+      ${groupedByAircraftHTML(completed, showEditControls)}
+    </div>`;
+  }
+
+  // In Progress
+  if (inprogress.length) {
+    html += `<div class="report-card">
+      <div class="report-card-header"><div class="card-title amber">⟳ In Progress — Carry to Next Shift</div><div class="card-count">${inprogress.length} item${inprogress.length !== 1 ? 's' : ''}</div></div>
+      ${groupedByAircraftHTML(inprogress, showEditControls)}
+    </div>`;
+  }
+
+  // Deferred
+  if (deferred.length) {
+    html += `<div class="report-card">
+      <div class="report-card-header"><div class="card-title red">↷ Deferred Items</div><div class="card-count">${deferred.length} item${deferred.length !== 1 ? 's' : ''}</div></div>
+      ${groupedByAircraftHTML(deferred, showEditControls)}
+    </div>`;
+  }
+
+  // AOG
+  if (aog.length) {
+    html += `<div class="report-card">
+      <div class="report-card-header"><div class="card-title amber">⚠ Open AOG Sessions</div><div class="card-count">${aog.length} active</div></div>
+      ${aog.map(item => checkItemHTML(item, false)).join('')}
+    </div>`;
+  }
+
+  // Empty state for new report with no items yet
+  if (!completed.length && !inprogress.length && !deferred.length && !aog.length && !report.summary) {
+    html += `<div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">Report Generated</div>
+      <div class="empty-msg">No activity found since the last report.<br>Add items manually using the button above.</div>
+    </div>`;
+  }
+
+  // Sign-off
+  html += `<div class="report-card">
+    <div class="report-card-header"><div class="card-title muted">Shift Lead Sign-Off</div></div>
+    <div class="sig-block">
+      <div class="sig-avatar">${escapeHTML(initials)}</div>
+      <div class="sig-info">
+        <div class="sig-name">${escapeHTML(report.lead_email || currentUser.email || '')}</div>
+        <div class="sig-role">${escapeHTML(report.shift || '')} Shift Lead</div>
+      </div>
+      <div class="sig-time">${createdDate}</div>
+    </div>
+  </div>`;
+
+  document.getElementById('reportContent').innerHTML = html;
+  document.getElementById('exportBtn').style.display = '';
+}
+
+function groupedByAircraftHTML(items, editable) {
+  // Extract tail number from title (format: "TAIL - description")
+  const groups = {};
+  items.forEach(item => {
+    const dashIdx = item.title.indexOf(' - ');
+    const tail = dashIdx > -1 ? item.title.substring(0, dashIdx).trim() : 'Other';
+    const shortTitle = dashIdx > -1 ? item.title.substring(dashIdx + 3).trim() : item.title;
+    if (!groups[tail]) groups[tail] = [];
+    groups[tail].push({ ...item, shortTitle });
+  });
+
+  return Object.entries(groups).map(([tail, groupItems]) => {
+    const groupId = 'grp_' + tail.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Math.random().toString(36).substr(2, 5);
+    const count = groupItems.length;
+    const itemsHTML = groupItems.map(item => checkItemHTML(item, editable, true)).join('');
+    const isReleased = releasedTails.includes(tail);
+    return `<div class="aircraft-group">
+      <div class="aircraft-group-header" onclick="toggleGroup('${groupId}')">
+        <div class="aircraft-group-title">
+          <span class="aircraft-group-tail">${escapeHTML(tail)}</span>
+          ${isReleased ? '<span class="item-tag tag-rts">RELEASED</span>' : ''}
+          <span class="aircraft-group-count">${count} item${count !== 1 ? 's' : ''}</span>
+        </div>
+        <span class="aircraft-group-chevron" id="chev_${groupId}">▾</span>
+      </div>
+      <div class="aircraft-group-items" id="${groupId}">
+        ${itemsHTML}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function checkItemHTML(item, editable, useShortTitle) {
+  const isChecked = item.checked;
+  const title = useShortTitle && item.shortTitle ? item.shortTitle : item.title;
+  const tag = item.tag && item.tag !== 'null' ? `<span class="item-tag tag-${item.tag}">${escapeHTML(item.tag.toUpperCase())}</span>` : '';
+  const checkAttr = editable ? `onclick="toggleItem('${item.id}')"` : '';
+  const signature = item.editSignature ? `<div class="edit-signature">${escapeHTML(item.editSignature)}</div>` : '';
+  if (editable) {
+    return `<div class="check-item">
+      <div class="check-box${isChecked ? ' checked' : ''}" ${checkAttr}></div>
+      <div class="check-item-body">
+        <div class="check-item-title${isChecked ? ' done' : ''}" contenteditable="true" data-item-id="${item.id}" onblur="saveItemEdit(this, '${item.id}')" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${escapeHTML(title)}${tag}</div>
+        ${item.notes ? `<div class="check-item-meta">${escapeHTML(item.notes)}</div>` : ''}
+        ${signature}
+      </div>
+    </div>`;
+  }
+  return `<div class="check-item">
+    <div class="check-box readonly"></div>
+    <div class="check-item-body">
+      <div class="check-item-title${isChecked ? ' done' : ''}">${escapeHTML(title)}${tag}</div>
+      ${item.notes ? `<div class="check-item-meta">${escapeHTML(item.notes)}</div>` : ''}
+      ${signature}
+    </div>
+  </div>`;
+}
+async function saveItemEdit(el, itemId) {
+  const newText = el.innerText.trim();
+  if (!newText) return;
+  const report = allReports.find(r => r.id === activeReportId);
+  if (!report) return;
+  const items = (() => { try { return JSON.parse(report.items || '[]'); } catch(e) { return []; } })();
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+  const oldTitle = item.shortTitle || item.title;
+  if (newText === oldTitle) return; // no change
+  const initials = (currentUser.email || '?').substring(0, 2).toUpperCase();
+  const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const sig = `Edited by ${initials} at ${ts}`;
+  item.title = item.title.replace(oldTitle, newText);
+  if (item.shortTitle) item.shortTitle = newText;
+  item.editSignature = sig;
+  report.items = JSON.stringify(items);
+  try {
+    await api({ type: 'update_turnover_item', report_id: activeReportId, company_id: currentUser.company_id, items: report.items });
+    showReport(activeReportId);
+  } catch(e) {
+    // Silent fail
+  }
+}
+function toggleGroup(groupId) {
+  const el = document.getElementById(groupId);
+  const chev = document.getElementById('chev_' + groupId);
+  if (!el) return;
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (chev) chev.textContent = isOpen ? '▸' : '▾';
+}
+
+// ── TOGGLE ITEM ───────────────────────────────────────────────────────────────
+async function toggleItem(itemId) {
+  const report = allReports.find(r => r.id === activeReportId);
+  if (!report) return;
+  const items = (() => { try { return JSON.parse(report.items || '[]'); } catch(e) { return []; } })();
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+  item.checked = !item.checked;
+  report.items = JSON.stringify(items);
+  showReport(activeReportId); // re-render optimistically
+  try {
+    await api({ type: 'update_turnover_item', report_id: activeReportId, company_id: currentUser.company_id, items: report.items });
+  } catch(e) {
+    // Silent fail — state already updated locally
+  }
+}
+
+// ── GENERATE MODAL ────────────────────────────────────────────────────────────
+function openGenerateModal() {
+  document.getElementById('generateModal').classList.add('open');
+  document.getElementById('leadNotes').value = '';
+  document.getElementById('generateError').style.display = 'none';
+}
+function closeGenerateModal() {
+  document.getElementById('generateModal').classList.remove('open');
+}
+
+async function submitGenerate() {
+  const shift = document.getElementById('shiftSelect').value;
+  const notes = document.getElementById('leadNotes').value.trim();
+  const btn = document.getElementById('generateSubmitBtn');
+  const errEl = document.getElementById('generateError');
+
+  btn.textContent = 'Generating...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    const data = await api({
+      type: 'generate_turnover',
+      company_id: currentUser.company_id,
+      shift,
+      lead_notes: notes
+    });
+
+    if (data.error) {
+      errEl.textContent = data.error;
+      errEl.style.display = 'block';
+      btn.textContent = 'Generate ↗';
+      btn.disabled = false;
+      return;
+    }
+
+    closeGenerateModal();
+    await loadReports();
+  } catch(e) {
+    errEl.textContent = 'Something went wrong. Please try again.';
+    errEl.style.display = 'block';
+    btn.textContent = 'Generate ↗';
+    btn.disabled = false;
+  }
+}
+
+// ── ADD ITEM MODAL ────────────────────────────────────────────────────────────
+function openAddItem() {
+  document.getElementById('addItemModal').classList.add('open');
+  document.getElementById('addItemText').value = '';
+  document.getElementById('addItemNotes').value = '';
+  document.getElementById('addItemError').style.display = 'none';
+}
+function closeAddItem() {
+  document.getElementById('addItemModal').classList.remove('open');
+}
+
+async function submitAddItem() {
+  const title = document.getElementById('addItemText').value.trim();
+  const category = document.getElementById('addItemCategory').value;
+  const notes = document.getElementById('addItemNotes').value.trim();
+  const btn = document.getElementById('addItemSubmitBtn');
+  const errEl = document.getElementById('addItemError');
+
+  if (!title) {
+    errEl.textContent = 'Please enter a description.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!activeReportId) {
+    errEl.textContent = 'No active report. Generate a turnover first.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.textContent = 'Adding...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    const report = allReports.find(r => r.id === activeReportId);
+    const items = (() => { try { return JSON.parse(report.items || '[]'); } catch(e) { return []; } })();
+    const newItem = {
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      title,
+      category,
+      notes,
+      checked: false,
+      manual: true,
+      added_by: currentUser.email,
+      added_at: new Date().toISOString()
+    };
+    items.push(newItem);
+    report.items = JSON.stringify(items);
+
+    await api({ type: 'update_turnover_item', report_id: activeReportId, company_id: currentUser.company_id, items: report.items });
+    closeAddItem();
+    showReport(activeReportId);
+  } catch(e) {
+    errEl.textContent = 'Could not add item. Please try again.';
+    errEl.style.display = 'block';
+  }
+
+  btn.textContent = 'Add Item';
+  btn.disabled = false;
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function exportPDF() {
+  window.print();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Close modals on overlay click
+document.getElementById('generateModal').addEventListener('click', function(e) {
+  if (e.target === this) closeGenerateModal();
+});
+document.getElementById('addItemModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAddItem();
+});
+</script>
+</body>
+</html>
