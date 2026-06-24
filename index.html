@@ -395,6 +395,7 @@
   <div class="hero-actions">
     <button class="btn-primary" onclick="openModal()">Start free, 3-day trial</button>
     <a href="#tool" style="width:100%;"><button class="btn-ghost" style="width:100%;">See it in action</button></a>
+    <a href="/tour" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);letter-spacing:1px;text-decoration:none;margin-top:4px;display:inline-block;transition:color 0.2s;" onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--text3)'">Product tour &#8594;</a>
   </div>
   <p class="hero-fine">From $9.99/mo. 3-day free trial. Card charged after 3-day trial ends. Cancel anytime.</p>
   <div class="stat-row">
@@ -859,6 +860,7 @@
         <button onclick="handleChangePassword()" style="background:var(--green);color:#0a0a0a;font-family:var(--font-mono);font-size:11px;padding:7px 16px;border:none;border-radius:4px;cursor:pointer;font-weight:500;">Update password</button>
         <span id="changePasswordStatus" style="font-family:var(--font-mono);font-size:11px;margin-left:10px;display:none;"></span>
       </div>
+      <a href="/tour" target="_blank" style="display:inline-block;font-family:var(--font-mono);font-size:11px;color:var(--text3);letter-spacing:1px;text-decoration:none;margin-bottom:12px;transition:color 0.2s;" onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--text3)'">&#9654; Product tour</a>
       <button class="btn-ghost" style="font-size:12px;padding:8px 16px;" onclick="handleLogout()">Log out</button>
       <button class="btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:8px;display:none;" id="changePlanBtn" onclick="showChangePlan(currentUser.plan)">Change plan</button>
       <button class="btn-ghost" style="font-size:12px;padding:8px 16px;margin-top:8px;color:var(--red);border-color:var(--red);display:none;" id="cancelSubBtn" onclick="showCancelFlow()">Cancel subscription</button>
