@@ -1,0 +1,25 @@
+{
+  "buildCommand": "bash build.sh",
+  "outputDirectory": ".",
+  "crons": [
+    {
+      "path": "/api/ratchet",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/referral",
+      "schedule": "0 10 * * *"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*\\.(js|css|png|jpg|ico|svg|json|webmanifest|woff2?))", "dest": "/$1" },
+    { "src": "/reference.html", "dest": "/reference.html" },
+    { "src": "/admin.html", "dest": "/admin.html" },
+    { "src": "/invite.html", "dest": "/invite.html" },
+    { "src": "/turnover.html", "dest": "/turnover.html" },
+    { "src": "/tour", "dest": "/tour.html" },
+    { "src": "/tour.html", "dest": "/tour.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
