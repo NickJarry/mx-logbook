@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX-Logbook Product Tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#00e5a0;--green-dark:#00c48c;
+  --bg:#0d0d0d;--bg2:#151515;--bg3:#1e1e1e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#f0f0f0;--text2:#888;--text3:#444;
+  --amber:#ef9f27;--red:#e24b4a;
+  --font-mono:'Share Tech Mono',monospace;
+  --font-cond:'Barlow Condensed',sans-serif;
+  --font-body:'Barlow',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.6;min-height:100vh;overflow-x:hidden;padding-bottom:120px;}
+a{color:var(--green);text-decoration:none;}
+a:hover{color:var(--green-dark);}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(13,13,13,0.95);backdrop-filter:blur(10px);border-bottom:0.5px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.nav-logo{font-family:var(--font-mono);font-size:13px;color:var(--green);letter-spacing:2px;}
+.nav-back{font-family:var(--font-mono);font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;border:0.5px solid var(--border2);padding:6px 14px;border-radius:4px;transition:color 0.2s,border-color 0.2s;}
+.nav-back:hover{color:var(--green);border-color:var(--green);}
+
+/* HERO */
+.hero{max-width:900px;margin:0 auto;padding:5rem 2rem 3rem;}
+.hero-eyebrow{font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:10px;}
+.hero-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--green);}
+.hero-title{font-family:var(--font-cond);font-size:clamp(32px,6vw,64px);font-weight:700;text-transform:uppercase;line-height:1;margin-bottom:1rem;}
+.hero-title span{color:var(--green);}
+.hero-sub{font-size:15px;color:var(--text2);line-height:1.8;max-width:540px;margin-bottom:3rem;}
+
+/* TOUR LIST */
+.tour-list{max-width:900px;margin:0 auto;padding:0 2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:5rem;}
+.tour-card{background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;padding:1.25rem;display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--text);transition:border-color 0.2s,background 0.2s;}
+.tour-card:hover{border-color:var(--green);background:var(--bg3);color:var(--text);}
+.tour-card-num{font-family:var(--font-mono);font-size:11px;color:var(--green);opacity:0.6;flex-shrink:0;width:24px;}
+.tour-card-title{font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text2);}
+.tour-card:hover .tour-card-title{color:var(--green);}
+.tour-card-arrow{margin-left:auto;font-family:var(--font-mono);font-size:14px;color:var(--text3);}
+.tour-card:hover .tour-card-arrow{color:var(--green);}
+
+/* SECTION */
+.tour-section{max-width:760px;margin:0 auto;padding:3rem 2rem 5rem;border-top:0.5px solid var(--border);}
+.section-label{font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+.section-title{font-family:var(--font-cond);font-size:32px;font-weight:700;text-transform:uppercase;margin-bottom:8px;}
+.section-sub{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:2rem;max-width:540px;}
+
+/* STEP WIDGET */
+.step-widget{background:var(--bg2);border:0.5px solid var(--border2);border-radius:10px;overflow:hidden;}
+.step-progress{height:2px;background:var(--border);position:relative;}
+.step-progress-fill{height:100%;background:var(--green);transition:width 0.4s ease;}
+.step-inner{padding:1.5rem;}
+.step-tag{font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.step-title{font-family:var(--font-cond);font-size:22px;font-weight:700;text-transform:uppercase;color:var(--text);margin-bottom:8px;}
+.step-body{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:1.25rem;}
+.step-screen{background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:1.25rem;margin-bottom:1.25rem;}
+.step-tip{background:rgba(0,229,160,0.05);border:0.5px solid rgba(0,229,160,0.15);border-radius:6px;padding:10px 14px;font-family:var(--font-mono);font-size:11px;color:var(--text2);margin-bottom:1.25rem;line-height:1.7;}
+.step-nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-top:0.5px solid var(--border);}
+.step-nav-btn{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;padding:8px 18px;border:0.5px solid var(--border2);border-radius:4px;background:transparent;color:var(--text2);cursor:pointer;transition:all 0.15s;}
+.step-nav-btn:hover{color:var(--text);border-color:var(--text2);}
+.step-nav-btn.next{background:var(--green);color:#0a0a0a;border-color:var(--green);font-weight:600;}
+.step-nav-btn.next:hover{background:var(--green-dark);}
+.step-nav-btn:disabled{opacity:0.3;cursor:default;}
+.step-counter{font-family:var(--font-mono);font-size:11px;color:var(--text3);}
+.step-anim{opacity:0;transform:translateY(10px);transition:opacity 0.3s ease,transform 0.3s ease;}
+.step-anim.in{opacity:1;transform:translateY(0);}
+
+/* MOCK ELEMENTS */
+.m-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:10px;border-bottom:0.5px solid var(--border);}
+.m-logo{font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:2px;}
+.m-btn{font-family:var(--font-mono);font-size:10px;padding:4px 10px;border:0.5px solid var(--border2);border-radius:4px;color:var(--text2);background:transparent;cursor:default;}
+.m-btn.g{background:var(--green);color:#0a0a0a;border-color:var(--green);}
+.m-btn.r{background:rgba(226,75,74,0.12);color:var(--red);border:0.5px solid rgba(226,75,74,0.3);}
+.m-label{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.m-input{background:var(--bg);border:0.5px solid var(--border2);border-radius:4px;padding:8px 10px;font-size:12px;color:var(--text2);font-family:var(--font-body);}
+.m-input.hl{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,229,160,0.12);color:var(--text);}
+.m-textarea{background:var(--bg);border:0.5px solid var(--border2);border-radius:4px;padding:10px;font-size:12px;color:var(--text2);width:100%;min-height:60px;font-family:var(--font-body);}
+.m-textarea.hl{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,229,160,0.12);}
+.m-field{flex:1;}
+.m-row{display:flex;gap:10px;margin-bottom:10px;}
+.m-entry-row{display:flex;gap:8px;align-items:center;margin-bottom:7px;}
+.m-etime{font-family:var(--font-mono);font-size:10px;color:var(--green);min-width:38px;flex-shrink:0;}
+.m-etext{background:var(--bg);border:0.5px solid var(--border);border-radius:4px;padding:8px 10px;flex:1;font-size:11px;color:var(--text2);}
+.m-badge{font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:3px;}
+.m-badge.green{background:rgba(0,229,160,0.1);color:var(--green);border:0.5px solid rgba(0,229,160,0.2);}
+.m-badge.red{background:rgba(226,75,74,0.1);color:var(--red);border:0.5px solid rgba(226,75,74,0.2);}
+.m-badge.amber{background:rgba(239,159,39,0.1);color:var(--amber);border:0.5px solid rgba(239,159,39,0.2);}
+.m-report-row{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:0.5px solid var(--border);border-left:2px solid var(--green);border-radius:4px;padding:10px 12px;margin-bottom:7px;}
+.m-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.m-stat{background:var(--bg);border:0.5px solid var(--border);border-radius:4px;padding:8px;text-align:center;}
+.m-stat-num{font-family:var(--font-cond);font-size:20px;font-weight:700;}
+.m-stat-label{font-family:var(--font-mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.m-aog-bar{background:rgba(226,75,74,0.06);border:0.5px solid rgba(226,75,74,0.2);border-radius:6px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.m-aog-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;}
+.m-avatar{width:28px;height:28px;border-radius:50%;background:rgba(0,229,160,0.12);color:var(--green);font-family:var(--font-mono);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-team-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:12px;color:var(--text2);}
+.m-team-row:last-child{border-bottom:none;}
+.m-tab-bar{display:flex;background:var(--bg);border:0.5px solid var(--border);border-radius:6px;margin-bottom:10px;overflow:hidden;}
+.m-tab{flex:1;padding:8px 6px;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;text-align:center;color:var(--text3);border-right:0.5px solid var(--border);}
+.m-tab:last-child{border-right:none;}
+.m-tab.active{background:var(--bg2);color:var(--green);}
+.m-pol{font-size:11px;color:var(--text2);line-height:1.8;background:var(--bg);border:0.5px solid var(--border);border-radius:4px;padding:10px;min-height:80px;}
+.m-cb{width:14px;height:14px;border:0.5px solid var(--border2);border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;background:var(--bg);flex-shrink:0;margin-right:8px;}
+.m-cb.chk{background:var(--green);color:#0a0a0a;border-color:var(--green);}
+
+/* HIGHLIGHT RING */
+.hl{position:relative;display:inline-block;}
+.hl::after{content:'';position:absolute;inset:-4px;border-radius:6px;border:1.5px solid var(--green);animation:hl-ring 1.8s ease-in-out infinite;pointer-events:none;}
+.hl.pill::after{border-radius:20px;}
+.hl.round::after{border-radius:50%;}
+.hl.block{display:block;}
+.hl.block::after{border-radius:8px;}
+@keyframes hl-ring{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,160,0.35);}50%{opacity:0.7;box-shadow:0 0 0 6px rgba(0,229,160,0);}}
+@keyframes aog-pulse{0%,100%{box-shadow:0 0 0 0 rgba(226,75,74,0.5);}50%{box-shadow:0 0 0 5px rgba(226,75,74,0);}}
+.m-aog-dot.live{animation:aog-pulse 1.2s ease-in-out infinite;}
+
+/* BACK TO TOP BTN */
+.back-top{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;background:var(--bg2);color:var(--text2);border:0.5px solid var(--border2);border-radius:20px;padding:10px 20px;cursor:pointer;z-index:99;transition:all 0.2s;white-space:nowrap;}
+.back-top:hover{color:var(--green);border-color:var(--green);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">MX-LOGBOOK</div>
+  <a href="/" class="nav-back">&#8592; Back to mx-logbook.com</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Product Tour</div>
+  <h1 class="hero-title">How it <span>works</span></h1>
+  <p class="hero-sub">Step-by-step walkthroughs for every part of the platform. Pick a topic or start from the top.</p>
+</div>
+
+<!-- TOUR LIST -->
+<div class="tour-list" id="tourList">
+  <a href="#signup" class="tour-card">
+    <span class="tour-card-num">01</span>
+    <span class="tour-card-title">Signing up</span>
+    <span class="tour-card-arrow">&#8594;</span>
+  </a>
+  <a href="#setup" class="tour-card">
+    <span class="tour-card-num">02</span>
+    <span class="tour-card-title">Account setup</span>
+    <span class="tour-card-arrow">&#8594;</span>
+  </a>
+  <a href="#reports" class="tour-card">
+    <span class="tour-card-num">03</span>
+    <span class="tour-card-title">Running reports</span>
+    <span class="tour-card-arrow">&#8594;</span>
+  </a>
+  <a href="#aog" class="tour-card">
+    <span class="tour-card-num">04</span>
+    <span class="tour-card-title">AOG sessions</span>
+    <span class="tour-card-arrow">&#8594;</span>
+  </a>
+  <a href="#turnover" class="tour-card">
+    <span class="tour-card-num">05</span>
+    <span class="tour-card-title">Shift turnover</span>
+    <span class="tour-card-arrow">&#8594;</span>
+  </a>
+  <a href="#admin" class="tour-card">
+    <span class="tour-card-num">06</span>
+    <span class="tour-card-title">Team admin</span>
+    <span class="tour-card-arrow">&#8594;</span>
+  </a>
+</div>
+
+<!-- 01 SIGNING UP -->
+<div class="tour-section" id="signup">
+  <div class="section-label">01</div>
+  <h2 class="section-title">Signing up</h2>
+  <p class="section-sub">Getting started takes about two minutes. Here is what to expect from the moment you hit the site to when you land on the tool.</p>
+  <div class="step-widget" id="w1">
+    <div class="step-progress"><div class="step-progress-fill" id="p1"></div></div>
+    <div class="step-inner" id="s1"></div>
+    <div class="step-nav">
+      <button class="step-nav-btn" id="b1p" onclick="go('w1',-1)" disabled>Back</button>
+      <span class="step-counter" id="c1"></span>
+      <button class="step-nav-btn next" id="b1n" onclick="go('w1',1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- 02 ACCOUNT SETUP -->
+<div class="tour-section" id="setup">
+  <div class="section-label">02</div>
+  <h2 class="section-title">Account setup</h2>
+  <p class="section-sub">Before you start logging entries, take two minutes to fill in your technician profile. It makes everything downstream faster and more accurate.</p>
+  <div class="step-widget" id="w2">
+    <div class="step-progress"><div class="step-progress-fill" id="p2"></div></div>
+    <div class="step-inner" id="s2"></div>
+    <div class="step-nav">
+      <button class="step-nav-btn" id="b2p" onclick="go('w2',-1)" disabled>Back</button>
+      <span class="step-counter" id="c2"></span>
+      <button class="step-nav-btn next" id="b2n" onclick="go('w2',1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- 03 RUNNING REPORTS -->
+<div class="tour-section" id="reports">
+  <div class="section-label">03</div>
+  <h2 class="section-title">Running reports</h2>
+  <p class="section-sub">The core workflow. Open a report for an aircraft, add entries as you work, then release when the job is done.</p>
+  <div class="step-widget" id="w3">
+    <div class="step-progress"><div class="step-progress-fill" id="p3"></div></div>
+    <div class="step-inner" id="s3"></div>
+    <div class="step-nav">
+      <button class="step-nav-btn" id="b3p" onclick="go('w3',-1)" disabled>Back</button>
+      <span class="step-counter" id="c3"></span>
+      <button class="step-nav-btn next" id="b3n" onclick="go('w3',1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- 04 AOG -->
+<div class="tour-section" id="aog">
+  <div class="section-label">04</div>
+  <h2 class="section-title">AOG sessions</h2>
+  <p class="section-sub">When an aircraft goes AOG, the whole team needs to know immediately. This is how it works from flag to close.</p>
+  <div class="step-widget" id="w4">
+    <div class="step-progress"><div class="step-progress-fill" id="p4"></div></div>
+    <div class="step-inner" id="s4"></div>
+    <div class="step-nav">
+      <button class="step-nav-btn" id="b4p" onclick="go('w4',-1)" disabled>Back</button>
+      <span class="step-counter" id="c4"></span>
+      <button class="step-nav-btn next" id="b4n" onclick="go('w4',1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- 05 TURNOVER -->
+<div class="tour-section" id="turnover">
+  <div class="section-label">05</div>
+  <h2 class="section-title">Shift turnover</h2>
+  <p class="section-sub">At shift end, leads generate a turnover report that captures everything that happened and what the next shift needs to know.</p>
+  <div class="step-widget" id="w5">
+    <div class="step-progress"><div class="step-progress-fill" id="p5"></div></div>
+    <div class="step-inner" id="s5"></div>
+    <div class="step-nav">
+      <button class="step-nav-btn" id="b5p" onclick="go('w5',-1)" disabled>Back</button>
+      <span class="step-counter" id="c5"></span>
+      <button class="step-nav-btn next" id="b5n" onclick="go('w5',1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- 06 ADMIN -->
+<div class="tour-section" id="admin">
+  <div class="section-label">06</div>
+  <h2 class="section-title">Team admin</h2>
+  <p class="section-sub">Admins manage the whole shop from one place. Invite mechanics, assign roles, track records, and manage billing.</p>
+  <div class="step-widget" id="w6">
+    <div class="step-progress"><div class="step-progress-fill" id="p6"></div></div>
+    <div class="step-inner" id="s6"></div>
+    <div class="step-nav">
+      <button class="step-nav-btn" id="b6p" onclick="go('w6',-1)" disabled>Back</button>
+      <span class="step-counter" id="c6"></span>
+      <button class="step-nav-btn next" id="b6n" onclick="go('w6',1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<button class="back-top" onclick="document.getElementById('tourList').scrollIntoView({behavior:'smooth'})">&#8593; Back to tour list</button>
+
+<script>
+const TOURS = {
+  w1: {
+    cur: 0,
+    steps: [
+      {
+        tag:'Signing up &middot; Step 1 of 4',
+        title:'Pick your plan',
+        body:'Head to mx-logbook.com and scroll to the plans section. Pro is for individual mechanics. Shop plans are for teams. Hit Start free trial on whichever fits.',
+        tip:'Have a promo code? Enter it at checkout. No card required.',
+        html:`<div class="step-screen">
+          <div class="m-nav"><span class="m-logo">MX-LOGBOOK</span><div style="display:flex;gap:6px;"><span class="m-btn">Sign in</span><div class="hl pill"><span class="m-btn g">Start free trial</span></div></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:var(--bg);border:0.5px solid var(--green);border-radius:6px;padding:12px;">
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:4px;">PRO</div>
+              <div style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:var(--text);">$9.99<span style="font-size:12px;color:var(--text3);">/mo</span></div>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px;">Single user</div>
+            </div>
+            <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:12px;">
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:4px;">SHOP</div>
+              <div style="font-family:var(--font-cond);font-size:22px;font-weight:700;color:var(--text);">$299<span style="font-size:12px;color:var(--text3);">/mo</span></div>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px;">Up to 5 mechanics</div>
+            </div>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Signing up &middot; Step 2 of 4',
+        title:'Create your account',
+        body:'Enter your email address and create a password. That is all that is required to get started. You can add your technician details after you log in.',
+        tip:'Use the same email you use professionally. Your account is tied to it.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Create account</div>
+          <div style="margin-bottom:10px;"><div class="m-label">Email address</div><div class="m-input hl">you@airline.com</div></div>
+          <div style="margin-bottom:10px;"><div class="m-label">Password</div><div class="m-input">&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</div></div>
+          <div style="margin-bottom:14px;"><div class="m-label">Promo code (optional)</div><div class="m-input">READANDSIGN</div></div>
+          <div class="hl pill" style="display:inline-block;"><span class="m-btn g" style="padding:8px 20px;font-size:12px;">Create account</span></div>
+        </div>`
+      },
+      {
+        tag:'Signing up &middot; Step 3 of 4',
+        title:'Check your email',
+        body:'A confirmation email will arrive within a minute. Click the link inside to verify your address. Once confirmed, you are in.',
+        tip:'Check your spam folder if it does not show up within a few minutes.',
+        html:`<div class="step-screen" style="text-align:center;padding:2rem;">
+          <div style="font-size:32px;margin-bottom:12px;">&#9993;</div>
+          <div style="font-family:var(--font-cond);font-size:20px;font-weight:700;text-transform:uppercase;color:var(--text);margin-bottom:6px;">Check your inbox</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">Sent to you@airline.com</div>
+          <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:12px;text-align:left;max-width:340px;margin:0 auto;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:6px;">From: hello@mx-logbook.com</div>
+            <div style="font-size:13px;color:var(--text);margin-bottom:8px;">Confirm your MX-Logbook account</div>
+            <div class="hl pill" style="display:inline-block;"><span class="m-btn g">Confirm email</span></div>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Signing up &middot; Step 4 of 4',
+        title:'You are in',
+        body:'After confirmation you land on the main tool page. Your account is active and your free trial has started. The first thing to do is set up your technician profile before you start logging.',
+        tip:'Your trial runs for 3 days. No charges until it ends, and you can cancel any time.',
+        html:`<div class="step-screen">
+          <div class="m-nav"><span class="m-logo">MX-LOGBOOK</span><div style="display:flex;gap:6px;"><span class="m-btn">My Account</span><span class="m-btn">&#128295;</span></div></div>
+          <div style="font-family:var(--font-cond);font-size:16px;font-weight:700;text-transform:uppercase;color:var(--text);margin-bottom:4px;">What did you do?</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Plain language is fine. Speak or type as events happen.</div>
+          <div class="m-row">
+            <div class="m-field"><div class="m-label">Tail number</div><div class="m-input">N12345</div></div>
+            <div class="m-field"><div class="m-label">AC Type</div><div class="m-input">B737, A320...</div></div>
+          </div>
+          <div style="margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--green);">Account active. Trial period started.</div>
+        </div>`
+      }
+    ]
+  },
+  w2: {
+    cur: 0,
+    steps: [
+      {
+        tag:'Account setup &middot; Step 1 of 3',
+        title:'Open My Account',
+        body:'Hit My Account in the top nav. This opens your account dashboard where you manage your profile, view your closed reports, access referrals, and manage your team if you are on a Shop plan.',
+        tip:'My Account is accessible from any page on the site.',
+        html:`<div class="step-screen">
+          <div class="m-nav"><span class="m-logo">MX-LOGBOOK</span><div style="display:flex;gap:6px;"><div class="hl pill"><span class="m-btn">My Account</span></div><span class="m-btn">&#128295;</span></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--green);border-radius:4px;color:var(--green);">Overview</span>
+            <span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--border);border-radius:4px;color:var(--text3);">My Closed Reports</span>
+            <span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--border);border-radius:4px;color:var(--text3);">Referrals</span>
+            <span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--border);border-radius:4px;color:var(--text3);">Glossary</span>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Account setup &middot; Step 2 of 3',
+        title:'Fill in your technician info',
+        body:'In the Overview tab, find the Technician Info section. Enter your name and certificate number. Hit Save. These get pulled automatically into every entry and report you generate going forward.',
+        tip:'You only need to do this once. Update it any time your cert number changes.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Technician Info</div>
+          <div class="m-row">
+            <div class="m-field"><div class="m-label">Name</div><div class="m-input hl">J. Smith</div></div>
+            <div class="m-field"><div class="m-label">Cert #</div><div class="m-input hl">A&P #123456789</div></div>
+          </div>
+          <div class="hl pill" style="display:inline-block;margin-top:4px;"><span class="m-btn g">Save</span></div>
+          <div style="margin-top:12px;font-family:var(--font-mono);font-size:11px;color:var(--green);">Saved. These will appear in all generated entries.</div>
+        </div>`
+      },
+      {
+        tag:'Account setup &middot; Step 3 of 3',
+        title:'Add custom terms to your glossary',
+        body:'Head to the Glossary tab to add abbreviations, aircraft-specific shorthand, or company terms. Anything you add here gets used when your entries are converted, so the output matches how your shop actually talks.',
+        tip:'Examples: "ETOPS = Extended-range Twin-engine Operational Performance Standards", or your shop\'s internal job codes.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Custom Glossary</div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">Add your own abbreviations and shorthand. These will be used when generating entries.</div>
+          <div class="hl" style="display:block;border-radius:4px;">
+            <div class="m-textarea" style="min-height:70px;">HMU = Hydromechanical Metering Unit&#10;FCU = Fuel Control Unit&#10;LRU = Line Replaceable Unit</div>
+          </div>
+          <div style="margin-top:8px;"><span class="m-btn g">Save glossary</span></div>
+        </div>`
+      }
+    ]
+  },
+  w3: {
+    cur: 0,
+    steps: [
+      {
+        tag:'Running reports &middot; Step 1 of 5',
+        title:'Open a report for an aircraft',
+        body:'On the main tool page, enter the tail number and aircraft type at the top. This opens a running report for that aircraft. Every entry you add during the shift gets logged here.',
+        tip:'You can have multiple running reports open at the same time for different aircraft.',
+        html:`<div class="step-screen">
+          <div class="m-row">
+            <div class="m-field"><div class="m-label">Tail number</div><div class="m-input hl">N442TX</div></div>
+            <div class="m-field"><div class="m-label">AC Type</div><div class="m-input hl">BAE 777</div></div>
+          </div>
+          <div style="margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--green);">Running report open for N442TX</div>
+        </div>`
+      },
+      {
+        tag:'Running reports &middot; Step 2 of 5',
+        title:'Add entries as you work',
+        body:'Describe what you did in plain language. Type it or tap the mic button to speak it. Select the entry type, then hit Add to Running Report. Repeat for each task throughout the shift.',
+        tip:'Voice input works on Chrome and Safari. No need for regulatory language, just say what happened.',
+        html:`<div class="step-screen">
+          <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;">
+            <div class="m-textarea hl" style="flex:1;">Replaced number 2 tire, torqued to spec, no defects noted</div>
+            <div class="hl round" style="width:40px;height:40px;border-radius:50%;background:var(--bg);border:0.5px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">&#127897;</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+            <span style="font-family:var(--font-mono);font-size:10px;padding:3px 10px;border:0.5px solid var(--border);border-radius:20px;color:var(--text3);">+ inspection</span>
+            <span style="font-family:var(--font-mono);font-size:10px;padding:3px 10px;border:0.5px solid var(--border);border-radius:20px;color:var(--text3);">+ repair</span>
+            <span style="font-family:var(--font-mono);font-size:10px;padding:3px 10px;border:0.5px solid var(--border);border-radius:20px;color:var(--text3);">+ oil change</span>
+          </div>
+          <div class="m-entry-row"><span class="m-etime">1315L</span><div class="m-etext">Performed ETOPS operational check</div></div>
+          <div class="m-entry-row"><span class="m-etime">1317L</span><div class="m-etext">FOD found in #1 tire. Tire requires replacement.</div></div>
+        </div>`
+      },
+      {
+        tag:'Running reports &middot; Step 3 of 5',
+        title:'Release the aircraft',
+        body:'When the work is done, hit Release AC. Every entry in the running report is automatically converted into a single clean, professional maintenance log entry. You review it before anything saves.',
+        tip:'Nothing commits until you hit Confirm and Release. Edit freely in the review screen.',
+        html:`<div class="step-screen">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div><div style="font-family:var(--font-cond);font-size:16px;font-weight:700;text-transform:uppercase;color:var(--text);">N442TX</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">3 entries logged</div></div>
+            <div class="hl pill"><span class="m-btn g" style="padding:8px 16px;">Release AC</span></div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Review before release</div>
+          <div class="m-pol">MAINTENANCE LOG ENTRY&#10;Aircraft Registration: N442TX&#10;&#10;1315L - Performed ETOPS operational check per current standards.&#10;1317L - Foreign object debris (FOD) found in #1 tire. Tire requires replacement.</div>
+        </div>`
+      },
+      {
+        tag:'Running reports &middot; Step 4 of 5',
+        title:'Confirm and release',
+        body:'Read the polished output carefully. Edit anything that is not accurate. The conversion handles regulatory language but you know the work better than any system does. When you are satisfied, hit Confirm and Release.',
+        tip:'The review screen is a full editable text area. You can rewrite any part of it.',
+        html:`<div class="step-screen">
+          <div class="m-pol" style="margin-bottom:12px;">MAINTENANCE LOG ENTRY&#10;Aircraft Registration: N442TX&#10;Aircraft Type: BAE 777&#10;&#10;WORK PERFORMED:&#10;1315L - Performed ETOPS operational check. All systems checked and within limits.&#10;1317L - FOD found in #1 tire. Tire removed and requires replacement.&#10;&#10;Aircraft not returned to service pending tire replacement.&#10;&#10;Technician: J. Smith | Cert: A&P #123456789</div>
+          <div style="display:flex;gap:8px;">
+            <span class="m-btn">Cancel</span>
+            <div class="hl pill"><span class="m-btn g">Confirm &amp; Release</span></div>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Running reports &middot; Step 5 of 5',
+        title:'Generate your final report',
+        body:'The released report lands in My Closed Reports. Select one or more reports using the checkboxes and hit Generate Final Report to open a clean, printable document you can save as a PDF or hand to your lead.',
+        tip:'You can select reports from multiple aircraft and generate one consolidated document.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">My Closed Reports</div>
+          <div class="m-report-row"><span class="m-cb chk">&#10003;</span><div style="flex:1;"><div style="font-family:var(--font-cond);font-size:15px;font-weight:700;text-transform:uppercase;color:var(--text);">N442TX &middot; BAE 777</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Released 6/15/2026 &middot; 3 entries</div></div><span class="m-badge green">RELEASED</span></div>
+          <div class="m-report-row" style="opacity:0.5;"><span class="m-cb"></span><div style="flex:1;"><div style="font-family:var(--font-cond);font-size:15px;font-weight:700;text-transform:uppercase;color:var(--text);">AALR &middot; BAE 777</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Released 6/14/2026 &middot; 2 entries</div></div><span class="m-badge green">RELEASED</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--text3);">1 selected</span>
+            <div class="hl pill"><span class="m-btn g">Generate Final Report</span></div>
+          </div>
+        </div>`
+      }
+    ]
+  },
+  w4: {
+    cur: 0,
+    steps: [
+      {
+        tag:'AOG sessions &middot; Step 1 of 7',
+        title:'An aircraft goes AOG',
+        body:'The moment an aircraft is grounded, any team member can open an AOG session directly from the main tool. Hit the AOG button, confirm the tail number and aircraft type, and the session goes live instantly.',
+        tip:'The AOG button is always visible on the tool page for Shop, Shop Pro, and Enterprise accounts.',
+        html:`<div class="step-screen">
+          <div class="m-nav"><span class="m-logo">MX-LOGBOOK</span><div style="display:flex;gap:6px;"><span class="m-btn">My Account</span><span class="m-btn">&#128295;</span></div></div>
+          <div class="m-row">
+            <div class="m-field"><div class="m-label">Tail number</div><div class="m-input">N442TX</div></div>
+            <div class="m-field"><div class="m-label">AC Type</div><div class="m-input">BAE 777</div></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+            <div class="hl pill"><span class="m-btn r">&#9888; AOG</span></div>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Flag this aircraft as grounded</span>
+          </div>
+        </div>`
+      },
+      {
+        tag:'AOG sessions &middot; Step 2 of 7',
+        title:'The session goes live for the whole team',
+        body:'The moment the session opens, it appears in real time on the AOG feed for every team member, lead, and admin on the account. No phone calls, no chasing people down.',
+        tip:'Leads and admins see all open AOG sessions across the shop at once.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Live AOG Feed</div>
+          <div class="hl block m-aog-bar" style="padding:10px 12px;">
+            <div class="m-aog-dot live"></div>
+            <div style="flex:1;"><div style="font-family:var(--font-mono);font-size:11px;color:var(--red);">N442TX &middot; BAE 777</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">Opened 1247L &middot; Engine FOD suspected</div></div>
+            <span class="m-badge red">OPEN AOG</span>
+          </div>
+          <div class="m-aog-bar" style="opacity:0.4;"><div class="m-aog-dot"></div><div style="flex:1;"><div style="font-family:var(--font-mono);font-size:11px;color:var(--text2);">AALR &middot; BAE 777</div></div><span class="m-badge green">RESOLVED</span></div>
+        </div>`
+      },
+      {
+        tag:'AOG sessions &middot; Step 3 of 7',
+        title:'Log entries during the AOG',
+        body:'While the aircraft is grounded, mechanics log every action taken directly into the AOG session. Voice or text, plain language. Every entry is timestamped and tied to the session.',
+        tip:'All entries logged during an AOG are automatically tagged with the session for full traceability.',
+        html:`<div class="step-screen">
+          <div class="m-aog-bar"><div class="m-aog-dot live"></div><div><div style="font-family:var(--font-mono);font-size:11px;color:var(--red);">N442TX &middot; Open AOG</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Session started 1247L</div></div></div>
+          <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;">
+            <div class="m-textarea hl" style="flex:1;">Engine intake inspected, FOD confirmed, area cleared...</div>
+            <div class="hl round" style="width:40px;height:40px;border-radius:50%;background:var(--green);border:0.5px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">&#127897;</div>
+          </div>
+          <div class="m-entry-row"><span class="m-etime">1248L</span><div class="m-etext">Engine intake inspected, FOD confirmed, area cleared</div></div>
+          <div class="m-entry-row"><span class="m-etime">1312L</span><div class="m-etext">Borescope inspection completed, no blade damage noted</div></div>
+        </div>`
+      },
+      {
+        tag:'AOG sessions &middot; Step 4 of 7',
+        title:'The lead monitors from the turnover page',
+        body:'While work is happening, the shift lead can pull up the Shift Turnover page and see the open AOG counted in real time alongside the rest of the shift.',
+        tip:'The turnover page updates with every new entry.',
+        html:`<div class="step-screen">
+          <div class="m-tab-bar"><div class="m-tab active">NIGHT JUN 15</div><div class="m-tab">DAY JUN 14</div><div class="m-tab">SWING JUN 14</div></div>
+          <div class="m-stat-grid">
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--green);">4</div><div class="m-stat-label">Completed</div></div>
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--amber);">2</div><div class="m-stat-label">In progress</div></div>
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--red);">1</div><div class="m-stat-label">Deferred</div></div>
+            <div class="hl" style="border-radius:4px;"><div class="m-stat"><div class="m-stat-num" style="color:var(--red);">1</div><div class="m-stat-label">Open AOG</div></div></div>
+          </div>
+          <div class="m-aog-bar" style="margin-bottom:0;"><div class="m-aog-dot live"></div><div style="font-family:var(--font-mono);font-size:11px;color:var(--red);">N442TX &middot; Engine FOD</div><span class="m-badge red" style="margin-left:auto;">OPEN</span></div>
+        </div>`
+      },
+      {
+        tag:'AOG sessions &middot; Step 5 of 7',
+        title:'Resolve the AOG',
+        body:'When the issue is fixed, hit Resolve AOG. The session closes and all entries logged during the AOG automatically merge into the running report for that aircraft.',
+        tip:'The merged entries carry their original timestamps so the timeline stays accurate.',
+        html:`<div class="step-screen">
+          <div class="m-aog-bar"><div class="m-aog-dot live"></div><div style="flex:1;"><div style="font-family:var(--font-mono);font-size:11px;color:var(--red);">N442TX &middot; Open AOG</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">3 entries &middot; 1h 26m open</div></div></div>
+          <div class="m-entry-row"><span class="m-etime">1248L</span><div class="m-etext">Engine intake inspected, FOD confirmed, area cleared</div></div>
+          <div class="m-entry-row"><span class="m-etime">1312L</span><div class="m-etext">Borescope inspection completed, no blade damage noted</div></div>
+          <div class="m-entry-row"><span class="m-etime">1353L</span><div class="m-etext">Engine run-up completed, all parameters normal</div></div>
+          <div style="display:flex;gap:8px;margin-top:10px;"><span class="m-btn">Cancel</span><div class="hl pill"><span class="m-btn g">Resolve AOG</span></div></div>
+        </div>`
+      },
+      {
+        tag:'AOG sessions &middot; Step 6 of 7',
+        title:'Release the aircraft',
+        body:'With the AOG resolved and all entries in the running report, hit Release AC. Every entry from the shift, including the AOG work, is automatically converted into a single clean maintenance log entry. You review it, edit if needed, then confirm.',
+        tip:'Entries from the AOG session are automatically included and treated as part of the same work package.',
+        html:`<div class="step-screen">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div><div style="font-family:var(--font-cond);font-size:16px;font-weight:700;text-transform:uppercase;">N442TX &middot; BAE 777</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">5 entries &middot; AOG resolved 1353L</div></div>
+            <div class="hl pill"><span class="m-btn g">Release AC</span></div>
+          </div>
+          <div class="m-pol">MAINTENANCE LOG ENTRY&#10;Aircraft: N442TX &middot; BAE 777&#10;&#10;1247L - AOG declared, engine FOD suspected.&#10;1248L - Engine intake inspected, FOD confirmed and cleared.&#10;1312L - Borescope inspection completed, no blade damage noted.&#10;1353L - Engine run-up completed, all parameters within limits. Aircraft returned to service.</div>
+          <div style="display:flex;gap:8px;margin-top:10px;"><span class="m-btn">Cancel</span><span class="m-btn g">Confirm &amp; Release</span></div>
+        </div>`
+      },
+      {
+        tag:'AOG sessions &middot; Step 7 of 7',
+        title:'The record is saved',
+        body:'The released report lands in My Closed Reports and in Team Records. The AOG session is logged, the work is documented, and the aircraft is back in service.',
+        tip:'From AOG flag to closed record, the whole thing lives in one place. No paper, no back-and-forth, no missing context.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Team Records</div>
+          <div class="hl block m-report-row"><div style="flex:1;"><div style="font-family:var(--font-mono);font-size:12px;color:var(--text);">Closed Report</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">N442TX &middot; Released 1414L &middot; 5 entries</div></div><span class="m-badge green">RELEASED</span></div>
+          <div class="m-report-row" style="opacity:0.5;border-left-color:var(--amber);"><div style="flex:1;"><div style="font-family:var(--font-mono);font-size:12px;color:var(--text);">Closed AOG Session</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">N442TX &middot; Resolved 1353L &middot; 3 entries</div></div><span class="m-badge amber">CLOSED</span></div>
+          <div style="margin-top:10px;font-family:var(--font-mono);font-size:11px;color:var(--green);">Aircraft back in service. Full record on file.</div>
+        </div>`
+      }
+    ]
+  },
+  w5: {
+    cur: 0,
+    steps: [
+      {
+        tag:'Shift turnover &middot; Step 1 of 5',
+        title:'Open the turnover page',
+        body:'Shift Turnover is available on Shop Pro and Enterprise. Access it from the nav. The page shows a tab for each shift report, with the most recent active. The lead generates a new report at the end of each shift.',
+        tip:'Only leads and admins can generate turnover reports. Mechanics can view them.',
+        html:`<div class="step-screen">
+          <div class="m-nav"><span class="m-logo">MX-LOGBOOK</span><div style="display:flex;gap:6px;"><span class="m-btn">My Account</span><span class="m-btn">&#128295;</span></div></div>
+          <div style="font-family:var(--font-cond);font-size:14px;font-weight:700;text-transform:uppercase;color:var(--text);margin-bottom:10px;">Shift Turnover</div>
+          <div class="m-tab-bar" style="margin-bottom:0;">
+            <div class="m-tab active" style="font-size:10px;"><span style="color:var(--green);">&#9679;</span> NIGHT<br/>JUN 15</div>
+            <div class="m-tab">DAY<br/>JUN 14</div>
+            <div class="m-tab">SWING<br/>JUN 14</div>
+            <div class="m-tab">NIGHT<br/>JUN 13</div>
+            <div class="m-tab">DAY<br/>JUN 13</div>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Shift turnover &middot; Step 2 of 5',
+        title:'Generate a turnover report',
+        body:'At the end of a shift, the lead hits Generate Turnover. A modal asks for the shift type and any lead notes. Voice input is available here too. Hit Generate and the system compiles everything that happened since the last report.',
+        tip:'Lead notes that reference a specific tail number automatically group under that aircraft in the report.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Generate Shift Turnover</div>
+          <div style="margin-bottom:10px;"><div class="m-label">Shift</div><div class="m-input">Night Shift</div></div>
+          <div style="margin-bottom:10px;">
+            <div class="m-label">Lead mechanic notes (optional)</div>
+            <div style="position:relative;">
+              <div class="m-textarea hl" style="padding-right:36px;">ETOPS check required on N442TX next shift. Tire replacement still pending.</div>
+              <div style="position:absolute;bottom:8px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--bg);border:0.5px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:14px;">&#127897;</div>
+            </div>
+          </div>
+          <div class="hl pill" style="display:inline-block;"><span class="m-btn g">Generate</span></div>
+        </div>`
+      },
+      {
+        tag:'Shift turnover &middot; Step 3 of 5',
+        title:'Read the shift summary',
+        body:'The generated report shows a summary of the full shift at the top, counts of completed, in-progress, deferred, and open AOG items, and all work grouped by aircraft. The lead signs off at the bottom.',
+        tip:'The shift summary is written automatically from the entries. No manual summarizing needed.',
+        html:`<div class="step-screen">
+          <div class="m-stat-grid">
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--green);">3</div><div class="m-stat-label">Completed</div></div>
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--amber);">2</div><div class="m-stat-label">In progress</div></div>
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--red);">1</div><div class="m-stat-label">Deferred</div></div>
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--text3);">0</div><div class="m-stat-label">Open AOG</div></div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:6px;">SHIFT SUMMARY</div>
+          <div style="font-size:12px;color:var(--text2);font-style:italic;line-height:1.7;">Night shift completed ground testing on N442TX and AALR. ETOPS check completed on both aircraft. One deferred item remains on N442TX pending tire replacement.</div>
+        </div>`
+      },
+      {
+        tag:'Shift turnover &middot; Step 4 of 5',
+        title:'Search previous reports',
+        body:'Below the shift tabs, a search bar lets anyone look up any previous report by shift, date, or tail number. Select a report from the dropdown to load it instantly.',
+        tip:'All reports are stored indefinitely. The search covers your full history.',
+        html:`<div class="step-screen">
+          <div class="m-tab-bar" style="margin-bottom:6px;">
+            <div class="m-tab active" style="font-size:10px;"><span style="color:var(--green);">&#9679;</span> NIGHT JUN 15</div>
+            <div class="m-tab">DAY JUN 14</div>
+            <div class="m-tab">SWING JUN 14</div>
+            <div class="m-tab">NIGHT JUN 13</div>
+            <div class="m-tab">DAY JUN 13</div>
+          </div>
+          <div class="hl block" style="border-radius:4px;margin-bottom:10px;">
+            <div class="m-input" style="color:var(--text3);">Search shifts, dates, tail numbers...</div>
+          </div>
+          <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:4px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;padding:8px 10px;border-bottom:0.5px solid var(--border);font-family:var(--font-mono);font-size:10px;"><span style="color:var(--text2);">NIGHT</span><span style="color:var(--text3);">Jun 13</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 10px;border-bottom:0.5px solid var(--border);font-family:var(--font-mono);font-size:10px;"><span style="color:var(--text2);">SWING &middot; N442TX, AALR</span><span style="color:var(--text3);">Jun 12</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 10px;font-family:var(--font-mono);font-size:10px;"><span style="color:var(--text2);">DAY</span><span style="color:var(--text3);">Jun 12</span></div>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Shift turnover &middot; Step 5 of 5',
+        title:'Export as PDF',
+        body:'Any turnover report can be exported as a PDF using the Export PDF button at the top of the page. Clean, printable, ready to file or hand off.',
+        tip:'Released aircraft show a green RELEASED badge next to their tail number in the turnover report.',
+        html:`<div class="step-screen">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="font-family:var(--font-cond);font-size:14px;font-weight:700;text-transform:uppercase;">Shift Turnover</div>
+            <div style="display:flex;gap:8px;"><div class="hl pill"><span class="m-btn">Export PDF</span></div><span class="m-btn">+ Add Item</span></div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Completed this shift</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="font-family:var(--font-cond);font-size:15px;font-weight:700;text-transform:uppercase;color:var(--text);">N442TX</div>
+            <span class="m-badge green">RELEASED</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">2 items</span>
+          </div>
+          <div class="m-entry-row"><span class="m-etime">1315L</span><div class="m-etext">ETOPS operational check completed</div></div>
+          <div class="m-entry-row"><span class="m-etime">1353L</span><div class="m-etext">Engine run-up completed, all parameters normal</div></div>
+        </div>`
+      }
+    ]
+  },
+  w6: {
+    cur: 0,
+    steps: [
+      {
+        tag:'Team admin &middot; Step 1 of 6',
+        title:'Open the team admin panel',
+        body:'On Shop plans, a Team Admin tab appears in your account. This is where you manage everyone on the account. Only admins can access this tab.',
+        tip:'The account owner is automatically set as Admin. You can promote other members to Admin from here.',
+        html:`<div class="step-screen">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+            <span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--border);border-radius:4px;color:var(--text3);">Overview</span>
+            <span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--border);border-radius:4px;color:var(--text3);">My Closed Reports</span>
+            <span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--border);border-radius:4px;color:var(--text3);">Referrals</span>
+            <div class="hl pill"><span style="font-family:var(--font-mono);font-size:11px;padding:6px 14px;border:0.5px solid var(--amber);border-radius:4px;color:var(--amber);">Team Admin</span></div>
+          </div>
+          <div class="m-stat-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--text);">4</div><div class="m-stat-label">Team members</div></div>
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--text);">147</div><div class="m-stat-label">Total entries</div></div>
+            <div class="m-stat"><div class="m-stat-num" style="color:var(--amber);">21</div><div class="m-stat-label">Seats remaining</div></div>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Team admin &middot; Step 2 of 6',
+        title:'Invite a mechanic',
+        body:'Hit Invite Mechanic, enter their email address, and assign them a role. They will receive an email with a link to set up their account. If they already have an MX-Logbook account, they are added to your team immediately.',
+        tip:'Roles: Mechanic, Lead, Inspector, Admin. Leads can generate turnovers. Admins can manage the team.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Invite a Mechanic</div>
+          <div style="margin-bottom:10px;"><div class="m-label">Email address</div><div class="m-input hl">j.rodriguez@airline.com</div></div>
+          <div style="margin-bottom:14px;">
+            <div class="m-label">Role</div>
+            <div class="m-input">Lead Mechanic</div>
+          </div>
+          <div class="hl pill" style="display:inline-block;"><span class="m-btn g">Send invite</span></div>
+          <div style="margin-top:10px;font-family:var(--font-mono);font-size:10px;color:var(--text3);">An invite email will be sent to j.rodriguez@airline.com</div>
+        </div>`
+      },
+      {
+        tag:'Team admin &middot; Step 3 of 6',
+        title:'Manage your team',
+        body:'The team members list shows everyone on the account with their role, entry count, and join date. You can change any member\'s role from the dropdown or remove them from the account.',
+        tip:'Removing a member immediately revokes their access. Their records stay on file in Team Records.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Team Members</div>
+          <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="m-avatar">JS</div>
+                <div style="font-size:12px;color:var(--text);">j.smith@airline.com</div>
+              </div>
+              <span class="m-btn r" style="font-size:10px;">Remove</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="hl pill"><div class="m-input" style="padding:3px 8px;font-size:10px;">Lead</div></div>
+                <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">24 entries</span>
+              </div>
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Joined 6/8/2026</span>
+            </div>
+          </div>
+          <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:10px 12px;opacity:0.6;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="m-avatar">MR</div><div style="font-size:12px;color:var(--text);">m.rodriguez@airline.com</div></div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);">Mechanic &middot; 11 entries &middot; Joined 6/10/2026</div>
+          </div>
+        </div>`
+      },
+      {
+        tag:'Team admin &middot; Step 4 of 6',
+        title:'Search team records',
+        body:'The Team Records tab gives admins and leads access to every closed report and AOG session for the whole shop. Search by tail number, aircraft type, or mechanic email to find what you need.',
+        tip:'Team Records only shows completed records. Active running reports are visible on the main tool page in real time.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Team Records</div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <div class="hl" style="flex:1;border-radius:4px;"><div class="m-input">N442TX</div></div>
+            <div class="m-input" style="width:160px;color:var(--text3);">All record types</div>
+          </div>
+          <div class="m-report-row"><div style="flex:1;"><div style="font-family:var(--font-mono);font-size:11px;color:var(--green);">Closed Report</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">N442TX &middot; BAE 777 &middot; j.smith@airline.com &middot; 6/15/2026</div></div><span class="m-badge green">RELEASED</span></div>
+          <div class="m-report-row" style="border-left-color:var(--amber);"><div style="flex:1;"><div style="font-family:var(--font-mono);font-size:11px;color:var(--amber);">Closed AOG</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px;">N442TX &middot; BAE 777 &middot; j.smith@airline.com &middot; 6/15/2026</div></div><span class="m-badge amber">CLOSED</span></div>
+        </div>`
+      },
+      {
+        tag:'Team admin &middot; Step 5 of 6',
+        title:'Track seat usage',
+        body:'The Overview tab shows how many seats your plan includes and how many are in use. Each invited mechanic takes one seat. Upgrade your plan any time to add more seats.',
+        tip:'Removing a mechanic frees their seat immediately.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Seat Usage</div>
+          <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--text2);">4 of 5 seats used</span>
+              <span class="m-badge amber">1 remaining</span>
+            </div>
+            <div style="background:var(--bg3);border-radius:3px;height:4px;overflow:hidden;">
+              <div style="background:var(--green);height:100%;width:80%;border-radius:3px;"></div>
+            </div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text2);margin-bottom:6px;">Need more seats?</div>
+          <div class="hl pill" style="display:inline-block;"><span class="m-btn">Upgrade plan</span></div>
+        </div>`
+      },
+      {
+        tag:'Team admin &middot; Step 6 of 6',
+        title:'Manage billing',
+        body:'From the Overview tab you can view your current plan, change plans, or cancel. Founding rate customers are locked in for 12 months. After that, subscriptions automatically move to the market rate with 14 days advance notice.',
+        tip:'Cancel any time. Your data stays on file for 90 days after cancellation.',
+        html:`<div class="step-screen">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Account</div>
+          <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:12px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-family:var(--font-mono);font-size:12px;color:var(--text);">admin@airline.com</div>
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--green);margin-top:4px;">Shop &middot; Founding rate</div>
+              </div>
+              <span class="m-badge green">Active</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="hl pill"><span class="m-btn">Change plan</span></div>
+            <span class="m-btn r">Cancel subscription</span>
+          </div>
+          <div style="margin-top:10px;font-family:var(--font-mono);font-size:10px;color:var(--text3);">Founding rate locked until 6/8/2027</div>
+        </div>`
+      }
+    ]
+  }
+};
+
+function render(wid) {
+  const t = TOURS[wid];
+  const s = t.steps[t.cur];
+  const total = t.steps.length;
+  const pct = ((t.cur + 1) / total * 100).toFixed(1);
+  document.getElementById('p' + wid[1]).style.width = pct + '%';
+  const inner = document.getElementById('s' + wid[1]);
+  inner.innerHTML = `
+    <div class="step-anim">
+      <div class="step-tag">${s.tag}</div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-body">${s.body}</div>
+      ${s.html}
+      ${s.tip ? `<div class="step-tip">&#9432; ${s.tip}</div>` : ''}
+    </div>`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const el = inner.querySelector('.step-anim');
+    if (el) el.classList.add('in');
+  }));
+  document.getElementById('c' + wid[1]).textContent = (t.cur + 1) + ' of ' + total;
+  document.getElementById('b' + wid[1] + 'p').disabled = t.cur === 0;
+  const nb = document.getElementById('b' + wid[1] + 'n');
+  nb.textContent = t.cur === total - 1 ? 'Done' : 'Next';
+}
+
+function go(wid, dir) {
+  const t = TOURS[wid];
+  if (dir === 1 && t.cur === t.steps.length - 1) return;
+  t.cur = Math.max(0, Math.min(t.steps.length - 1, t.cur + dir));
+  render(wid);
+}
+
+['w1','w2','w3','w4','w5','w6'].forEach(render);
+</script>
+</body>
+</html>
