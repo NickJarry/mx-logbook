@@ -18,7 +18,9 @@
     { "src": "/admin.html", "dest": "/admin.html" },
     { "src": "/invite.html", "dest": "/invite.html" },
     { "src": "/turnover.html", "dest": "/turnover.html" },
+    { "src": "/tour", "dest": "/tour.html" },
     { "src": "/tour.html", "dest": "/tour.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
